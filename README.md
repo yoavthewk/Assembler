@@ -1,6 +1,6 @@
 # Assembler Project - Final Project
 
-This project is an Assembler written in the C programming language that supports 15 different commands, macros, labels, and different types of data (e.g. strings).
+This project is an Assembler written in the C programming language that supports 15 different commands, macros, labels, and different types of data (e.g. strings). The assembler is the program that creates a file of machine code from a given source code file written in Assembly (specifically created for this project). After the assembler does so, the program then goes through several other processes which we will not discuss nor implement.
 
 The commands it supports are as following:
 mov, cmp, add, sub, lea, clr, not, inc, dec, jmp, bne, jsr, red, prn, rts, stop
