@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #define MEMORY_SIZE 8192 
 #define NUM_OF_REGISTERS 20
 
