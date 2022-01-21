@@ -23,8 +23,9 @@ int main(int argc, char* argv[]){
         fp = open_file(file_name);
 
         if(fp){
-            while((line = get_next_line(fp)) != NULL)
+            while((line = get_next_line(fp)) != NULL) { 
                 printf("%s", line);  
+            }
         }
         else{
             printf("%s doesn't exist\n", file_name);
@@ -51,4 +52,3 @@ char* get_next_line(FILE* fp){
     }
     return NULL;
 }
-
