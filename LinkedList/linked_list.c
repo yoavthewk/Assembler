@@ -59,21 +59,43 @@ void printCommandList(LinkedList* head)
 }
 
 /*
-* This function prints a linked List
+* This function returns the size of a linked list
 * Input: the head of the list
-* Output: none
+* Output: the size of the list
 */
-LinkedList* findNodeAt(LinkedList* head, const unsigned int place)
+int getSize(LinkedList* head)
 {
-    int count = 0;
-    while (place != count)
+    if (!head->next)
+    {
+        return 1;
+    }
+    return getSize(head->next) + 1;
+}
+
+/*
+* This function finds a node at a specific index
+* Input: the head of the list, the place of the node
+* Output: the node which has been found, NULL if out of bounds
+*/
+LinkedList* findNodeAt(LinkedList* head, unsigned int place)
+{
+    if (place >= getSize(head))
+    {
+        puts("This index is out of bounds");
+        return NULL;
+    }
+
+    while (place > 0)
     {
         head = head->next;
-        count++;
+        place--;
     }
+    
     return head;
 }
 
+/*
+This is a main used to debug linkedlist.c and linkedlist.h
 int main()
 {
     LinkedList* head, *second, *third;
@@ -81,8 +103,8 @@ int main()
     second = initNode(third, "Command of 2");
     head = initNode(second, "Command of 1");
 
-
     printCommandList(head);
     freeListFromMemory(head);
     return 0;
 }
+*/

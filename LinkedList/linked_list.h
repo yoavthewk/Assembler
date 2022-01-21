@@ -13,3 +13,5 @@ LinkedList* initNode(LinkedList* next, char cmd[]);
 void freeListFromMemory(LinkedList* head);
 void insertAtEnd(LinkedList** head, LinkedList* node);
 void printCommandList(LinkedList* head);
+LinkedList* findNodeAt(LinkedList* head, unsigned int place);
+int getSize(LinkedList* head);
