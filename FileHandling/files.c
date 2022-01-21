@@ -1,7 +1,7 @@
 #include "files.h"
 
 int main(int argc, char* argv[]){
-    int num_of_files, file_index;
+    int num_of_files = argc - 1, file_index = 1;
     char* file_name;
     char* line  = "";
     FILE* fp;
@@ -13,9 +13,6 @@ int main(int argc, char* argv[]){
     }
     
     /* open each file and process it */
-    num_of_files = argc - 1;
-    file_index = 1;
-
     while(num_of_files > 0){
         /* Getting the file pointer */
         file_name = argv[file_index++];
@@ -24,7 +21,8 @@ int main(int argc, char* argv[]){
 
         if(fp){
             while((line = get_next_line(fp)) != NULL) { 
-                printf("%s", line);  
+                puts(line);  
+                free(line);
             }
         }
         else{
@@ -46,7 +44,7 @@ FILE* open_file(char* filename){
 }
 
 char* get_next_line(FILE* fp){
-    char* input = "";
+    char* input = (char*)malloc(MAX_LEN);
     if(fgets(input, MAX_LEN, fp)){
         return input;
     }
