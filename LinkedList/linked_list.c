@@ -1,6 +1,4 @@
 #include "linked_list.h"
-#include <stdlib.h>
-#include <string.h>
 
 /*
 * This function creates a node and allocates memory to it

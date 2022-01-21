@@ -1,10 +1,12 @@
- #include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define SIZE_OF_COMMAND 80
 
 typedef struct LinkedList {
     char command[SIZE_OF_COMMAND];
-    struct Linkedlist* next;
+    struct LinkedList* next;
 } LinkedList;
 
 LinkedList* initNode(LinkedList* next, char cmd[]);
