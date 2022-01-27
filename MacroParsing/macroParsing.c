@@ -1,15 +1,19 @@
 #include "../LinkedList/linked_list.h"
 #include "../FileHandling/files.h"
 #include <ctype.h>
+#include <stdbool.h>
 
-
-bool inMacro = FALSE;
-
+bool inMacro = false;
+struct macro {
+    char * name;
+    char * data;
+} 
 void copyMacroToFile(token);
 bool isMacro();
 void addMacroToTable(char *name);
 
-int main(){
+int main()
+{
     
     return 0;
 }
@@ -19,26 +23,28 @@ int main(){
 * Input: a specific line in the program
 * Output: Boolean, true if macro.
 */
-bool isMacro(char* input){
+bool isMacro(char* input)
+{
     int i = 0;
     char* name;
     char *line;
     strcpy(line, input);
 
     name = strtok(line, "\n");
-    if(containsName(token)){
-        copyMacroToFile(token);
+    if(containsName(head---, name))
+    {
+        copyMacroToFile(name);
         return;
     }
 
-    if (strcmp(strtok(line, " "), "macro")) return FALSE; // if string is not macro
+    if (strcmp(strtok(line, " "), "macro")) return false; // if string is not macro
     i += 5;
 
     strcpy(line, line + i);
     name = strtok(line, "\n");
     // Add the macro to the table.
-    inMacro = TRUE;
-    return TRUE;
+    inMacro = true;
+    return true;
 }
 
 /*
@@ -46,21 +52,25 @@ bool isMacro(char* input){
 * Input: a macro name, and the macro table head
 * Output: Boolean, true if in the list.
 */
-bool containsName(LinkedList* macroTableHead, char* name){
+bool containsName(LinkedList* macroTableHead, char* name)
+{
     while (macroTableHead){
-        if (!strncmp(macroTableHead->command, name)){
-            return TRUE;
+        if (!strcmp(macroTableHead->command, name))
+        {
+            return true;
         }
 
         macroTableHead = macroTableHead->next;
     }
-    return FALSE;
+    return false;
 }
 
-void addMacroToTable(char *name){
-
+void addMacroToTable(char *name)
+{
+	//todo
 }
 
-void copyMacroToFile(char *name){
-
+void copyMacroToFile(char *name)
+{
+	//todo
 }
