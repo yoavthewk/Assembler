@@ -4,6 +4,7 @@
 #define MAX_LEN 81
 
 #define get_file_name(name) strcat(name, ".as")
+#define get_file_name_pre(name) strcat(name, ".am")
 
 /*
  * This function opens the file and returns the file pointer.
@@ -18,3 +19,18 @@ FILE* open_file(char* filename);
  * FILE* fp - the file pointer.
 */
 char* get_next_line(FILE* fp);
+
+/*
+ * This function opens or creates the pre assembler file and returns the file pointer.
+ * Parameters:
+ * char* filename - the name of the file to open.
+*/
+FILE* open_file_create(char* filename);
+
+/*
+ * This function writes a line to the pre assembler file;
+ * Parameters:
+ * FILE* fp - the file pointer.
+ * char* input - the line to write.
+*/
+void write_line(FILE* fp, char *input);

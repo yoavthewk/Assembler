@@ -50,3 +50,19 @@ char* get_next_line(FILE* fp){
     }
     return NULL;
 }
+
+FILE* open_file_create(char* filename){
+    FILE* fp = fopen(filename, "w");
+
+    if(!fp){
+        return NULL;
+    }
+    return fp;
+}
+
+void write_line(FILE* fp, char *input){
+    fprintf(fp, "%s", input);
+    return NULL;
+}
+
+
