@@ -26,5 +26,9 @@
     "**/.*/**",
     "**/.vscode",
     "**/.vscode/**"
-  ]
+  ],
+  "files.associations": {
+    "macro_list.h": "c",
+    "typeinfo": "c"
+  }
 }

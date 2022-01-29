@@ -64,8 +64,9 @@ void insertAtEnd(MacroList** head, MacroList* node)
 /*
 * This function prints a linked List
 * Input: the head of the list
-* Output: none
-*/
+* Output: nonevoid writeListToFile(MacroList* head, FILE* f);
+void writeListToFile(MacroList* head, FILE* f);
+
 void printCommandList(MacroList* head)
 {
     while (head)
