@@ -52,7 +52,9 @@ char* get_next_line(FILE* fp){
 }
 
 FILE* open_file_create(char* filename){
-    FILE* fp = fopen(filename, "w");
+    filename = (char*)realloc(filename, strlen(filename) + strlen(".am") + 1);
+    get_file_name_pre(filename);
+    FILE* fp = fopen(filename, "a");
 
     if(!fp){
         return NULL;

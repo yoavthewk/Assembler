@@ -1,16 +1,13 @@
-#include "../LinkedList/linked_list.h"
+#include "../MacroLinkedList/macro_list.h"
 #include "../FileHandling/files.h"
 #include <ctype.h>
 #include <stdbool.h>
 
 bool inMacro = false;
-struct macro {
-    char * name;
-    char * data;
-} 
-void copyMacroToFile(token);
+
+void copyMacroToFile(MacroList* head, char* macroName, char* filename);
 bool isMacro();
-void addMacroToTable(char *name);
+void addMacroToTable(MacroList* head, FILE* fp, char *name);
 
 int main()
 {
@@ -23,7 +20,7 @@ int main()
 * Input: a specific line in the program
 * Output: Boolean, true if macro.
 */
-bool isMacro(char* input)
+bool isMacro(MacroList* head, char* input)
 {
     int i = 0;
     char* name;
@@ -31,9 +28,9 @@ bool isMacro(char* input)
     strcpy(line, input);
 
     name = strtok(line, "\n");
-    if(containsName(head---, name))
+    if(containsName(head, name))
     {
-        copyMacroToFile(name);
+        copyMacroToFile(name, filename);
         return;
     }
 
@@ -52,10 +49,10 @@ bool isMacro(char* input)
 * Input: a macro name, and the macro table head
 * Output: Boolean, true if in the list.
 */
-bool containsName(LinkedList* macroTableHead, char* name)
+bool containsName(MacroList* macroTableHead, char* name)
 {
     while (macroTableHead){
-        if (!strcmp(macroTableHead->command, name))
+        if (!strcmp(macroTableHead->m.name, name))
         {
             return true;
         }
@@ -65,12 +62,43 @@ bool containsName(LinkedList* macroTableHead, char* name)
     return false;
 }
 
-void addMacroToTable(char *name)
+/* 
+* This function adds a new macro to the macro table
+* Input: the macto list, the assembly file (to get the content of the macro), and the macro name
+* Output: none.
+*/
+void addMacroToTable(MacroList* head, FILE* fp, char *name)
 {
-	//todo
+    char* content = (char*)malloc(sizeof(char)), line;
+	while (head->next)
+    {
+        head = head->next;
+    }
+
+    do {
+        line = get_next_line(fp);
+        content = (char*)realloc(content, strlen(line) + strlen(content));
+        strcat(content, line);
+    } while (strcmp(line, "endm"));
+
+    head->next = initNode(NULL, name, content);
 }
 
-void copyMacroToFile(char *name)
+/*
+* This function replaces a macro name with its content inside the assembly file
+* Input: the macro name, the file name, and the macro list
+* Output: none. 
+*/
+void copyMacroToFile(MacroList* head, char* macroName, char* filename)
 {
-	//todo
+    while (strcmp(macroName, head->m.name))
+    {
+        head = head->next;
+    }
+
+    FILE* newMacroFile = open_file_create(filename);
+
+    write_line(newMacroFile, head->m.data);
+
+    fclose(newMacroFile);
 }
