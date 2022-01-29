@@ -11,8 +11,8 @@
 MacroList* initNode(MacroList* next, char* name, char* content)
 {
     MacroList* node = (MacroList*)malloc(sizeof(MacroList));
-    node->m.data = (char*)malloc(strlen(content));
-    node->m.name = (char*)malloc(strlen(name));
+    node->m.data = (char*)malloc(strlen(content) + 1);
+    node->m.name = (char*)malloc(strlen(name) + 1);
     strcpy(node->m.data, content);
     strcpy(node->m.name, name);
     node->next = next;
