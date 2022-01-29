@@ -10,25 +10,32 @@ bool inMacro = false;
 bool isMacro(MacroList* head, char* input, FILE* fp, char* filename)
 {
     int i = 0;
-    char* name;
-    char *line = (char*)malloc(strlen(input) + 1);
+    char *line = (char*)malloc(strlen(input) + 1), *cmd;
     strcpy(line, input);
 
-    name = strtok(line, "\n");
-    if(containsName(head, name))
+    cmd = strtok(line, " ");
+    if (cmd && strcmp(cmd, "macro"))
     {
-        copyMacroToFile(head, name, filename);
-        return true;
+        free(line);
+        return false; /* if string is not macro */
     }
-
-    if (strcmp(strtok(line, " "), "macro")) return false; /* if string is not macro */
+    else if(!cmd) 
+    {  
+        cmd = strtok(line, "\n");
+        if (containsName(head, cmd))
+        {
+            copyMacroToFile(head, cmd, filename);
+            free(line);
+            return true;
+        }
+    }
     i += 5;
-
     strcpy(line, line + i);
-    name = strtok(line, "\n");
+
     /* Add the macro to the table. */
-    addMacroToTable(head, fp, name);
+    addMacroToTable(head, fp, cmd);
     inMacro = true;
+    free(line);
     return true;
 }
 
