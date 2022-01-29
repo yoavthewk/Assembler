@@ -11,10 +11,16 @@
 MacroList* initNode(MacroList* next, char* name, char* content)
 {
     MacroList* node = (MacroList*)malloc(sizeof(MacroList));
-    node->m.data = (char*)malloc(strlen(content) + 1);
-    node->m.name = (char*)malloc(strlen(name) + 1);
-    strcpy(node->m.data, content);
-    strcpy(node->m.name, name);
+    if(content != NULL){
+        node->m.data = (char*)malloc(strlen(content) + 1);
+        strcpy(node->m.data, content);
+    }
+
+    if(name != NULL){
+        node->m.name = (char*)malloc(strlen(name) + 1);
+        strcpy(node->m.name, name);    
+    }
+    
     node->next = next;
     return node;
 }
@@ -75,6 +81,7 @@ void printCommandList(MacroList* head)
         head = head->next;
     }
 }
+*/
 
 /*
 * This function returns the size of a linked list
@@ -113,7 +120,7 @@ MacroList* findNodeAt(MacroList* head, unsigned int place)
 }
 
 
-/* This is a main used to debug MacroList.c and MacroList.h */
+/* This is a main used to debug MacroList.c and MacroList.h 
 int main()
 {
     MacroList* head, *second, *third;
@@ -125,3 +132,4 @@ int main()
     freeListFromMemory(head);
     return 0;
 }
+*/

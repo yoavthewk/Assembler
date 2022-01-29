@@ -1,45 +1,33 @@
-#include "../MacroLinkedList/macro_list.h"
-#include "../FileHandling/files.h"
-#include <ctype.h>
-#include <stdbool.h>
+#include "line_parsing.h"
 
 bool inMacro = false;
-
-void copyMacroToFile(MacroList* head, char* macroName, char* filename);
-bool isMacro();
-void addMacroToTable(MacroList* head, FILE* fp, char *name);
-
-int main()
-{
-    
-    return 0;
-}
 
 /*
 * This function checks whether a given line contains a macro
 * Input: a specific line in the program
 * Output: Boolean, true if macro.
 */
-bool isMacro(MacroList* head, char* input)
+bool isMacro(MacroList* head, char* input, FILE* fp, char* filename)
 {
     int i = 0;
     char* name;
-    char *line;
+    char *line = (char*)malloc(strlen(input) + 1);
     strcpy(line, input);
 
     name = strtok(line, "\n");
     if(containsName(head, name))
     {
-        copyMacroToFile(name, filename);
-        return;
+        copyMacroToFile(head, name, filename);
+        return true;
     }
 
-    if (strcmp(strtok(line, " "), "macro")) return false; // if string is not macro
+    if (strcmp(strtok(line, " "), "macro")) return false; /* if string is not macro */
     i += 5;
 
     strcpy(line, line + i);
     name = strtok(line, "\n");
-    // Add the macro to the table.
+    /* Add the macro to the table. */
+    addMacroToTable(head, fp, name);
     inMacro = true;
     return true;
 }
@@ -69,19 +57,17 @@ bool containsName(MacroList* macroTableHead, char* name)
 */
 void addMacroToTable(MacroList* head, FILE* fp, char *name)
 {
-    char* content = (char*)malloc(sizeof(char)), line;
-	while (head->next)
-    {
-        head = head->next;
-    }
+    char* content = (char*)malloc(sizeof(char));
+    char* line;
 
-    do {
-        line = get_next_line(fp);
+    line = get_next_line(fp);
+    while (strcmp(line, "endm")){
         content = (char*)realloc(content, strlen(line) + strlen(content));
         strcat(content, line);
-    } while (strcmp(line, "endm"));
+        line = get_next_line(fp);
+    } 
 
-    head->next = initNode(NULL, name, content);
+    insertAtEnd(&head, initNode(NULL, name, content));
 }
 
 /*
@@ -91,12 +77,14 @@ void addMacroToTable(MacroList* head, FILE* fp, char *name)
 */
 void copyMacroToFile(MacroList* head, char* macroName, char* filename)
 {
+    FILE* newMacroFile;
+
     while (strcmp(macroName, head->m.name))
     {
         head = head->next;
     }
 
-    FILE* newMacroFile = open_file_create(filename);
+    newMacroFile = open_file_create(filename);
 
     write_line(newMacroFile, head->m.data);
 
