@@ -1,4 +1,5 @@
 #include "files.h"
+#include "PreAssembler/line_parsing.h"
 
 int main(int argc, char* argv[]){
     int num_of_files = argc - 1, file_index = 1;
@@ -21,7 +22,7 @@ int main(int argc, char* argv[]){
 
         if(fp){
             while((line = get_next_line(fp)) != NULL) { 
-                puts(line);  
+                 
                 free(line);
             }
         }
