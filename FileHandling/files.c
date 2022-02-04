@@ -5,6 +5,7 @@ int main(int argc, char* argv[]){
     int num_of_files = argc - 1, file_index = 1;
     char* file_name;
     char* line;
+    char* original_line;
     FILE* fp, *newMacroFile;
     MacroList* head;
 
@@ -21,13 +22,16 @@ int main(int argc, char* argv[]){
         fp = open_file(file_name);
         if(fp){
             while((line = get_next_line(fp)) != NULL) { 
+                original_line = (char*)malloc(strlen(line) + 1);
+                strcpy(original_line, line);
                 line = parse_line(line);
                 if(!isMacro(head, line, fp, file_name)){
                     newMacroFile = open_file_create(file_name);
-                    write_line(newMacroFile, line);
+                    write_line(newMacroFile, original_line);
                     fclose(newMacroFile);
                 }
                 free(line);
+                free(original_line);
             }
             fclose(fp);
         }

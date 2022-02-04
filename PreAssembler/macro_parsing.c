@@ -23,7 +23,7 @@ bool isMacro(MacroList* head, char* input, FILE* fp, char* filename)
         free(line);
         return false; 
     } else if(!cmd) return false;
-    cmd = strtok(NULL, "\n");
+    cmd = strtok(NULL, "\n"); /* get the name of the macro */ 
 
     /* Add the macro to the table. */
     addMacroToTable(head, fp, cmd);
@@ -58,22 +58,29 @@ void addMacroToTable(MacroList* head, FILE* fp, char *name)
 {
     char* content = (char*)calloc(MAX_LEN, sizeof(char));
     char* line;
+    char* originalLine;
+    
     line = get_next_line(fp);
+    originalLine = (char*)malloc(strlen(line) + 1);
+    strcpy(originalLine, line);
     line = parse_line(line);
     if(!line){
         free(content);
         return;
     }
     while (strcmp(line, "endm\n")){
-        printf("%s", line);
-        content = (char*)realloc(content, strlen(line) + strlen(content) + 1);
-        strcat(content, line);
+        content = (char*)realloc(content, strlen(originalLine) + strlen(content) + 1);
+        strcat(content, originalLine);
         free(line);
+        free(originalLine);
         line = get_next_line(fp);
-        line = parse_line(line);
+        originalLine = (char*)malloc(strlen(line) + 1);
+    	strcpy(originalLine, line);
+    	line = parse_line(line);
         if(!line) break;
     } 
     free(line);
+    free(originalLine);
     insertAtEnd(&head, initNode(NULL, name, content));
     free(content);
 }

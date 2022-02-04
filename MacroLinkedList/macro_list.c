@@ -118,18 +118,3 @@ MacroList* findNodeAt(MacroList* head, unsigned int place)
     
     return head;
 }
-
-
-/* This is a main used to debug MacroList.c and MacroList.h 
-int main()
-{
-    MacroList* head, *second, *third;
-    third = initNode(NULL, "3", "Command of 3");
-    second = initNode(third, "2", "Command of 2");
-    head = initNode(second, "1", "Command of 1");
-
-    printCommandList(head);
-    freeListFromMemory(head);
-    return 0;
-}
-*/
