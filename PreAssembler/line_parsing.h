@@ -9,3 +9,4 @@ bool isMacro(MacroList* head, char* input, FILE* fp, char* filename);
 void addMacroToTable(MacroList* head, FILE* fp, char *name);
 bool containsName(MacroList* macroTableHead, char* name);
 char* parse_line(char* line);
+bool containsSpace(char* name);

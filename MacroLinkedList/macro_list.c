@@ -20,7 +20,7 @@ MacroList* initNode(MacroList* next, char* name, char* content)
         node->m.name = (char*)malloc(strlen(name) + 1);
         strcpy(node->m.name, name);    
     }
-    
+
     node->next = next;
     return node;
 }
@@ -72,7 +72,7 @@ void insertAtEnd(MacroList** head, MacroList* node)
 * Input: the head of the list
 * Output: nonevoid writeListToFile(MacroList* head, FILE* f);
 void writeListToFile(MacroList* head, FILE* f);
-
+*/
 void printCommandList(MacroList* head)
 {
     while (head)
@@ -81,7 +81,7 @@ void printCommandList(MacroList* head)
         head = head->next;
     }
 }
-*/
+
 
 /*
 * This function returns the size of a linked list
