@@ -20,20 +20,24 @@ int main(int argc, char* argv[]){
         /* Getting the file pointer */
         file_name = argv[file_index++];
         fp = open_file(file_name);
+        
         if(fp){
-            while((line = get_next_line(fp)) != NULL) { 
-                original_line = (char*)malloc(strlen(line) + 1);
-                strcpy(original_line, line);
-                line = parse_line(line);
-                if(!isMacro(head, line, fp, file_name)){
-                    newMacroFile = open_file_create(file_name);
-                    write_line(newMacroFile, original_line);
-                    fclose(newMacroFile);
+            /* clear the pre assembler file */
+            if(clear_file(file_name)){
+                while((line = get_next_line(fp)) != NULL) { 
+                    original_line = (char*)malloc(strlen(line) + 1);
+                    strcpy(original_line, line);
+                    line = parse_line(line);
+                    if(!isMacro(head, line, fp, file_name)){
+                        newMacroFile = open_file_create(file_name);
+                        write_line(newMacroFile, original_line);
+                        fclose(newMacroFile);
+                    }
+                    free(line);
+                    free(original_line);
                 }
-                free(line);
-                free(original_line);
+                fclose(fp);
             }
-            fclose(fp);
         }
         else{
             printf("%s doesn't exist\n", file_name);
@@ -65,14 +69,30 @@ char* get_next_line(FILE* fp){
     return NULL;
 }
 
-FILE* open_file_create(char* filename){
+FILE* open_file_create(char* file_name){
     FILE* fp;
-    char* temp = (char*)calloc(strlen(filename) + strlen(".am") + 1, sizeof(char));   
+    char* temp = (char*)calloc(strlen(file_name) + strlen(".am") + 1, sizeof(char));   
+    strcpy(temp, file_name);
     get_file_name_pre(temp);
     fp = fopen(temp, "a");
     free(temp);
 
     return fp;
+}
+
+int clear_file(char* file_name){
+    FILE* fp;
+    char* temp = (char*)calloc(strlen(file_name) + strlen(".am") + 1, sizeof(char));   
+    strcpy(temp, file_name);
+    get_file_name_pre(temp);
+    fp = fopen(temp, "w");
+    free(temp);
+
+    if(fp){
+        fclose(fp);
+        return 1;
+    }
+    return 0;
 }
 
 void write_line(FILE* fp, char *input){

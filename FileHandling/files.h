@@ -28,9 +28,16 @@ char* get_next_line(FILE* fp);
 FILE* open_file_create(char* filename);
 
 /*
- * This function writes a line to the pre assembler file;
+ * This function writes a line to the pre-assembled file.
  * Parameters:
  * FILE* fp - the file pointer.
  * char* input - the line to write.
 */
 void write_line(FILE* fp, char *input);
+
+/*
+ * This function clears the pre-assembled file.
+ * Parameters:
+ * char* filename - the name of the file to open.
+*/
+int clear_file(char* file_name);
