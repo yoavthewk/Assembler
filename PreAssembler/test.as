@@ -6,5 +6,3 @@ asdadasd
 asdadasd
 endm
 m1
-
-

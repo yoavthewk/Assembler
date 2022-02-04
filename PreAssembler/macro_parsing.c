@@ -59,11 +59,19 @@ void addMacroToTable(MacroList* head, FILE* fp, char *name)
     char* content = (char*)calloc(MAX_LEN, sizeof(char));
     char* line;
     line = get_next_line(fp);
+    line = parse_line(line);
+    if(!line){
+        free(content);
+        return;
+    }
     while (strcmp(line, "endm\n")){
+        printf("%s", line);
         content = (char*)realloc(content, strlen(line) + strlen(content) + 1);
         strcat(content, line);
         free(line);
         line = get_next_line(fp);
+        line = parse_line(line);
+        if(!line) break;
     } 
     free(line);
     insertAtEnd(&head, initNode(NULL, name, content));

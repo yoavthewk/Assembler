@@ -1,69 +1,11 @@
-asdadasd
-asdasdasdasd
-asdasdasdasd
+.entry LIST
+.extern W
 
-
-m1
-
-
-asdadasd
-asdasdasdasd
-asdasdasdasd
-
-
-m1
-
-
-asdadasd
-asdasdasdasd
-asdasdasdasd
-
-
-m1
-
-
-asdadasd
-asdasdasdasd
-asdasdasdasd
-
-
-m1
-
-
-asdadasd
-asdasdasdasd
-asdasdasdasd
-m1
-
-
-asdadasd
-asdasdasdasd
-asdasdasdasd
-m1
-
-
-asdadasd
-asdasdasdasd
-asdasdasdasd
-m1
-
-
-asdadasd
-asdasdasdasd
-asdasdasdasd
-asdadasd
-asdadasd
-asdadasd
-asdasdasdasd
-asdasdasdasd
-asdadasd
-asdadasd
-
-
-asdadasd
-asdasdasdasd
-asdasdasdasd
-asdadasd
-asdadasd
-
+MAIN: add r3, LIST
+LOOP: prn #48
+lea STR, r6
+inc r6
+mov r3, W
+sub r1, r4
+bne END
 
