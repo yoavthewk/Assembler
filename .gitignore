@@ -1,5 +1,7 @@
 # folders
 valgrind-3.18.1/
+.vscode/
+.idea/
 
 # Prerequisites
 *.d
