@@ -3,28 +3,29 @@
 #define MEMORY_SIZE 8192 
 #define NUM_OF_REGISTERS 20
 
-typedef struct hregister{
-    int data : 20;
-}hregister;
+typedef struct hregister {
+    unsigned int data : 20;
+} hregister;
 
-typedef struct word{
-    int data : 20;
-}word;
+typedef struct word {
+    unsigned int data : 20;
+} word;
 
-typedef struct PSW{
-    int Z : 1;
-}PSW;
+typedef struct PSW {
+    unsigned int Z : 1;
+	unsigned int SYM : 1;
+} PSW;
 
-struct{
-	char *name;
-	int op_code : 16;
-	int funct : 4;
-	}action_table[] = {
-		{"mov", 0, NULL},
-		{"cmp", 1, NULL},
+struct {
+	char name[8];
+	unsigned int op_code : 16;
+	unsigned int funct : 4;
+} action_table[] = {
+		{"mov", 0, 0},
+		{"cmp", 1, 0},
 		{"add", 2, 10},
 		{"sub", 2, 11}, 
-		{"lea", 8, NULL}, 
+		{"lea", 8, 0}, 
 		{"clr", 16, 10}, 
 		{"not", 16, 11}, 
 		{"inc", 16, 12}, 
@@ -32,17 +33,18 @@ struct{
 		{"jmp", 256, 10},
 		{"bne", 256, 11},
 		{"jsr", 256, 12},
-		{"red", 2048, NULL},
-		{"prn", 4096, NULL},
-		{"rts", 8192, NULL},
-		{"stop", 16385, NULL},
-		{"not_valid", NULL}
-	};
+		{"red", 2048, 0},
+		{"prn", 4096, 0},
+		{"rts", 8192, 0},
+		{"stop", 16385, 0},
+		{"invalid", 0}
+};
 
 word memory[MEMORY_SIZE] = {0};
 hregister registers[NUM_OF_REGISTERS] = {0};
-hregister PC = {100};
-
+hregister IC = {100};
+hregister DC = {0};
+PSW flagRegister = {0, 0};
 /* Initialization functions */
 void init_memory();
 void init_registers();
