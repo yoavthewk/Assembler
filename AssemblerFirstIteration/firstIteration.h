@@ -3,9 +3,12 @@
 #include <stdbool.h>
 #include "../Hardware/hardware.h"
 #include "../FileHandling/files.h"
+#define BASE 0 
+#define OFFSET 0
 
-void containsLabel(char* line);
-bool isExtern(char* line);
-bool isEntry(char* line);
-void processData(char* line);
-void isData(char* line);
+void contains_label(char* line);
+bool is_extern(char* line);
+bool is_entry(char* line);
+void process_data(char* line);
+void handle_data(char* line, symbolList *head);
+void process_line(char *line, symbolList* head);

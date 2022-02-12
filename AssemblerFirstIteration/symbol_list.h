@@ -19,7 +19,7 @@ typedef struct symbolList {
     struct symbolList* next;
 } symbolList;
 
-symbolList* initNode(symbolList* next, char* name, char* content);
+symbolList* initList(symbolList* next, char name[], unsigned char value, unsigned char addr, unsigned char offset, bool att[]);
 void freeListFromMemory(symbolList* head);
 void insertAtEnd(symbolList** head, symbolList* node);
 int getSize(symbolList* head);
