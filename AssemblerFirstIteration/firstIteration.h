@@ -10,5 +10,5 @@ void contains_label(char* line);
 bool is_extern(char* line);
 bool is_entry(char* line);
 void process_data(char* line);
-void handle_data(char* line, symbolList *head);
+bool handle_data(char* line, symbolList *head);
 void process_line(char *line, symbolList* head);

@@ -57,7 +57,7 @@ FILE* open_file(char* filename){
 
 char* get_next_line(FILE* fp){
     char* input = (char*)calloc(MAX_LEN, sizeof(char));
-    if(fgets(input, MAX_LEN, fp)){
+    if(fgets(input, MAX_LEN, fp) && strlen(input) < MAX_LEN){
         return input;
     }
     free(input);

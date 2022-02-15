@@ -37,7 +37,7 @@ struct {
 		{"prn", 4096, 0},
 		{"rts", 8192, 0},
 		{"stop", 16385, 0},
-		{"invalid", 0}
+		{"invalid", 0, 0}
 };
 
 word memory[MEMORY_SIZE] = {0};

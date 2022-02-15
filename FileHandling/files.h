@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define MAX_LEN 81
+#define MAX_LEN 83
 
 #define get_file_name(name) strcat(name, ".as")
 #define get_file_name_pre(name) strcat(name, ".am")
