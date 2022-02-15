@@ -1,3 +1,6 @@
+#ifndef SYMBOL_LIST_H
+#define SYMBOL_LIST_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -5,7 +8,8 @@
 
 #define SIZE_OF_COMMAND 80
 
-typedef struct symbol {
+typedef struct symbol
+{
     char name[5];
     unsigned char value;
     unsigned char baseAddress;
@@ -14,12 +18,15 @@ typedef struct symbol {
     /* att[0] = external; att[1] = entry; att[2] = code; att[3] = data; */
 } symbol;
 
-typedef struct symbolList {
+typedef struct SymbolList
+{
     symbol s;
-    struct symbolList* next;
-} symbolList;
+    struct SymbolList *next;
+} SymbolList;
 
-symbolList* initList(symbolList* next, char name[], unsigned char value, unsigned char addr, unsigned char offset, bool att[]);
-void freeListFromMemory(symbolList* head);
-void insertAtEnd(symbolList** head, symbolList* node);
-int getSize(symbolList* head);
+SymbolList *initSymbolNode(SymbolList *next, char name[], unsigned char value, unsigned char addr, unsigned char offset, bool att[]);
+void freeSymbolList(SymbolList *head);
+void insertSymbol(SymbolList **head, SymbolList *node);
+int getSymbolListSize(SymbolList *head);
+
+#endif /* SYMBOL_LIST_H */
