@@ -1,3 +1,5 @@
+#ifndef HARDWARE_SEEN
+#define HARDWARE_SEEN
 #include <stdio.h>
 #include <stdlib.h>
 #define MEMORY_SIZE 8192 
@@ -20,7 +22,7 @@ struct {
 	char name[8];
 	unsigned int op_code : 16;
 	unsigned int funct : 4;
-} action_table[] = {
+} static action_table[] = {
 		{"mov", 0, 0},
 		{"cmp", 1, 0},
 		{"add", 2, 10},
@@ -39,12 +41,13 @@ struct {
 		{"stop", 16385, 0},
 		{"invalid", 0, 0}
 };
+static word memory[MEMORY_SIZE] = {0};
+static hregister registers[NUM_OF_REGISTERS] = {0};
+static hregister IC = {100};
+static hregister DC = {0};
+static PSW flagRegister = {0, 0};
 
-word memory[MEMORY_SIZE] = {0};
-hregister registers[NUM_OF_REGISTERS] = {0};
-hregister IC = {100};
-hregister DC = {0};
-PSW flagRegister = {0, 0};
 /* Initialization functions */
 void init_memory();
 void init_registers();
+#endif /* !HARDWARE_SEEN */

@@ -1,9 +1,9 @@
-#ifndef LINE_PARSING_H
-#define LINE_PARSING_H
-
-#include <ctype.h>
+#ifndef PRE_ASSEMBLER_H
+#define PRE_ASSEMBLER_H
 #include "../FileHandling/files.h"
 #include "../MacroLinkedList/macro_list.h"
+#include "../Hardware/hardware.h"
+#include <ctype.h>
 
 void copyMacroToFile(MacroList* head, char* macroName, char* filename);
 bool isMacro(MacroList* head, char* input, FILE* fp, char* filename);
@@ -21,4 +21,4 @@ bool containsSpace(char* name);
  */
 void preassemble(char *file_name, FILE *fp, MacroList *head);
 
-#endif /* LINE_PARSING_H */
+#endif /* PRE_ASSEMBLER_H */

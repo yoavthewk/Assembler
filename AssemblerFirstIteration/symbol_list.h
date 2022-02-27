@@ -1,12 +1,9 @@
-#ifndef SYMBOL_LIST_H
-#define SYMBOL_LIST_H
-
-#include <stdio.h>
+#ifndef SYMBOL_LIST_SEEN
+#define SYMBOL_LIST_SEEN
+#define SIZE_OF_COMMAND 80
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
-#define SIZE_OF_COMMAND 80
 
 typedef struct symbol
 {
@@ -29,4 +26,4 @@ void freeSymbolList(SymbolList *head);
 void insertSymbol(SymbolList **head, SymbolList *node);
 int getSymbolListSize(SymbolList *head);
 
-#endif /* SYMBOL_LIST_H */
+#endif /* !SYMBOL_LIST_SEEN */

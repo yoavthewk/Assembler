@@ -1,9 +1,9 @@
 #ifndef FIRSTITERATION_H
 #define FIRSTITERATION_H
-
 #include "../Hardware/hardware.h"
-#include "../PreAssembler/line_parsing.h"
 #include "symbol_list.h"
+#include "../PreAssembler/pre_assembler.h"
+
 #define BASE 0
 #define OFFSET 0
 

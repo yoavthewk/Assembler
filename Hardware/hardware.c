@@ -1,12 +1,5 @@
 #include "hardware.h"
 
-int main(){
-    init_memory();
-    init_registers();
-    
-    return 0;
-}
-
 /* Initialize the memory */
 void init_memory(){
     int i;

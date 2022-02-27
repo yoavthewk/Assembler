@@ -1,3 +1,6 @@
+#ifndef MACRO_LIST_SEEN
+#define MACRO_LIST_SEEN
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,3 +23,5 @@ void insertAtEnd(MacroList** head, MacroList* node);
 void printCommandList(MacroList* head);
 MacroList* findNodeAt(MacroList* head, unsigned int place);
 int getSize(MacroList* head);
+
+#endif /* !MACRO_LIST_SEEN */
