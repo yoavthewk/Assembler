@@ -5,6 +5,29 @@
 #include <stdbool.h>
 #define MAX_LEN 81
 
+struct{
+	char *name;
+	void (*func)(char input[]);
+	}cmd[] = {
+		{"mov", mov_exec},
+		{"cmp", cmp_exec},
+		{"add", add_exec},
+		{"sub", sub_exec}, 
+		{"lea", lea_exec}, 
+		{"clr", clr_exec}, 
+		{"not", not_exec}, 
+		{"inc", inc_exec}, 
+		{"dec", dec_exec},
+		{"jmp", jmp_exec},
+		{"bne", bne_exec},
+		{"jsr", jsr_exec},
+		{"red", red_exec},
+		{"prn", prn_exec},
+		{"rts", rts_exec},
+		{"stop", stop_exec},
+		{"not_valid", NULL}
+	};
+	
 /* Helper functions */
 void executeCommand();
 int isWhiteSpaceOnly(char input[]);
