@@ -30,22 +30,26 @@ struct{
 	
 /* Helper functions */
 void executeCommand();
-int isWhiteSpaceOnly(char input[]);
+int isWhiteSpaceOnly(char *input);
+void isImmediate(char* line, int* number);
+int isDirect(char* line);
+void isIndex(char* line, char* label, int *index);
+int isRegisterDirect(char* line);
 
 /* Execution functions */
-void mov_exec(char input[]);
-void cmp_exec(char input[]);
-void add_exec(char input[]);
-void sub_exec(char input[]);
-void lea_exec(char input[]);
-void clr_exec(char input[]);
-void not_exec(char input[]);
-void inc_exec(char input[]);
-void dec_exec(char input[]);
-void jmp_exec(char input[]);
-void bne_exec(char input[]);
-void jsr_exec(char input[]);
-void red_exec(char input[]);
-void prn_exec(char input[]);
-void rts_exec(char input[]);
-void stop_exec(char input[]);
+void mov_exec(char *input);
+void cmp_exec(char *input);
+void add_exec(char *input);
+void sub_exec(char *input);
+void lea_exec(char *input);
+void clr_exec(char *input);
+void not_exec(char *input);
+void inc_exec(char *input);
+void dec_exec(char *input);
+void jmp_exec(char *input);
+void bne_exec(char *input);
+void jsr_exec(char *input);
+void red_exec(char *input);
+void prn_exec(char *input);
+void rts_exec(char *input);
+void stop_exec(char *input);
