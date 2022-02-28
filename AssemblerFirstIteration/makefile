@@ -1,17 +1,42 @@
-CFLAGS = -c -ansi -Wall -pedantic -m32 -g -o $@
-EXEFLAGS = -ansi -Wall -pedantic -g -m32 -o prog
-UTILITY_SRC = ../PreAssembler/line_parsing.c ../Hardware/hardware.c ../FileHandling/files.c symbol_list.c
-UTILITY_HEADERS = ../PreAssembler/line_parsing.h ../Hardware/hardware.h ../FileHandling/files.h symbol_list.h
-OBJ_SRC = main.o first_iteration.o pre_assembler.o utility.o
-UFLAGS = -ansi -Wall -pedantic -m32 -g -o $@
-
+CFLAGS = -c -ansi -Wall -pedantic -m32 -g
+EXEFLAGS = -ansi -Wall -pedantic -g -m32
+OBJ_SRC = main.o firstIteration.o macro_parsing.o hardware.o files.o symbol_list.o line_parsing.o execute_command.o command_parse.o macro_list.o
+CC = gcc
+OUT = prog
+ 
 prog: $(OBJ_SRC)
-	gcc $(EXEFLAGS) $(OBJ_SRC)	
+	$(CC) $(EXEFLAGS) $(OBJ_SRC)
+    
 main.o: ../main.c ../main.h
-	gcc $(CFLAGS) ../main.c
-first_iteration.o: firstIteration.c
-	gcc $(CFLAGS) firstIteration.c
-pre_assembler.o: ../PreAssembler/macro_parsing.c
-	gcc $(CFLAGS) ../PreAssembler/macro_parsing.c
-utility.o: $(UTILITY_SRC)
-	gcc $(UFLAGS) $(UTILITY_SRC)
+	$(CC) $(CFLAGS) ../main.c
+    
+firstIteration.o: firstIteration.c firstIteration.h
+	$(CC) $(CFLAGS) firstIteration.c
+    
+macro_parsing.o: ../PreAssembler/macro_parsing.c ../PreAssembler/pre_assembler.h
+	$(CC) $(CFLAGS) ../PreAssembler/macro_parsing.c
+    
+macro_list.o: ../MacroLinkedList/macro_list.c ../MacroLinkedList/macro_list.h
+	$(CC) $(CFLAGS) ../MacroLinkedList/macro_list.c
+    
+line_parsing.o: ../PreAssembler/line_parsing.c ../PreAssembler/pre_assembler.h
+	$(CC) $(CFLAGS) ../PreAssembler/line_parsing.c -std=c90
+    
+hardware.o: ../Hardware/hardware.c ../Hardware/hardware.h
+	$(CC) $(CFLAGS) ../Hardware/hardware.c -std=c90
+ 
+files.o: ../FileHandling/files.c ../FileHandling/files.h
+	$(CC) $(CFLAGS) ../FileHandling/files.c -std=c90
+ 
+command_parse.o: ../CommandParsing/command_parse.c ../CommandParsing/exec.h
+	$(CC) $(CFLAGS) ../CommandParsing/command_parse.c
+    
+execute_command.o: ../CommandParsing/execute_command.c ../CommandParsing/exec.h
+	$(CC) $(CFLAGS) ../CommandParsing/execute_command.c
+ 
+symbol_list.o: symbol_list.c symbol_list.h
+	$(CC) $(CFLAGS) symbol_list.c -std=c90
+    
+clean:
+	rm -f $(OBJ_SRC) $(OUT)
+ 

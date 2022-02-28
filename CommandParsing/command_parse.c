@@ -66,7 +66,7 @@ int isRegisterDirect(char* line){
 	tok = strtok(line, " ");
 	if(tok[0] == 'r'){
 		strcpy(tok, tok + 1);
-		if((num = getNUmber(tok)) != -1){
+		if((num = getNumber(tok)) != -1){
 			return num;
 		}
 	}
