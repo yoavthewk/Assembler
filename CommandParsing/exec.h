@@ -3,11 +3,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-#define MAX_LEN 81
 
 struct{
 	char *name;
-	void (*func)(char input[]);
+	void (*func)(char *input);
 	}cmd[] = {
 		{"mov", mov_exec},
 		{"cmp", cmp_exec},
