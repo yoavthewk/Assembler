@@ -82,3 +82,12 @@ int getSymbolListSize(SymbolList *head)
     }
     return getSymbolListSize(head->next) + 1;
 }
+
+bool contains(SymbolList *head, char *name)
+{
+    do {
+        if (!strncmp(head->s.name, name, SYMBOL_SIZE))
+            return true;
+    } while (head = head->next);
+    return false;
+}
