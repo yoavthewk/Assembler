@@ -38,10 +38,15 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         }
     }
     /* alert error and break */
-
+    throw_error("Invalid First Operand!", line_number);
     found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
     if(action_table[action_index].operands == 1){
+        /* if there's no extra text */
         /* encode */
+        return;
+    }
+    if(line[0] == '\n' || !line[0]){
+        /* not enough operands */
         return;
     }
     /* encode the first operand with what we found */

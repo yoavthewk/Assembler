@@ -26,23 +26,27 @@ int getNumber(char* num){
 
 bool isImmediate(char* line, int *number, bool first){
 	char* tok;
-	tok = strtok(line, first ? &',' : &'\n');
+    char line_backup[MAX_LEN] = {0};
+
+    strcpy(line_backup, line);
+	tok = strtok(line, first ? "," : "\n");
 	/* check if it starts with a # */
 	if(tok[0] != '#') return false;
 	strcpy(tok, tok + 1); /* skip over it */
+    strcpy(line, line_backup);
 	
 	*number = getNumber(tok); /* get the argument */
 	if(*number == -1){
 		return false;
 	}
 
-	strcpy(line, line + strlen(tok));
+	strcpy(line, line_backup + strlen(tok));
 	return true;
 }
 
 bool isDirect(char* line, int *address, SymbolList* head, bool first){
 	char* tok;
-	tok = strtok(line, first ? &',' : &'\n');
+	tok = strtok(line, first ? "," : "\n");
 	if(tok != NULL && contains(head, tok)){
 		/* if it is: return address somehow */
 		strcpy(line, line + strlen(tok));
