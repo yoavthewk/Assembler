@@ -93,7 +93,7 @@ bool isIndex(char* line, char* label, int *index){
 bool isRegisterDirect(char* line, int *number, bool first){
 	char* tok;
 	int num;
-	tok = strtok(line, first ? &',' : &'\n');
+	tok = strtok(line, first ? "," : "\n");
 	if(tok[0] == 'r'){
 		strcpy(tok, tok + 1);
 		if((*number = getNumber(tok)) != -1){

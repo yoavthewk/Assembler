@@ -88,6 +88,6 @@ bool contains(SymbolList *head, char *name)
     do {
         if (!strncmp(head->s.name, name, SYMBOL_SIZE))
             return true;
-    } while (head = head->next);
+    } while ((head = head->next));
     return false;
 }
