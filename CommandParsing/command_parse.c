@@ -11,23 +11,22 @@ int getNumber(char* num){
 	while(isdigit(num[i]) || num[i] == '.' || num[i] == '-') number[j++] = num[i++];
 
 	if(j == 0){
-		/* alert error and shit */
+        /* alert error */
 		return -1;
 	}
 	return atoi(number);
 }
 
-bool isImmediate(char* line, int *number){
+bool isImmediate(char* line, int *number, bool first){
 	char* tok;
-	tok = strtok(line, " ");
+	tok = strtok(line, first ? &',' : &'\n');
 	/* check if it starts with a # */
 	if(tok[0] != '#') return false;
 	strcpy(tok, tok + 1); /* skip over it */
 	
 	*number = getNumber(tok); /* get the argument */
 	if(*number == -1){
-		/* alert error */
-		return;
+		return false;
 	}
 
 	strcpy(line, line + strlen(tok));
@@ -36,9 +35,8 @@ bool isImmediate(char* line, int *number){
 
 bool isDirect(char* line, int *address){
 	char* tok;
-	tok = strtok(line, " ");
-	if(tok != NULL){
-		/* check if tok is in the symbol table */
+	tok = strtok(line, first ? &',' : &'\n');
+	if(tok != NULL && contains){
 		/* if it is: return address somehow */
 		strcpy(line, line + strlen(tok));
 		/* else alert error */
@@ -73,7 +71,7 @@ bool isIndex(char* line, char* label, int *index){
 bool isRegisterDirect(char* line, int *number){
 	char* tok;
 	int num;
-	tok = strtok(line, " ");
+	tok = strtok(line, first ? &',' : &'\n');
 	if(tok[0] == 'r'){
 		strcpy(tok, tok + 1);
 		if((*number = getNumber(tok)) != -1){
