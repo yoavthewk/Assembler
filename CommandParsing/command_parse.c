@@ -1,7 +1,14 @@
 #include "exec.h"
 
 int isWhiteSpaceOnly(char *input){
-	return -1;
+	int i = 0;
+	for (i = 0; i < strlen(input); i++)
+	{
+		if (!isspace(input[i])) {
+			return true;
+		}
+	}
+	return false;
 }
 
 int getNumber(char* num){
@@ -85,5 +92,5 @@ bool isRegisterDirect(char* line, int *number){
 }
 
 void throw_error(char* message, int line_number){
-	printf("%d: %s\n", line_number, message);
+	printf("ERROR: in line %d: %s\n", line_number, message);
 }

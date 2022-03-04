@@ -1,13 +1,14 @@
 #ifndef SYMBOL_LIST_SEEN
 #define SYMBOL_LIST_SEEN
 #define SIZE_OF_COMMAND 80
+#define SYMBOL_SIZE 5
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
 typedef struct symbol
 {
-    char name[5];
+    char name[SYMBOL_SIZE];
     unsigned char value;
     unsigned char baseAddress;
     unsigned char offset;
@@ -25,5 +26,6 @@ SymbolList *initSymbolNode(SymbolList *next, char name[], unsigned char value, u
 void freeSymbolList(SymbolList *head);
 void insertSymbol(SymbolList **head, SymbolList *node);
 int getSymbolListSize(SymbolList *head);
+bool contains(SymbolList *head, char *name);
 
 #endif /* !SYMBOL_LIST_SEEN */
