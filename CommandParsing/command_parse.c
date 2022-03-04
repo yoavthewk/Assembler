@@ -1,20 +1,10 @@
 #include "exec.h"
 
 int isWhiteSpaceOnly(char *input){
-	
+	return -1;
 }
 
-void isImmediate(char* line, int* number){
-	char* tok;
-	tok = strtok(line, " ");
-	/* check if it starts with a # */
-	if(tok[0] != '#') return;
-	strcpy(tok, tok + 1); /* skip over it */
-	
-	*number = getNumber(tok); /* get the argument */
-}
-
-int getNumber(int* num){
+int getNumber(char* num){
 	int i = 0;
 	int j = 0;
 	char number[MAX_LEN];
@@ -27,49 +17,73 @@ int getNumber(int* num){
 	return atoi(number);
 }
 
-int isDirect(char* line){
+bool isImmediate(char* line, int *number){
+	char* tok;
+	tok = strtok(line, " ");
+	/* check if it starts with a # */
+	if(tok[0] != '#') return false;
+	strcpy(tok, tok + 1); /* skip over it */
+	
+	*number = getNumber(tok); /* get the argument */
+	if(*number == -1){
+		/* alert error */
+		return;
+	}
+
+	strcpy(line, line + strlen(tok));
+	return true;
+}
+
+bool isDirect(char* line, int *address){
 	char* tok;
 	tok = strtok(line, " ");
 	if(tok != NULL){
 		/* check if tok is in the symbol table */
 		/* if it is: return address somehow */
+		strcpy(line, line + strlen(tok));
 		/* else alert error */
 	}
-	else{
-		return -1; /* alert error */
-	}
 	
+	return false;
 }
 
-void isIndex(char* line, char* label, int *index){
+bool isIndex(char* line, char* label, int *index){
 	char* tok;
 	tok = strtok(line, "[");
 	if(tok != NULL){
 		/* check if tok is in the symbol table */
 		/* if it is: */
-		*label = tok;
-		strcpy(line, line + strlen(tok) + 1); /* skip the label and the [ */
+		label = tok;
+		strcpy(line, line + strlen(tok) + 1); /* skip the label and the [ - risky */
 		tok = strtok(line, "]");
 		if((*index = getNumber(tok)) == -1){
 			/* index is illegal */
 			/* throw an error and flag */
+			return false;
 		}
+		strcpy(line, line + strlen(tok));
+		return true;
 	}
 	else{
 		/* throw an error and raise flag */
+		return false;
 	}
 }
 
-int isRegisterDirect(char* line){
+bool isRegisterDirect(char* line, int *number){
 	char* tok;
 	int num;
 	tok = strtok(line, " ");
 	if(tok[0] == 'r'){
 		strcpy(tok, tok + 1);
-		if((num = getNumber(tok)) != -1){
-			return num;
+		if((*number = getNumber(tok)) != -1){
+			return true;
 		}
 	}
 	/* alert error */
-	return -1;
+	return false;
+}
+
+void throw_error(char* message, int line_number){
+	printf("%d: %s\n", line_number, message);
 }

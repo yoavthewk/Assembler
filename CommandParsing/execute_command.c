@@ -1,73 +1,65 @@
 #include "exec.h"
 
-void mov_exec(char *line){
-    int num;
-    if(line[0] == ' ') strcpy(line, line + 1);
-    else{
-        /* throw an error */
+void parse_command(char* line, SymbolList* head, int action_index, int line_number){
+    int i, number, index, address;
+    char* label;
+
+    /* firstly, we check if the command has any continuation */
+    if(line[0] != ' '){
+        /* if it is a 0 operand command, we're okay and we encode it */
+        if(!action_table[action_index].operands){
+            /* encode and return. */
+        }
+        /* if not, we raise an error and return */
+        return;
+    } else if(!action_table[action_index].operands){
+        /* alert extraneous text error */
         return;
     }
-
-    isImmediate(line, &num);
+    strcpy(line, line + 1); /* skip the space */
     
-}
-
-void cmp_exec(char *input){
-
-}
-
-void add_exec(char *input){
-
-}
-
-void sub_exec(char *input){
-
-}
-
-void lea_exec(char *input){
-
-}
-
-void clr_exec(char *input){
-
-}
-
-void not_exec(char *input){
-
-}
-
-void inc_exec(char *input){
-
-}
-
-void dec_exec(char *input){
-
-}
-
-void jmp_exec(char input[]){
-
-}
-
-void bne_exec(char input[]){
-
-}
-
-void jsr_exec(char input[]){
-
-}
-
-void red_exec(char input[]){
-
-}
-
-void prn_exec(char input[]){
-
-}
-
-void rts_exec(char input[]){
-
-}
-
-void stop_exec(char input[]){
+    /* else, it has operands, and we check whether it is valid */
+    for(i = 0; i < NUM_OF_ADDRESSING; i++){
+        if(action_table[action_index].first_operand_valid[i]){
+            switch(i){
+                case 0:
+                    if(isImmediate(line, &number)) goto found;
+                    break;
+                case 1:
+                    if(isDirect(line, &address)) goto found;
+                    break;
+                case 2:
+                    if(isIndex(line, label, &index)) goto found;
+                    break;
+                case 3:
+                    if(isRegisterDirect(line, &number)) goto found;
+                    break;
+            }
+        }
+    }
+    /* alert error and break */
+    
+    found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
+    /* encode the first operand with what we found */
+    /* afterwards, do the same for the rest */
+    for(i = 0; i < NUM_OF_ADDRESSING; i++){
+        if(action_table[action_index].first_operand_valid[i]){
+            switch(i){
+                case 0:
+                    if(isImmediate(line, &number)) goto found;
+                    break;
+                case 1:
+                    if(isDirect(line, &address)) goto found;
+                    break;
+                case 2:
+                    if(isIndex(line, label, &index)) goto found;
+                    break;
+                case 3:
+                    if(isRegisterDirect(line, &number)) goto found;
+                    break;
+            }
+        }
+    }
+    
 
 }

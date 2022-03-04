@@ -12,7 +12,7 @@ bool is_extern(char *line);
 bool is_entry(char *line);
 void process_data(char *line);
 bool handle_data(char *line, SymbolList *head);
-void process_line(char *line, SymbolList *head);
+void process_line(char *line, SymbolList *head, int line_number);
 void handle_extern(char *line, SymbolList *head);
 
 #endif /* FIRSTITERATION_H */

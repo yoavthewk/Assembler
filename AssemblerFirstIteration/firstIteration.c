@@ -1,7 +1,7 @@
 #include "firstIteration.h"
 #include "../CommandParsing/exec.h"
 
-void process_line(char *line, SymbolList *head)
+void process_line(char *line, SymbolList *head, int line_number)
 {
     int i;
     char* name;
@@ -35,20 +35,21 @@ void process_line(char *line, SymbolList *head)
     }
 
     /* Loop over each command, and check if it's name is equal to a known command */
-	for(i = 0; cmd[i].func != NULL; i++){
-		if(!strcmp(name, cmd[i].name))
+	for(i = 0; strcmp(action_table[i].name, "invalid"); i++){
+		if(!strcmp(name, action_table[i].name))
 			break;
 	}
 	
     strcpy(line, line + strlen(name)); /* get the rest of the line after the command */
 
 	/* if it isn't, we print an error */
-	if(cmd[i].func == NULL){
+	if(!action_table[i].op_code && !action_table[i].operands){
 		fprintf(stderr, "Command does not exist: %s\n", name);
 		return;
 	}
+
 	/* if it is, we call the function that executes the command */
-	else (*(cmd[i].func))(line); /* function is found in command parsing */
+    parse_command(line, head, i, line_number);
 }
 
 void handle_extern(char *line, SymbolList *head)
