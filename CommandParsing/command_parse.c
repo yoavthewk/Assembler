@@ -15,7 +15,7 @@ int getNumber(char* num){
 	int i = 0;
 	int j = 0;
 	char number[MAX_LEN];
-	while((isdigit(num[i]) || num[i] == '.' || num[i] == '-') && num[i] != ',') number[j++] = num[i++];
+	while((isdigit(num[i]) || num[i] == '.' || num[i] == '-' || num[i] == '+') && num[i] != ',') number[j++] = num[i++];
 
 	if(j == 0){
         /* alert error */

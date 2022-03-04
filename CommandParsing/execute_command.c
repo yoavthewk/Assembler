@@ -38,7 +38,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         }
     }
     /* alert error and break */
-    throw_error("Invalid First Operand!", line_number);
+    throw_error("Invalid or Missing First Operand!", line_number);
     found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
     if(action_table[action_index].operands == 1){
         /* if there's no extra text */
@@ -70,7 +70,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         }
     }
     /* alert error and break */
-
+    throw_error("Invalid or Missing Second Operand!", line_number);
     found2:
 
 }
