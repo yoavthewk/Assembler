@@ -11,10 +11,10 @@
 /* Helper functions */
 void executeCommand();
 int isWhiteSpaceOnly(char *input);
-bool isImmediate(char* line, int* number);
-bool isDirect(char* line, int *address);
+bool isImmediate(char* line, int* number, bool first);
+bool isDirect(char* line, int *address, SymbolList* head, bool first);
 bool isIndex(char* line, char* label, int *index);
-bool isRegisterDirect(char* line, int *number);
+bool isRegisterDirect(char* line, int *number, bool first);
 void throw_error(char* message, int line_number);
 
 /* Execution functions */

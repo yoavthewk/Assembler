@@ -23,16 +23,16 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         if (action_table[action_index].first_operand_valid[i]) {
             switch (i) {
                 case 0:
-                    if (isImmediate(line, &number)) goto found;
+                    if (isImmediate(line, &number, true)) goto found;
                     break;
                 case 1:
-                    if (isDirect(line, &address)) goto found;
+                    if (isDirect(line, &address, head, true)) goto found;
                     break;
                 case 2:
-                    if (isIndex(line, label, &index)) goto found;
+                    if (isIndex(line, label, &index, false)) goto found;
                     break;
                 case 3:
-                    if (isRegisterDirect(line, &number)) goto found;
+                    if (isRegisterDirect(line, &number, true)) goto found;
                     break;
             }
         }
