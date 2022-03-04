@@ -5,7 +5,7 @@ CC = gcc
 OUT = prog
  
 prog: $(OBJ_SRC)
-	$(CC) $(EXEFLAGS) $(OBJ_SRC)
+	$(CC) $(EXEFLAGS) $(OBJ_SRC) -o $(OUT)
     
 main.o: ../main.c ../main.h
 	$(CC) $(CFLAGS) ../main.c

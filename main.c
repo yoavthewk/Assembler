@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
         if (fp)
         {
             preassemble(file_name, fp, macroHead);
-            process_line(get_next_line(open_file(file_name, true)), symbolHead);
+            /*process_line(get_next_line(open_file(file_name, true)), symbolHead);*/
         }
         else
         {
