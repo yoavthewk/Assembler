@@ -3,7 +3,7 @@
 void parse_command(char *line, SymbolList *head, int action_index, int line_number) {
     int i, number, index, address;
     char *label;
-    char* tok;
+    char* tok, line_backup;
 
     /* firstly, we check if the command has any continuation */
     if (line[0] != ' ') {
@@ -22,6 +22,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     tok = strtok(line, ",");
     /* else, it has operands, and we check whether it is valid */
     for (i = 0; i < NUM_OF_ADDRESSING; i++) {
+        strcpy(line_backup, line);
         if (action_table[action_index].first_operand_valid[i]) {
             switch (i) {
                 case IMMEDIATE:
@@ -38,6 +39,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                     break;
             }
         }
+        strcpy(line, line_backup);
     }
     /* alert error */
     throw_error("Invalid or Missing First Operand!", line_number);
@@ -66,6 +68,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     /* encode the first operand with what we found */
     /* afterwards, do the same for the rest */
     for (i = 0; i < NUM_OF_ADDRESSING; i++) {
+        strcpy(line_backup, line);
         if (action_table[action_index].first_operand_valid[i]) {
             switch (i) {
                 case IMMEDIATE:
@@ -82,6 +85,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                     break;
             }
         }
+        strcpy(line, line_backup);
     }
 
     /* alert error and break */
