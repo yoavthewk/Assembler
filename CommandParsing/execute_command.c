@@ -3,6 +3,7 @@
 void parse_command(char *line, SymbolList *head, int action_index, int line_number) {
     int i, number, index, address;
     char *label;
+    char* tok;
 
     /* firstly, we check if the command has any continuation */
     if (line[0] != ' ') {
@@ -17,60 +18,74 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         return;
     }
     strcpy(line, line + 1); /* skip the space */
-
+    
+    tok = strtok(line, ",");
     /* else, it has operands, and we check whether it is valid */
     for (i = 0; i < NUM_OF_ADDRESSING; i++) {
         if (action_table[action_index].first_operand_valid[i]) {
             switch (i) {
-                case 0:
-                    if (isImmediate(line, &number, true)) goto found;
+                case IMMEDIATE:
+                    if (isImmediate(tok, &number)) goto found;
                     break;
-                case 1:
-                    if (isDirect(line, &address, head, true)) goto found;
+                case DIRECT:
+                    if (isDirect(tok, &address, head)) goto found;
                     break;
-                case 2:
-                    if (isIndex(line, label, &index, false)) goto found;
+                case INDEX:
+                    if (isIndex(tok, label, &index)) goto found;
                     break;
-                case 3:
-                    if (isRegisterDirect(line, &number, true)) goto found;
+                case REGISTER_DIRECT:
+                    if (isRegisterDirect(tok, &number)) goto found;
                     break;
             }
         }
     }
-    /* alert error and break */
+    /* alert error */
     throw_error("Invalid or Missing First Operand!", line_number);
+    /* raise error flag: */
+    /* break */
+    return;
+
     found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
-    if(action_table[action_index].operands == 1){
-        /* if there's no extra text */
-        /* encode */
-        return;
-    }
-    if(line[0] == '\n' || !line[0]){
+    tok = strtok(NULL, ","); /* get the rest */
+    if(!tok || tok[0] == '\n' || !tok[0]){
+        if(action_table[action_index].operands == 1){
+            if(/*error flag is activated */ 1){
+                return;
+            }
+            else{
+                /* encode */
+                return;
+            }
+        }
         /* not enough operands */
+        throw_error("Not Enough Operands Passsed!", line_number);
         return;
     }
+
+    /* we can just use strtok to get to the , and then to the rest of the word.
     /* encode the first operand with what we found */
     /* afterwards, do the same for the rest */
     for (i = 0; i < NUM_OF_ADDRESSING; i++) {
         if (action_table[action_index].first_operand_valid[i]) {
             switch (i) {
-                case 0:
-                    if (isImmediate(line, &number)) goto found2;
+                case IMMEDIATE:
+                    if (isImmediate(tok, &number)) goto found2;
                     break;
-                case 1:
-                    if (isDirect(line, &address)) goto found2;
+                case DIRECT:
+                    if (isDirect(tok, &address, head)) goto found2;
                     break;
-                case 2:
-                    if (isIndex(line, label, &index)) goto found2;
+                case INDEX:
+                    if (isIndex(tok, label, &index)) goto found2;
                     break;
-                case 3:
-                    if (isRegisterDirect(line, &number)) goto found2;
+                case REGISTER_DIRECT:
+                    if (isRegisterDirect(tok, &number)) goto found2;
                     break;
             }
         }
     }
+
     /* alert error and break */
     throw_error("Invalid or Missing Second Operand!", line_number);
     found2:
-
+        return;
 }

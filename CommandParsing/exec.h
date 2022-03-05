@@ -7,14 +7,17 @@
 
 #define MAX_LEN 83
 #define NUM_OF_ADDRESSING 4
-
+#define IMMEDIATE 0 
+#define DIRECT 1
+#define INDEX 2
+#define REGISTER_DIRECT 3
 /* Helper functions */
 void executeCommand();
 int isWhiteSpaceOnly(char *input);
-bool isImmediate(char* line, int* number, bool first);
-bool isDirect(char* line, int *address, SymbolList* head, bool first);
+bool isImmediate(char* line, int* number);
+bool isDirect(char* line, int *address, SymbolList* head);
 bool isIndex(char* line, char* label, int *index);
-bool isRegisterDirect(char* line, int *number, bool first);
+bool isRegisterDirect(char* line, int *number);
 void throw_error(char* message, int line_number);
 
 /* Execution functions */

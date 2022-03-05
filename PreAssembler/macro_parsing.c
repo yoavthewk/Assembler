@@ -14,8 +14,8 @@ bool isMacro(MacroList *head, char *input, FILE *fp, char *filename)
     {
         /* If the word is not "macro" */
         cmd[strlen(cmd) - 1] = 0;
-        if (!containsSpace(cmd) && containsName(head, cmd))
-        {                                         /* we check if it is a name of a macro */
+        if (!containsSpace(cmd) && containsName(head, cmd)) /* we check if it is a name of a macro */
+        {                                         
             copyMacroToFile(head, cmd, filename); /* if it is, we copy it's contents to the pre-assembled file */
             free(line);
             return true;
