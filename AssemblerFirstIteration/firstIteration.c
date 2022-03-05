@@ -4,7 +4,7 @@
 void process_line(char *line, SymbolList *head, int line_number)
 {
     int i;
-    char* name;
+    char *name;
     bool att[] = {false, false, false, false};
     flagRegister.SYM = 0;
     line = parse_line(line); /* getting the parsed command */
@@ -12,14 +12,24 @@ void process_line(char *line, SymbolList *head, int line_number)
     contains_label(line);
 
     if (handle_data(line, head))
+    {
+        free(line);
+        line = NULL;
         return;
+    }
 
     if (is_entry(line))
+    {
+        free(line);
+        line = NULL;
         return;
+    }
 
     if (is_extern(line))
     {
         handle_extern(line, head);
+        free(line);
+        line = NULL;
         return;
     }
 
@@ -35,21 +45,26 @@ void process_line(char *line, SymbolList *head, int line_number)
     }
 
     /* Loop over each command, and check if it's name is equal to a known command */
-	for(i = 0; strcmp(action_table[i].name, "invalid"); i++){
-		if(!strcmp(name, action_table[i].name))
-			break;
-	}
-	
+    for (i = 0; strcmp(action_table[i].name, "invalid"); i++)
+    {
+        if (!strcmp(name, action_table[i].name))
+            break;
+    }
+    
     strcpy(line, line + strlen(name)); /* get the rest of the line after the command */
 
-	/* if it isn't, we print an error */
-	if(!action_table[i].op_code && !action_table[i].operands){
-		fprintf(stderr, "Command does not exist: %s\n", name);
-		return;
-	}
+    /* if it isn't, we print an error */
+    if (!action_table[i].op_code && !action_table[i].operands)
+    {
+        fprintf(stderr, "Command does not exist: %s\n", name);
+        free(line);
+        return;
+    }
 
-	/* if it is, we call the function that executes the command */
+    /* if it is, we call the function that executes the command */
     parse_command(line, head, i, line_number);
+    
+    free(line);
 }
 
 void handle_extern(char *line, SymbolList *head)
@@ -79,14 +94,20 @@ void contains_label(char *line)
     {
         flagRegister.SYM = 0;
     }
-    /* if there is a definition of symbol */
-    flagRegister.SYM = 1;
+    else
+    {
+        /* if there is a definition of symbol */
+        flagRegister.SYM = 1;
+    }
 }
 
 bool handle_data(char *line, SymbolList *head)
 {
-    char *canBeData = strtok(line, " "); /* get the first (or only) word in the line. */
+    char lineBackup[MAX_LEN] = {0};
+    char *canBeData = NULL; /* get the first (or only) word in the line. */
     bool att[] = {false, false, false, false};
+    strcpy(lineBackup, line);
+    canBeData = strtok(line, " ");
     if (flagRegister.SYM)
     {
         /* canBeData is the name of the symbol in this case. */
@@ -94,10 +115,10 @@ bool handle_data(char *line, SymbolList *head)
         /* add to symbol table */
         att[3] = true;
         insertSymbol(&head, initSymbolNode(NULL, canBeData, BASE + OFFSET, BASE, OFFSET, att)); /* TEMP */
-
+        
         canBeData = strtok(NULL, " "); /* get the next word (or the only word) */
     }
-
+    strcpy(line, lineBackup);
     if (!strcmp(canBeData, ".data") || !strcmp(canBeData, ".string"))
     {
         /* add to data table */

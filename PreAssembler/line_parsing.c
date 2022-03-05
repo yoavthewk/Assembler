@@ -6,6 +6,7 @@ char *parse_line(char *line)
     int i, j;
     if (!line)
     {
+        free(line);
         return NULL;
     }
     new_line = (char *)calloc(MAX_LEN, sizeof(char));

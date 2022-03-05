@@ -2,12 +2,12 @@
 
 int main(int argc, char *argv[])
 {
-    int num_of_files = argc - 1, file_index = 1, line_number = 0;
     char *file_name;
     /*char *original_line, *line;*/
-    FILE *fp/*, *newMacroFile*/;
+    FILE *fp; /*, *newMacroFile*/
     MacroList *macroHead;
     SymbolList *symbolHead;
+    int num_of_files = argc - 1, file_index = 1, line_number = 0;
     bool test[] = {false, false, false, true}; /* delete this later */
     /* if there are no files, we print an error and exit. */
     if (argc == 1)
@@ -27,7 +27,12 @@ int main(int argc, char *argv[])
         if (fp)
         {
             preassemble(file_name, fp, macroHead);
-            process_line(get_next_line(open_file(file_name, true)), symbolHead, line_number++);
+            fp = open_file(file_name, true);
+            if (fp)
+            {
+                process_line(get_next_line(fp), symbolHead, line_number++);
+                fclose(fp);
+            }
         }
         else
         {

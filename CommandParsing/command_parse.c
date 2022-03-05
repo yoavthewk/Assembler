@@ -38,12 +38,10 @@ bool isImmediate(char* line, int *number){
 	return true;
 }
 
-bool isDirect(char* line, int *address, SymbolList* head){
-	char* tok;
-	
-	if(tok != NULL && contains(head, tok)){
+bool isDirect(char* line, int *address, SymbolList* head){	
+	if(line && contains(head, line)){
 		/* if it is: return address somehow */
-		strcpy(line, line + strlen(tok));
+		strcpy(line, line + strlen(line));
 		/* else alert error */
 	}
 	
@@ -68,9 +66,7 @@ bool isIndex(char* line, char* label, int *index){
             return true;
         }
 	}
-	else{
-		return false;
-    }
+	return false;
 }
 
 bool isRegisterDirect(char* line, int *number){
