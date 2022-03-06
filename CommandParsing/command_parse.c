@@ -14,7 +14,7 @@ int isWhiteSpaceOnly(char *input){
 int getNumber(char* num){
 	int i = 0;
 	int j = 0;
-	char number[MAX_LEN];
+	char number[MAX_LEN] = {0};
 	while((isdigit(num[i]) || num[i] == '-' || num[i] == '+') && num[i] != ',') number[j++] = num[i++];
 
 	if(j == 0 || num[i] == '.'){
@@ -28,7 +28,7 @@ bool isImmediate(char* line, int *number){
     
 	/* check if it starts with a # */
 	if(line[0] != '#') return false;
-	strcpy(line, line + 1); /* skip over it */
+	memmove(line, line + 1, strlen(line));; /* skip over it */
     
 	*number = getNumber(line); /* get the argument */
 	if(*number == -1){
@@ -41,7 +41,7 @@ bool isImmediate(char* line, int *number){
 bool isDirect(char* line, int *address, SymbolList* head){	
 	if(line && contains(head, line)){
 		/* if it is: return address somehow */
-		strcpy(line, line + strlen(line));
+		memmove(line, line + strlen(line), strlen(line));;
 		/* else alert error */
 	}
 	
@@ -56,8 +56,8 @@ bool isIndex(char* line, char* label, int *index){
 		strcpy(label, tok);
 		/* if it is: */
 		tok = strtok(NULL, "]");
-        if(tok[0] == 'r') {
-            strcpy(tok, tok + 1);
+        if(tok && tok[0] == 'r') {
+            memmove(tok, tok + 1, strlen(tok));
             if ((*index = getNumber(tok)) == -1) {
                 /* index is illegal */
                 /* throw an error and flag */
@@ -73,7 +73,7 @@ bool isRegisterDirect(char* line, int *number){
 	char* tok;
 	int num;
 	if(line[0] == 'r'){
-		strcpy(line, line + 1);
+		memmove(line, line + 1, strlen(line));
 		if((*number = getNumber(line)) != -1){
 			return true;
 		}

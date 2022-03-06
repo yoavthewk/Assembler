@@ -50,9 +50,10 @@ char *parse_line_first_iteration(char *line)
     }
     new_line = (char *)calloc(MAX_LEN, sizeof(char));
     strncpy(temp, line, MAX_LEN - 1);
-    strncpy(new_line, strtok(line, ","), MAX_LEN);
-    i = strcspn(temp, ",");
+    strncpy(new_line, strtok(line, " "), MAX_LEN);
+    strncat(new_line, " ", 1);
     j = strlen(new_line);
+    i = strcspn(line, " ");
 
     while (temp[i] && i < MAX_LEN)
     {

@@ -8,7 +8,8 @@ void process_line(char *line, SymbolList *head, int line_number)
     char line_backup[MAX_LEN];
     bool att[] = {false, false, false, false};
     flagRegister.SYM = 0;
-    line = parse_line(line); /* getting the parsed command */
+    line = parse_line_first_iteration(line); /* getting the parsed command */
+    line[strcspn(line, "\n")] = '\0';
     strcpy(line_backup, line);
 
     /* returns the full line if there is no label, otherwise, it cuts the label definition off after handling it */
@@ -59,7 +60,7 @@ void process_line(char *line, SymbolList *head, int line_number)
             break;
     }
     
-    strcpy(line, line + strlen(name) + 1); /* get the rest of the line after the command */
+    memmove(line, line + strlen(name), strlen(line)); /* get the rest of the line after the command */
 
     /* if it isn't, we print an error */
     if (!action_table[i].op_code && !action_table[i].operands)
