@@ -5,37 +5,45 @@ void process_line(char *line, SymbolList *head, int line_number)
 {
     int i;
     char *name;
+    char line_backup[MAX_LEN];
     bool att[] = {false, false, false, false};
     flagRegister.SYM = 0;
     line = parse_line(line); /* getting the parsed command */
+    strcpy(line_backup, line);
+
     /* returns the full line if there is no label, otherwise, it cuts the label definition off after handling it */
-    contains_label(line);
+    contains_label(line_backup);
+    strcpy(line_backup, line);
 
-    if (handle_data(line, head))
+    if (handle_data(line_backup, head))
     {
         free(line);
         line = NULL;
         return;
     }
+    strcpy(line_backup, line);
 
-    if (is_entry(line))
+    if (is_entry(line_backup))
     {
         free(line);
         line = NULL;
         return;
     }
+    strcpy(line_backup, line);
 
-    if (is_extern(line))
+    if (is_extern(line_backup))
     {
-        handle_extern(line, head);
+        strcpy(line_backup, line);
+        handle_extern(line_backup, head);
         free(line);
         line = NULL;
         return;
     }
+    strcpy(line_backup, line);
 
     /* if it's not any one of those, it is a command, and so if it is a symbol we add it */
     /* check if the symbol exists or is illegal */
-    name = strtok(line, " ");
+    name = strtok(line_backup, " ");
     if (flagRegister.SYM)
     {
         name[strlen(name) - 1] = 0;
@@ -51,7 +59,7 @@ void process_line(char *line, SymbolList *head, int line_number)
             break;
     }
     
-    strcpy(line, line + strlen(name)); /* get the rest of the line after the command */
+    strcpy(line, line + strlen(name) + 1); /* get the rest of the line after the command */
 
     /* if it isn't, we print an error */
     if (!action_table[i].op_code && !action_table[i].operands)
