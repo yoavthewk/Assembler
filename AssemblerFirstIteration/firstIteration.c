@@ -1,17 +1,36 @@
 #include "firstIteration.h"
 #include "../CommandParsing/exec.h"
 
+void firstIteration(char *file_name, FILE *fp, SymbolList *head)
+{
+    int line_number = 0;
+    char *line, *original_line;
+
+    while ((line = get_next_line(fp)) != NULL)
+    {
+        process_line(line, head, line_number++);
+        line_number++;
+        free(line);
+    }
+    fclose(fp);
+}
+
 void process_line(char *line, SymbolList *head, int line_number)
 {
     int i;
+    size_t offset = 0;
     char *name;
-    char line_backup[MAX_LEN];
+    char line_backup[MAX_LEN] = {0};
     bool att[] = {false, false, false, false};
     flagRegister.SYM = 0;
     line = parse_line_first_iteration(line); /* getting the parsed command */
-    line[strcspn(line, "\n")] = '\0';
+    line[strcspn(line, "\n")] = 0;
     strcpy(line_backup, line);
-
+    if (!line[0])
+    {
+        free(line);
+        return;
+    }
     /* returns the full line if there is no label, otherwise, it cuts the label definition off after handling it */
     contains_label(line_backup);
     strcpy(line_backup, line);
@@ -50,6 +69,7 @@ void process_line(char *line, SymbolList *head, int line_number)
         name[strlen(name) - 1] = 0;
         att[2] = true;
         insertSymbol(&head, initSymbolNode(NULL, name, OFFSET + BASE, BASE, OFFSET, att)); /* add the command to the list */
+        offset += 2 + strlen(name);
         name = strtok(NULL, " ");
     }
 
@@ -59,8 +79,8 @@ void process_line(char *line, SymbolList *head, int line_number)
         if (!strcmp(name, action_table[i].name))
             break;
     }
-    
-    memmove(line, line + strlen(name), strlen(line)); /* get the rest of the line after the command */
+    offset += strlen(name);
+    memmove(line, line + offset, strlen(line)); /* get the rest of the line after the command */
 
     /* if it isn't, we print an error */
     if (!action_table[i].op_code && !action_table[i].operands)
@@ -72,7 +92,6 @@ void process_line(char *line, SymbolList *head, int line_number)
 
     /* if it is, we call the function that executes the command */
     parse_command(line, head, i, line_number);
-    
     free(line);
 }
 
@@ -124,7 +143,7 @@ bool handle_data(char *line, SymbolList *head)
         /* add to symbol table */
         att[3] = true;
         insertSymbol(&head, initSymbolNode(NULL, canBeData, BASE + OFFSET, BASE, OFFSET, att)); /* TEMP */
-        
+
         canBeData = strtok(NULL, " "); /* get the next word (or the only word) */
     }
     strcpy(line, lineBackup);

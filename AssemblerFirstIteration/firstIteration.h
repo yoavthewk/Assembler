@@ -14,5 +14,7 @@ void process_data(char *line);
 bool handle_data(char *line, SymbolList *head);
 void process_line(char *line, SymbolList *head, int line_number);
 void handle_extern(char *line, SymbolList *head);
+void firstIteration(char *file_name, FILE *fp, SymbolList* head);
+
 
 #endif /* FIRSTITERATION_H */

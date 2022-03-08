@@ -1,1 +1,1 @@
-mov x[r1]      ,     x[r2]
+jmp: mov r1, r2
