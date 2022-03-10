@@ -30,8 +30,7 @@ int main(int argc, char *argv[])
             fp = open_file(file_name, true);
             if (fp)
             {
-                process_line(get_next_line(fp), symbolHead, line_number++);
-                fclose(fp);
+                firstIteration(file_name, fp, symbolHead);
             }
         }
         else

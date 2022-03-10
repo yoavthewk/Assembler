@@ -49,6 +49,11 @@ char *parse_line_first_iteration(char *line)
         return NULL;
     }
     new_line = (char *)calloc(MAX_LEN, sizeof(char));
+    if (!new_line)
+    {
+        free(new_line);
+        return NULL;
+    }
     strncpy(temp, line, MAX_LEN - 1);
     strncpy(new_line, strtok(line, " "), MAX_LEN);
     strncat(new_line, " ", 1);
@@ -65,7 +70,6 @@ char *parse_line_first_iteration(char *line)
         i++;
     }
 
-    free(line);
     return new_line;
 }
 
