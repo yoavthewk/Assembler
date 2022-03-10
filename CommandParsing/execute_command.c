@@ -121,8 +121,8 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     }
 
     /* alert error and break */
+    fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
 found2:
     free(label);
-    return;
 }
