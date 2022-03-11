@@ -1,21 +1,21 @@
 #include "firstIteration.h"
 #include "../CommandParsing/exec.h"
 
-void firstIteration(char *file_name, FILE *fp, SymbolList *head)
+void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister* IC, hregister* DC)
 {
     int line_number = 0;
-    char *line, *original_line;
+    char *line;
 
     while ((line = get_next_line(fp)) != NULL)
     {
-        process_line(line, head, line_number++);
-        line_number++;
+        process_line(line, head, line_number, IC, DC);
         free(line);
     }
+    printSymbolList(head);
     fclose(fp);
 }
 
-void process_line(char *line, SymbolList *head, int line_number)
+void process_line(char *line, SymbolList *head, int line_number, hregister* IC, hregister* DC)
 {
     int i;
     size_t offset = 0;
@@ -35,7 +35,7 @@ void process_line(char *line, SymbolList *head, int line_number)
     contains_label(line_backup);
     strcpy(line_backup, line);
 
-    if (handle_data(line_backup, head))
+    if (handle_data(line_backup, head, IC, DC))
     {
         free(line);
         line = NULL;
@@ -64,11 +64,12 @@ void process_line(char *line, SymbolList *head, int line_number)
     /* if it's not any one of those, it is a command, and so if it is a symbol we add it */
     /* check if the symbol exists or is illegal */
     name = strtok(line_backup, " ");
+    IC->data++;
     if (flagRegister.SYM)
     {
         name[strlen(name) - 1] = 0;
         att[2] = true;
-        insertSymbol(&head, initSymbolNode(NULL, name, OFFSET + BASE, BASE, OFFSET, att)); /* add the command to the list */
+        insertSymbol(&head, initSymbolNode(NULL, name, IC->data, IC->data - (IC->data % 16), IC->data % 16, att)); /* add the command to the list */
         offset += 2 + strlen(name);
         name = strtok(NULL, " ");
     }
@@ -91,7 +92,7 @@ void process_line(char *line, SymbolList *head, int line_number)
     }
 
     /* if it is, we call the function that executes the command */
-    parse_command(line, head, i, line_number);
+    parse_command(line, head, i, line_number, IC, DC);
     free(line);
 }
 
@@ -112,7 +113,7 @@ void handle_extern(char *line, SymbolList *head)
     /* check for errors and stuff */
 
     att[0] = true;
-    insertSymbol(&head, initSymbolNode(NULL, name, 0, 0, 0, att)); /* TEMP!!! */
+    insertSymbol(&head, initSymbolNode(NULL, name, 0, 0, 0, att));
 }
 
 void contains_label(char *line)
@@ -129,7 +130,7 @@ void contains_label(char *line)
     }
 }
 
-bool handle_data(char *line, SymbolList *head)
+bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC)
 {
     char lineBackup[MAX_LEN] = {0};
     char *canBeData = NULL; /* get the first (or only) word in the line. */
@@ -142,7 +143,7 @@ bool handle_data(char *line, SymbolList *head)
         canBeData[strlen(canBeData) - 1] = 0; /* removed the : */
         /* add to symbol table */
         att[3] = true;
-        insertSymbol(&head, initSymbolNode(NULL, canBeData, BASE + OFFSET, BASE, OFFSET, att)); /* TEMP */
+        insertSymbol(&head, initSymbolNode(NULL, canBeData, IC->data, IC->data - (IC->data % 16), IC->data % 16, att));
 
         canBeData = strtok(NULL, " "); /* get the next word (or the only word) */
     }
@@ -150,27 +151,27 @@ bool handle_data(char *line, SymbolList *head)
     if (!strcmp(canBeData, ".data") || !strcmp(canBeData, ".string"))
     {
         /* add to data table */
-        process_data(line);
+        process_data(line, DC);
         return true;
     }
     return false;
 }
 
-void process_data(char *line)
+void process_data(char *line, hregister* DC)
 {
     char *data = strtok(line, " "); /* get the first (or only) word in the line. */
     if (!strcmp(data, ".data"))
     {
         while ((data = strtok(NULL, ",")))
         {
-            DC.data++;
+            DC->data++;
         }
     }
     else
     {
         strtok(NULL, "\"");
         data = strtok(NULL, "\"");
-        DC.data += strlen(data) + 1;
+        DC->data += strlen(data) + 1;
     }
 }
 

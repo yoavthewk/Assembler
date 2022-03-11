@@ -1,11 +1,13 @@
 .entry LIST
 .extern W
 
-add r3, LIST
-prn #48
+MAIN: add r3, LIST
+LOOP: prn #48
         lea STR, r6
         inc r6
         mov r3, W
         sub r1, r4
         bne END
         hello there I'm so fucking happy
+
+

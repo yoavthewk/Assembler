@@ -6,14 +6,14 @@
  * the offset of the node, the attributes of the node.
  * Output: none
  */
-SymbolList *initSymbolNode(SymbolList *next, char name[], unsigned char value, unsigned char addr, unsigned char offset, bool att[])
+SymbolList *initSymbolNode(SymbolList *next, char name[], unsigned int value, unsigned int addr, unsigned int offset, bool att[])
 {
     int i = 0;
     SymbolList *node = (SymbolList *)malloc(sizeof(SymbolList));
 
     if (name)
     {
-        strncpy(node->s.name, name, 4);
+        strcpy(node->s.name, name);
     }
 
     node->s.baseAddress = addr;
@@ -90,4 +90,14 @@ bool contains(SymbolList *head, char *name)
             return true;
     } while ((head = head->next));
     return false;
+}
+
+void printSymbolList(SymbolList* head)
+{
+    int i;
+    while (head)
+    {
+        printf("name: %s\nval: %d\noffset: %d\nbase: %d\n", head->s.name, head->s.value, head->s.offset, head->s.baseAddress);
+        head = head->next;
+    }
 }

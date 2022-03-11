@@ -1,6 +1,6 @@
 #include "exec.h"
 
-void parse_command(char *line, SymbolList *head, int action_index, int line_number)
+void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister* IC, hregister* DC)
 {
     int i, number, index, address;
     char *label = NULL;
@@ -39,11 +39,17 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 {
                 case IMMEDIATE:
                     if (isImmediate(tok, &number))
+                    {
+                        IC->data++; /* add the word of the immediate */
                         goto found;
+                    }
                     break;
                 case INDEX:
                     if (isIndex(tok, label, &index))
+                    {
+                        IC->data += 2; /* add the base address and the offset */
                         goto found;
+                    }
                     break;
                 case REGISTER_DIRECT:
                     if (isRegisterDirect(tok, &number))
@@ -51,7 +57,10 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                     break;
                 case DIRECT:
                     if (isDirect(tok, &address, head))
+                    {
+                        IC->data += 2; /* add base and offset */
                         goto found;
+                    }
                     break;
                 }
             }
@@ -99,22 +108,31 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         {
             switch (i)
             {
-            case IMMEDIATE:
-                if (isImmediate(tok, &number))
-                    goto found2;
-                break;
-            case INDEX:
-                if (isIndex(tok, label, &index))
-                    goto found2;
-                break;
-            case REGISTER_DIRECT:
-                if (isRegisterDirect(tok, &number))
-                    goto found2;
-                break;
-            case DIRECT:
-                if (isDirect(tok, &address, head))
-                    goto found2;
-                break;
+                case IMMEDIATE:
+                    if (isImmediate(tok, &number))
+                    {
+                        IC->data++; /* add the word of the immediate */
+                        goto found;
+                    }
+                    break;
+                case INDEX:
+                    if (isIndex(tok, label, &index))
+                    {
+                        IC->data += 2; /* add the base address and the offset */
+                        goto found;
+                    }
+                    break;
+                case REGISTER_DIRECT:
+                    if (isRegisterDirect(tok, &number))
+                        goto found;
+                    break;
+                case DIRECT:
+                    if (isDirect(tok, &address, head))
+                    {
+                        IC->data += 2; /* add base and offset */
+                        goto found;
+                    }
+                    break;
             }
         }
         strcpy(line_backup, line);

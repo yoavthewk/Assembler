@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include "../AssemblerFirstIteration/symbol_list.h"
+#include "../Hardware/hardware.h"
 
 #define MAX_LEN 83
 #define NUM_OF_ADDRESSING 4
@@ -21,7 +22,7 @@ bool isRegisterDirect(char* line, int *number);
 void throw_error(char* message, int line_number);
 
 /* Execution functions */
-void parse_command(char* line, SymbolList* head, int action_index, int line_number);
+void parse_command(char* line, SymbolList* head, int action_index, int line_number, hregister* IC, hregister* DC);
 
 struct {
 	char name[8];

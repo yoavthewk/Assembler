@@ -9,6 +9,10 @@ int main(int argc, char *argv[])
     SymbolList *symbolHead;
     int num_of_files = argc - 1, file_index = 1, line_number = 0;
     bool test[] = {false, false, false, true}; /* delete this later */
+    hregister *IC = (hregister *)malloc(sizeof(hregister));
+    hregister *DC = (hregister *)malloc(sizeof(hregister));
+    IC->data = 100;
+    DC->data = 0;
     /* if there are no files, we print an error and exit. */
     if (argc == 1)
     {
@@ -30,7 +34,7 @@ int main(int argc, char *argv[])
             fp = open_file(file_name, true);
             if (fp)
             {
-                firstIteration(file_name, fp, symbolHead);
+                firstIteration(file_name, fp, symbolHead, IC, DC);
             }
         }
         else
@@ -39,6 +43,8 @@ int main(int argc, char *argv[])
         }
         num_of_files--;
     }
+    free(IC);
+    free(DC);
     freeSymbolList(symbolHead);
     freeListFromMemory(macroHead);
     return 0;
