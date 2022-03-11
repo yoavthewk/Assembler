@@ -41,16 +41,16 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                     if (isImmediate(tok, &number))
                         goto found;
                     break;
-                case DIRECT:
-                    if (isDirect(tok, &address, head))
-                        goto found;
-                    break;
                 case INDEX:
                     if (isIndex(tok, label, &index))
                         goto found;
                     break;
                 case REGISTER_DIRECT:
                     if (isRegisterDirect(tok, &number))
+                        goto found;
+                    break;
+                case DIRECT:
+                    if (isDirect(tok, &address, head))
                         goto found;
                     break;
                 }
@@ -103,16 +103,16 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 if (isImmediate(tok, &number))
                     goto found2;
                 break;
-            case DIRECT:
-                if (isDirect(tok, &address, head))
-                    goto found2;
-                break;
             case INDEX:
                 if (isIndex(tok, label, &index))
                     goto found2;
                 break;
             case REGISTER_DIRECT:
                 if (isRegisterDirect(tok, &number))
+                    goto found2;
+                break;
+            case DIRECT:
+                if (isDirect(tok, &address, head))
                     goto found2;
                 break;
             }

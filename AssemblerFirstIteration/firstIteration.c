@@ -159,21 +159,19 @@ bool handle_data(char *line, SymbolList *head)
 void process_data(char *line)
 {
     char *data = strtok(line, " "); /* get the first (or only) word in the line. */
-    size_t length = 0;
     if (!strcmp(data, ".data"))
     {
         while ((data = strtok(NULL, ",")))
         {
-            length += sizeof(word);
+            DC.data++;
         }
     }
     else
     {
         strtok(NULL, "\"");
         data = strtok(NULL, "\"");
-        length += strlen(data);
+        DC.data += strlen(data) + 1;
     }
-    DC.data += length;
 }
 
 bool is_extern(char *line)

@@ -34,14 +34,15 @@ bool isImmediate(char* line, int *number){
 	if(*number == -1){
 		return false;
 	}
-
+	IC.data++; /* add the word of the immediate */
 	return true;
 }
 
 bool isDirect(char* line, int *address, SymbolList* head){	
 	if(line && contains(head, line)){
 		/* if it is: return address somehow */
-		memmove(line, line + strlen(line), strlen(line));;
+		memmove(line, line + strlen(line), strlen(line));
+		IC.data += 2; /* add base and offset */ 
 		/* else alert error */
 	}
 	
@@ -63,6 +64,7 @@ bool isIndex(char* line, char* label, int *index){
                 /* throw an error and flag */
                 return false;
             }
+			IC.data += 2; /* add the base address and the offset */
             return true;
         }
 	}
