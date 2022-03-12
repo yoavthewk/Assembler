@@ -12,6 +12,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         /* if it is a 0 operand command, we're okay, and we encode it */
         if (!action_table[action_index].operands)
         {
+            IC->data++;
             /* encode and return. */
         }
         /* if not, we raise an error and return */
@@ -40,25 +41,26 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 case IMMEDIATE:
                     if (isImmediate(tok, &number))
                     {
-                        IC->data++; /* add the word of the immediate */
+                        IC->data += 2; /* add the word of the immediate */
                         goto found;
                     }
                     break;
                 case INDEX:
                     if (isIndex(tok, label, &index))
                     {
-                        IC->data += 2; /* add the base address and the offset */
+                        IC->data += 3; /* add the base address and the offset */
                         goto found;
                     }
                     break;
                 case REGISTER_DIRECT:
                     if (isRegisterDirect(tok, &number))
+                        IC->data++;
                         goto found;
                     break;
                 case DIRECT:
                     if (isDirect(tok, &address, head))
                     {
-                        IC->data += 2; /* add base and offset */
+                        IC->data += 3; /* add base and offset */
                         goto found;
                     }
                     break;
@@ -83,11 +85,13 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
             {
                 if (/*error flag is activated */ 1)
                 {
+                    free(label);
                     return;
                 }
                 else
                 {
                     /* encode */
+                    free(label);
                     return;
                 }
             }
@@ -111,26 +115,28 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 case IMMEDIATE:
                     if (isImmediate(tok, &number))
                     {
-                        IC->data++; /* add the word of the immediate */
-                        goto found;
+                        IC->data += 2; /* add the word of the immediate */
+                        goto found2;
                     }
                     break;
                 case INDEX:
                     if (isIndex(tok, label, &index))
                     {
-                        IC->data += 2; /* add the base address and the offset */
-                        goto found;
+                        IC->data += 3; /* add the base address and the offset */
+                        goto found2;
                     }
                     break;
                 case REGISTER_DIRECT:
-                    if (isRegisterDirect(tok, &number))
-                        goto found;
+                    if (isRegisterDirect(tok, &number)){
+                        IC->data++;
+                        goto found2;
+                    }
                     break;
                 case DIRECT:
                     if (isDirect(tok, &address, head))
                     {
-                        IC->data += 2; /* add base and offset */
-                        goto found;
+                        IC->data += 3; /* add base and offset */
+                        goto found2;
                     }
                     break;
             }

@@ -48,7 +48,7 @@ bool isImmediate(char *line, int *number)
 
 bool isDirect(char *line, int *address, SymbolList *head)
 {
-	if (line && contains(head, line))
+	if (line)
 	{
 		/* if it is: return address somehow */
 		memmove(line, line + strlen(line), strlen(line));
