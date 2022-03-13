@@ -15,7 +15,6 @@ SymbolList *initSymbolNode(SymbolList *next, char name[], unsigned int value, un
     {
         strcpy(node->s.name, name);
     }
-
     node->s.baseAddress = addr;
     node->s.offset = offset;
     node->s.value = value;
@@ -62,6 +61,23 @@ void freeSymbolList(SymbolList *head)
 void insertSymbol(SymbolList **head, SymbolList *node)
 {
     SymbolList *temp = *head;
+    int i = 0;
+    static int callNum = 0;
+    if (++callNum == 1)
+    {
+        temp->next = node->next;
+        strcpy(temp->s.name, node->s.name);
+        temp->s.offset = node->s.offset;
+        temp->s.value = node->s.value;
+        temp->s.baseAddress = node->s.baseAddress;
+        for (i = 0; i < 4; i++)
+        {
+            temp->s.attributes[i] = node->s.attributes[i];
+        }
+        free(node);
+        return;
+    }
+
     while (temp->next)
     {
         temp = temp->next;
@@ -85,14 +101,15 @@ int getSymbolListSize(SymbolList *head)
 
 bool contains(SymbolList *head, char *name)
 {
-    do {
+    do
+    {
         if (!strncmp(head->s.name, name, SYMBOL_SIZE))
             return true;
     } while ((head = head->next));
     return false;
 }
 
-void printSymbolList(SymbolList* head)
+void printSymbolList(SymbolList *head)
 {
     int i;
     while (head)

@@ -132,28 +132,29 @@ void contains_label(char *line)
 
 bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC)
 {
-    char lineBackup[MAX_LEN] = {0};
+    char lineBackup[MAX_LEN] = {0}, name[MAX_LEN] = {0};
     char *canBeData = NULL; /* get the first (or only) word in the line. */
     bool att[] = {false, false, false, false};
     strcpy(lineBackup, line);
     canBeData = strtok(line, " ");
+    if (flagRegister.SYM)
+    {
+        /* canBeData is the name of the symbol in this case. */
+        canBeData[strlen(canBeData) - 1] = 0; /* removed the : */
+        /* add to symbol table */
+        att[3] = true;
+        strcpy(name, canBeData);
+        canBeData = strtok(NULL, " "); /* get the next word (or the only word) */
+
+    }
 
     if (!strcmp(canBeData, ".data") || !strcmp(canBeData, ".string"))
     {
-        if (flagRegister.SYM)
-        {
-            /* canBeData is the name of the symbol in this case. */
-            canBeData[strlen(canBeData) - 1] = 0; /* removed the : */
-            /* add to symbol table */
-            att[3] = true;
-            insertSymbol(&head, initSymbolNode(NULL, canBeData, IC->data, IC->data - (IC->data % 16), IC->data % 16, att));
-
-            canBeData = strtok(NULL, " "); /* get the next word (or the only word) */
-        }
         strcpy(line, lineBackup);
 
         /* add to data table */
         process_data(line, DC);
+        if (flagRegister.SYM) insertSymbol(&head, initSymbolNode(NULL, name, IC->data, IC->data - (IC->data % 16), IC->data % 16, att));
         return true;
     }
     return false;
@@ -171,7 +172,7 @@ void process_data(char *line, hregister* DC)
     }
     else
     {
-        strtok(NULL, "\"");
+        strtok(NULL, " \"");
         data = strtok(NULL, "\"");
         DC->data += strlen(data) + 1;
     }
