@@ -31,18 +31,21 @@ int getNumber(char *num)
 bool isImmediate(char *line, int *number)
 {
 	char *tok;
+	char* binary_line; 
 
 	/* check if it starts with a # */
 	if (line[0] != '#')
 		return false;
-	memmove(line, line + 1, strlen(line));
-	; /* skip over it */
+	memmove(line, line + 1, strlen(line)); /* skip over it */
 
 	*number = getNumber(line); /* get the argument */
 	if (*number == -1)
 	{
 		return false;
 	}
+	
+	binary_line = encode_immediate(*number);
+	free(binary_line);
 	return true;
 }
 
@@ -102,4 +105,46 @@ bool isRegisterDirect(char *line, int *number)
 void throw_error(char *message, int line_number)
 {
 	printf("ERROR: in line %d: %s\n", line_number, message);
+}
+
+char* encode_immediate(int num){
+	const size_t BITS = 16;
+	const size_t ARE_SIZE = 3;
+	const size_t A = 1;
+	char* bin_str = (char*)malloc(WORD_SIZE);
+	char* rev_str = (char*)malloc(WORD_SIZE + 1);
+	unsigned int i, mask;
+
+	/* insert ARE */
+	for(i = 0; i < ARE_SIZE + 1; i++){
+		bin_str[i] = i == A ? '1' : '0'; 
+	}
+
+	/* insert number */
+	for(i = 4; i < WORD_SIZE; i++){
+		mask = 1u << (BITS - 1 - (i - (ARE_SIZE + 1)));
+		bin_str[i] = (num & mask) ? '1' : '0';
+	}
+
+	
+	bin_str[WORD_SIZE] = 0;
+	return bin_str;
+}
+
+char* encode_command_opcode(int action_index){
+	char* bin_str = (char*)malloc(WORD_SIZE + 1);
+	unsigned int i;
+
+	/* insert opcode */
+	for(i = 0; i < WORD_SIZE; i++){
+		bin_str[i] = (i == action_table[action_index].op_code) ? '1' : '0';
+	}
+
+	/* insert ARE */
+	bin_str[WORD_SIZE - 2] = '1';
+
+	/* insert terminator */ 
+	bin_str[WORD_SIZE] = 0;
+
+	return bin_str;
 }

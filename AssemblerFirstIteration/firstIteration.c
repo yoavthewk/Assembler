@@ -145,16 +145,15 @@ bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC)
         att[3] = true;
         strcpy(name, canBeData);
         canBeData = strtok(NULL, " "); /* get the next word (or the only word) */
-
     }
 
     if (!strcmp(canBeData, ".data") || !strcmp(canBeData, ".string"))
     {
         strcpy(line, lineBackup);
+        if (flagRegister.SYM) insertSymbol(&head, initSymbolNode(NULL, name, IC->data, IC->data - (IC->data % 16), IC->data % 16, att));
 
         /* add to data table */
         process_data(line, DC);
-        if (flagRegister.SYM) insertSymbol(&head, initSymbolNode(NULL, name, IC->data, IC->data - (IC->data % 16), IC->data % 16, att));
         return true;
     }
     return false;
@@ -162,18 +161,34 @@ bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC)
 
 void process_data(char *line, hregister* DC)
 {
+    int num, i;
+    char* binary_line;
     char *data = strtok(line, " "); /* get the first (or only) word in the line. */
     if (!strcmp(data, ".data"))
     {
         while ((data = strtok(NULL, ",")))
         {
+            num = getNumber(data);
+            if(num == -1) /* WILL BE CHANGED */
+                /* alert error */
+                return;
+            binary_line = encode_immediate(num);
+            printf("%s\n", binary_line);
+            free(binary_line);
             DC->data++;
         }
     }
     else
     {
+        printf("%s", data);
         strtok(NULL, " \"");
         data = strtok(NULL, "\"");
+        printf("String: \n");
+        for(i = 0; i < strlen(data); i++){
+            binary_line = encode_immediate(data[i]);
+            printf("%s\n", binary_line);
+            free(binary_line);
+        }
         DC->data += strlen(data) + 1;
     }
 }

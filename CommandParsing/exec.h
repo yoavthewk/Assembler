@@ -12,6 +12,7 @@
 #define REGISTER_DIRECT 1
 #define INDEX 2
 #define DIRECT 3
+#define WORD_SIZE 20
 
 /* Helper functions */
 void executeCommand();
@@ -21,6 +22,9 @@ bool isDirect(char* line, int *address, SymbolList* head);
 bool isIndex(char* line, char* label, int *index);
 bool isRegisterDirect(char* line, int *number);
 void throw_error(char* message, int line_number);
+char* encode_immediate(int num);
+char* encode_command_opcode(int action_index);
+int getNumber(char *num);
 
 /* Execution functions */
 void parse_command(char* line, SymbolList* head, int action_index, int line_number, hregister* IC, hregister* DC);
@@ -37,18 +41,18 @@ struct {
 		{"cmp", 1, 0, 2, {1, 1, 1, 1}, {1, 1, 1, 1}},
 		{"add", 2, 10, 2, {1, 1, 1, 1}, {0, 1, 1, 1}},
 		{"sub", 2, 11, 2, {1, 1, 1, 1}, {0, 1, 1, 1}}, 
-		{"lea", 8, 0, 2, {0, 0, 1, 1}, {0, 1, 1, 1}}, 
-		{"clr", 16, 10, 1, {0, 0, 0, 0}, {0, 1, 1, 1}},  
-		{"not", 16, 11, 1, {0, 0, 0, 0}, {0, 1, 1, 1}}, 
-		{"inc", 16, 12, 1, {0, 0, 0, 0}, {0, 1, 1, 1}}, 
-		{"dec", 16, 13, 1, {0, 0, 0, 0}, {0, 1, 1, 1}},
-		{"jmp", 256, 10, 1, {0, 0, 0, 0}, {0, 0, 1, 1}},
-		{"bne", 256, 11, 1, {0, 0, 0, 0}, {0, 0, 1, 1}},
-		{"jsr", 256, 12, 1, {0, 0, 0, 0}, {0, 0, 1, 1}},
-		{"red", 2048, 0, 1, {0, 0, 0, 0}, {0, 1, 1, 1}},
-		{"prn", 4096, 0, 1, {0, 0, 0, 0}, {1, 1, 1, 1}},
-		{"rts", 8192, 0, 0, {0, 0, 0, 0}, {0, 0, 0, 0}},
-		{"stop", 16385, 0, 0, {0, 0, 0, 0}, {0, 0, 0, 0}},
+		{"lea", 4, 0, 2, {0, 0, 1, 1}, {0, 1, 1, 1}}, 
+		{"clr", 5, 10, 1, {0, 0, 0, 0}, {0, 1, 1, 1}},  
+		{"not", 5, 11, 1, {0, 0, 0, 0}, {0, 1, 1, 1}}, 
+		{"inc", 5, 12, 1, {0, 0, 0, 0}, {0, 1, 1, 1}}, 
+		{"dec", 5, 13, 1, {0, 0, 0, 0}, {0, 1, 1, 1}},
+		{"jmp", 9, 10, 1, {0, 0, 0, 0}, {0, 0, 1, 1}},
+		{"bne", 9, 11, 1, {0, 0, 0, 0}, {0, 0, 1, 1}},
+		{"jsr", 9, 12, 1, {0, 0, 0, 0}, {0, 0, 1, 1}},
+		{"red", 12, 0, 1, {0, 0, 0, 0}, {0, 1, 1, 1}},
+		{"prn", 13, 0, 1, {0, 0, 0, 0}, {1, 1, 1, 1}},
+		{"rts", 14, 0, 0, {0, 0, 0, 0}, {0, 0, 0, 0}},
+		{"stop", 15, 0, 0, {0, 0, 0, 0}, {0, 0, 0, 0}},
 		{"invalid", 0, 0, 0, {0, 0, 0, 0}, {0, 0, 0, 0}}
 };
 
