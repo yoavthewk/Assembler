@@ -75,6 +75,7 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
             /* alert error */
             printf("Line %d: label name \"%s\" already in use!\n", line_number, name);
             flagRegister.ERR = 1;
+            free(line);
             return;
         }
         att[2] = true;
