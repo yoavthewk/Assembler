@@ -13,7 +13,7 @@ int isWhiteSpaceOnly(char *input)
 	return false;
 }
 
-int getNumber(char *num)
+int getNumber(char *num, PSW* flagRegister)
 {
 	int i = 0;
 	int j = 0;
@@ -23,8 +23,10 @@ int getNumber(char *num)
 
 	if (j == 0 || num[i] == '.')
 	{
+		flagRegister->ERR = 1;
 		return -1;
 	}
+
 	return atoi(number);
 }
 
@@ -38,8 +40,8 @@ bool isImmediate(char *line, int *number)
 		return false;
 	memmove(line, line + 1, strlen(line)); /* skip over it */
 
-	*number = getNumber(line); /* get the argument */
-	if (*number == -1)
+	*number = getNumber(line, &flagRegister); /* get the argument */
+	if (flagRegister.ERR)
 	{
 		return false;
 	}
@@ -75,7 +77,8 @@ bool isIndex(char *line, char *label, int *index)
 		if (tok && tok[0] == 'r')
 		{
 			memmove(tok, tok + 1, strlen(tok));
-			if ((*index = getNumber(tok)) == -1)
+			*index = getNumber(tok, &flagRegister);
+			if(flagRegister.ERR)
 			{
 				/* index is illegal */
 				/* throw an error and flag */
@@ -94,7 +97,8 @@ bool isRegisterDirect(char *line, int *number)
 	if (line[0] == 'r')
 	{
 		memmove(line, line + 1, strlen(line));
-		if ((*number = getNumber(line)) != -1)
+		*number = getNumber(line, &flagRegister);
+		if(flagRegister.ERR)
 		{
 			return true;
 		}
@@ -112,7 +116,6 @@ char* encode_immediate(int num){
 	const size_t ARE_SIZE = 3;
 	const size_t A = 1;
 	char* bin_str = (char*)malloc(WORD_SIZE);
-	char* rev_str = (char*)malloc(WORD_SIZE + 1);
 	unsigned int i, mask;
 
 	/* insert ARE */

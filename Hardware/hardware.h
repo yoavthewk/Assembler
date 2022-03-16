@@ -14,7 +14,7 @@ typedef struct word {
 } word;
 
 typedef struct PSW {
-    unsigned int Z : 1;
+    unsigned int ERR : 1;
 	unsigned int SYM : 1;
 } PSW;
 

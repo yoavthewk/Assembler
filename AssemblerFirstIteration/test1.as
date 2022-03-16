@@ -3,8 +3,9 @@
 MAIN: add r3, LIST
 LOOP: prn #48
 END: stop
-STR: .string “abcd”
-LIST: .data 6, -9
+END: no
+STR: .string "abcd"
+LIST: .data 6, -9.5
 K: .data 31
  lea STR, r6
  inc r6

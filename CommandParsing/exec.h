@@ -24,7 +24,7 @@ bool isRegisterDirect(char* line, int *number);
 void throw_error(char* message, int line_number);
 char* encode_immediate(int num);
 char* encode_command_opcode(int action_index);
-int getNumber(char *num);
+int getNumber(char *num, PSW* flagRegister);
 
 /* Execution functions */
 void parse_command(char* line, SymbolList* head, int action_index, int line_number, hregister* IC, hregister* DC);
