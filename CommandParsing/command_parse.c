@@ -102,8 +102,9 @@ bool isRegisterDirect(char *line, int *number)
 		{
 			return false;
 		}
+		return true;
 	}
-	return true;
+	return false;
 }
 
 void throw_error(char *message, int line_number)
