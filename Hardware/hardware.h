@@ -22,7 +22,4 @@ static word memory[MEMORY_SIZE] = {0};
 static hregister registers[NUM_OF_REGISTERS] = {0};
 static PSW flagRegister = {0, 0};
 
-/* Initialization functions */
-void init_memory();
-void init_registers();
 #endif /* !HARDWARE_SEEN */

@@ -54,8 +54,10 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                     break;
                 case REGISTER_DIRECT:
                     if (isRegisterDirect(tok, &number))
+                    {
                         IC->data++;
                         goto found;
+                    }
                     break;
                 case DIRECT:
                     if (isDirect(tok, &address, head))
@@ -127,7 +129,8 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                     }
                     break;
                 case REGISTER_DIRECT:
-                    if (isRegisterDirect(tok, &number)){
+                    if (isRegisterDirect(tok, &number))
+                    {
                         goto found2;
                     }
                     break;

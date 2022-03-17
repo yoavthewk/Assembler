@@ -75,7 +75,6 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
             /* alert error */
             printf("Line %d: label name \"%s\" already in use!\n", line_number, name);
             flagRegister.ERR = 1;
-            free(line);
             return;
         }
         att[2] = true;
@@ -207,9 +206,9 @@ void process_data(char *line, hregister* DC)
         while ((data = strtok(NULL, ",")))
         {
             num = getNumber(data, &flagRegister);
-            if(flagRegister.ERR == 1){
+            if(flagRegister.ERR){
                 /* alert error */
-                printf("Invalid Number!");
+                printf("Invalid Number!\n");
                 return;
             }
             printf("num: %d\n", num);

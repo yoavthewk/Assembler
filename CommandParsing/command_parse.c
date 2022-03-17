@@ -100,10 +100,10 @@ bool isRegisterDirect(char *line, int *number)
 		*number = getNumber(line, &flagRegister);
 		if(flagRegister.ERR)
 		{
-			return true;
+			return false;
 		}
 	}
-	return false;
+	return true;
 }
 
 void throw_error(char *message, int line_number)
