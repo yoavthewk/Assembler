@@ -35,11 +35,11 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
         free(line);
         return;
     }
-    /* returns the full line if there is no label, otherwise, it cuts the label definition off after handling it */
-    contains_label(line_backup, head);
+
+    contains_label(line_backup, head, line_number);
     strcpy(line_backup, line);
 
-    if (handle_data(line_backup, head, IC, DC))
+    if (handle_data(line_backup, head, IC, DC, line_number))
     {
         free(line);
         line = NULL;
@@ -58,7 +58,7 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
     if (is_extern(line_backup))
     {
         strcpy(line_backup, line);
-        handle_extern(line_backup, head);
+        handle_extern(line_backup, head, line_number);
         free(line);
         line = NULL;
         return;
@@ -138,7 +138,7 @@ bool isValidExtern(char* label, SymbolList* head){
     return !contains_not_extern(head, label) && is_valid_label_name(label);
 }
 
-void handle_extern(char *line, SymbolList *head)
+void handle_extern(char *line, SymbolList *head, int line_number)
 {
     /* get the name of the symbol first */
     char *name;
@@ -152,6 +152,7 @@ void handle_extern(char *line, SymbolList *head)
 
     if (!name || !isValidExtern(name, head)){
         /* throw errors */
+        printf("Line %d: Invalid name or already in use!\n", line_number);
         flagRegister.ERR = 1;
         return;
     }
@@ -172,7 +173,7 @@ void updateSymbolList(SymbolList* head, hregister* IC){
     }
 }
 
-void contains_label(char *line, SymbolList* head)
+void contains_label(char *line, SymbolList* head, int line_number)
 {
     char *canBeLabel = strtok(line, " "); /* get the first (or only) word in the line. */
     if (!strcspn(canBeLabel, ":") || strcspn(canBeLabel, ":") == strlen(canBeLabel))
@@ -183,7 +184,7 @@ void contains_label(char *line, SymbolList* head)
     {
         if(!isValidLabel(canBeLabel, head)){
             /* raise an error */
-            printf("Label %s Already Exists!", canBeLabel);
+            printf("Line %d: Label %s Already Exists!", line_number, canBeLabel);
             flagRegister.ERR = 1;
             flagRegister.SYM = 0;
             return;
@@ -193,7 +194,7 @@ void contains_label(char *line, SymbolList* head)
     }
 }
 
-bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC)
+bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC, int line_number)
 {
     char lineBackup[MAX_LEN] = {0}, name[MAX_LEN] = {0};
     char *canBeData = NULL; /* get the first (or only) word in the line. */
@@ -217,13 +218,13 @@ bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC)
             insertSymbol(&head, initSymbolNode(NULL, name, DC->data, 0, 0, att));
         }
         /* add to data table */
-        process_data(line, DC);
+        process_data(line, DC, line_number);
         return true;
     }
     return false;
 }
 
-void process_data(char *line, hregister* DC)
+void process_data(char *line, hregister* DC, int line_number)
 {
     int num, i;
     char* binary_line;
@@ -237,7 +238,7 @@ void process_data(char *line, hregister* DC)
             num = getNumber(data, &flagRegister);
             if(flagRegister.ERR){
                 /* alert error */
-                printf("Invalid Number!\n");
+                printf("Line %d: Invalid Number Entered!\n", line_number);
                 free(line);
                 return;
             }
