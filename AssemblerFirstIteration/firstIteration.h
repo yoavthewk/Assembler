@@ -18,5 +18,6 @@ void process_data(char *line, hregister* DC);
 bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC);
 void process_line(char *line, SymbolList *head, int line_number, hregister* IC, hregister* DC);
 void handle_extern(char *line, SymbolList *head);
+void updateSymbolList(SymbolList* head, hregister* IC);
 
 #endif /* FIRSTITERATION_H */

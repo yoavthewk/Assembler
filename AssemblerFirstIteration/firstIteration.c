@@ -11,6 +11,7 @@ void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister* IC, 
         process_line(line, head, line_number++, IC, DC);
         free(line);
     }
+    updateSymbolList(head, IC);
     printSymbolList(head);
     fclose(fp);
 }
@@ -159,6 +160,17 @@ void handle_extern(char *line, SymbolList *head)
     insertSymbol(&head, initSymbolNode(NULL, name, 0, 0, 0, att));
 }
 
+void updateSymbolList(SymbolList* head, hregister* IC){
+    SymbolList* temp = head;
+    while(temp){
+        if(temp->s.attributes[DATA]){
+            temp->s.value += IC->data;
+            temp->s.offset = temp->s.value % 16;
+            temp->s.baseAddress = temp->s.value - (temp->s.value % 16);
+        }
+        temp = temp->next;
+    }
+}
 
 void contains_label(char *line, SymbolList* head)
 {
@@ -202,7 +214,7 @@ bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC)
     {
         strcpy(line, lineBackup);
         if (flagRegister.SYM){
-            insertSymbol(&head, initSymbolNode(NULL, name, IC->data, IC->data - (IC->data % 16), IC->data % 16, att));
+            insertSymbol(&head, initSymbolNode(NULL, name, DC->data, DC->data - (DC->data % 16), DC->data % 16, att));
         }
         /* add to data table */
         process_data(line, DC);
