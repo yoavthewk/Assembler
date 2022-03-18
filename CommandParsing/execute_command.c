@@ -5,6 +5,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     int i, number, index, address;
     char *label = NULL;
     char *tok, line_backup[MAX_LEN] = {0};
+    int command_length = 0;
 
     /* firstly, we check if the command has any continuation */
     if (line[0] != ' ')
@@ -12,6 +13,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         /* if it is a 0 operand command, we're okay, and we encode it */
         if (!action_table[action_index].operands)
         {
+            command_length += 1;
             IC->data++;
             /* encode and return. */
         }
@@ -25,6 +27,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     }
     memmove(line, line + 1, strlen(line)); /* skip the space */
     strcpy(line_backup, line);
+    command_length += 2;
 
     tok = strtok(line, ",");
     label = (char *)calloc(MAX_LEN, sizeof(char));
@@ -41,28 +44,27 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 case IMMEDIATE:
                     if (isImmediate(tok, &number))
                     {
-                        IC->data += 2; /* add the word of the immediate */
+                        command_length++; /* add the word of the immediate */
                         goto found;
                     }
                     break;
                 case INDEX:
                     if (isIndex(tok, label, &index))
                     {
-                        IC->data += 3; /* add the base address and the offset */
+                        command_length += 2; /* add the base address and the offset */
                         goto found;
                     }
                     break;
                 case REGISTER_DIRECT:
                     if (isRegisterDirect(tok, &number))
                     {
-                        IC->data++;
                         goto found;
                     }
                     break;
                 case DIRECT:
                     if (isDirect(tok, &address, head))
                     {
-                        IC->data += 3; /* add base and offset */
+                        command_length += 2; /* add base and offset */
                         goto found;
                     }
                     break;
@@ -93,6 +95,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 else
                 {
                     /* encode */
+                    IC->data += command_length;
                     free(label);
                     return;
                 }
@@ -117,14 +120,14 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 case IMMEDIATE:
                     if (isImmediate(tok, &number))
                     {
-                        IC->data += 1; /* add the word of the immediate */
+                        command_length += 1; /* add the word of the immediate */
                         goto found2;
                     }
                     break;
                 case INDEX:
                     if (isIndex(tok, label, &index))
                     {
-                        IC->data += 2; /* add the base address and the offset */
+                        command_length += 2; /* add the base address and the offset */
                         goto found2;
                     }
                     break;
@@ -137,7 +140,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 case DIRECT:
                     if (isDirect(tok, &address, head))
                     {
-                        IC->data += 2; /* add base and offset */
+                        command_length += 2; /* add base and offset */
                         goto found2;
                     }
                     break;
@@ -150,5 +153,6 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
 found2:
+    IC->data += command_length;
     free(label);
 }
