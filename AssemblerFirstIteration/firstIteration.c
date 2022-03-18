@@ -214,7 +214,7 @@ bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC)
     {
         strcpy(line, lineBackup);
         if (flagRegister.SYM){
-            insertSymbol(&head, initSymbolNode(NULL, name, DC->data, DC->data - (DC->data % 16), DC->data % 16, att));
+            insertSymbol(&head, initSymbolNode(NULL, name, DC->data, 0, 0, att));
         }
         /* add to data table */
         process_data(line, DC);
