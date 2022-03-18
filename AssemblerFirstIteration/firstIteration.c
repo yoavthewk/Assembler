@@ -105,20 +105,37 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
     free(line);
 }
 
-bool isValidLabel(char* label, SymbolList* head){
+bool is_valid_label_name(char* name){
     bool valid = true;
     int i;
 
     /* first we check that the first character is a letter */
-    valid = isalpha(label[0]) ? valid : false; 
+    valid = isalpha(name[0]) ? valid : false; 
 
-    for(i = 1; i < strlen(label) - 1; i++){
-        if(!isalpha(label[i]) && !isdigit(label[i])) valid = false;
+    for(i = 1; i < strlen(name) - 1; i++){
+        if(!isalpha(name[i]) && !isdigit(name[i])) valid = false;
     }
-
-    return valid && !contains(head, label);
+    
+    return valid;
 }
 
+bool isValidLabel(char* label, SymbolList* head){
+    return is_valid_label_name(label) && !contains(head, label);
+}
+
+bool contains_not_extern(SymbolList *head, char *name)
+{
+    do
+    {
+        if (!strncmp(head->s.name, name, SYMBOL_SIZE) && !head->s.attributes[EXTERN])
+            return true;
+    } while ((head = head->next));
+    return false;
+}
+
+bool isValidExtern(char* label, SymbolList* head){
+    return !contains_not_extern(head, label) && is_valid_label_name(label);
+}
 
 void handle_extern(char *line, SymbolList *head)
 {
@@ -132,7 +149,7 @@ void handle_extern(char *line, SymbolList *head)
     }
     name = strtok(NULL, " ");
 
-    if (!name || !isValidLabel(name, head)){
+    if (!name || !isValidExtern(name, head)){
         /* throw errors */
         flagRegister.ERR = 1;
         return;
@@ -209,6 +226,7 @@ void process_data(char *line, hregister* DC)
             if(flagRegister.ERR){
                 /* alert error */
                 printf("Invalid Number!\n");
+                free(line);
                 return;
             }
             printf("num: %d\n", num);

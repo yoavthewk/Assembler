@@ -13,6 +13,10 @@
 #define INDEX 2
 #define DIRECT 3
 #define WORD_SIZE 20
+#define EXTERN 0
+#define ENTRY 1
+#define CODE 2
+#define DATA 3
 
 /* Helper functions */
 void executeCommand();
