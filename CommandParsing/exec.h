@@ -20,7 +20,6 @@
 
 /* Helper functions */
 void executeCommand();
-int isWhiteSpaceOnly(char *input);
 bool isImmediate(char* line, int* number);
 bool isDirect(char* line, int *address, SymbolList* head);
 bool isIndex(char* line, char* label, int *index);
@@ -29,6 +28,7 @@ void throw_error(char* message, int line_number);
 char* encode_immediate(int num);
 char* encode_command_opcode(int action_index);
 int getNumber(char *num, PSW* flagRegister);
+bool is_empty_line(char *line);
 
 /* Execution functions */
 void parse_command(char* line, SymbolList* head, int action_index, int line_number, hregister* IC, hregister* DC);

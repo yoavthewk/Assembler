@@ -16,15 +16,19 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
             command_length += 1;
             IC->data++;
             /* encode and return. */
+            return;
         }
-        /* if not, we raise an error and return */
+        /* if not, we raise an error and return */  
+        throw_error("Not enough operands passed!", line_number);
         return;
     }
     else if (!action_table[action_index].operands)
     {
         /* alert extraneous text error */
+        throw_error("Extraneous text!", line_number);
         return;
     }
+
     memmove(line, line + 1, strlen(line)); /* skip the space */
     strcpy(line_backup, line);
     command_length += 2;
@@ -73,36 +77,42 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
             strcpy(line, line_backup);
         }
         /* alert error */
-        throw_error("Invalid or Missing First Operand!", line_number);
+        throw_error("Invalid or missing first operand!\n", line_number);
         /* raise error flag: */
         /* break */
         free(label);
         return;
 
     found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
+        if (flagRegister.ERR)
+        {
+            free(label);
+            return;
+        }
+
         strcpy(line, line_backup);
         strtok(line, ",");
         tok = strtok(NULL, ","); /* get the rest */
         if (!tok || tok[0] == '\n' || !tok[0])
         {
-            if (action_table[action_index].operands == 1)
+            if (action_table[action_index].operands)
             {
-                if (/*error flag is activated */ 1)
-                {
-                    free(label);
-                    return;
-                }
-                else
-                {
-                    /* encode */
-                    IC->data += command_length;
-                    free(label);
-                    return;
-                }
+                
+                /* encode */
+                IC->data += command_length;
+                free(label);
+                return;
+                
             }
             /* not enough operands */
-            throw_error("Not Enough Operands Passsed!", line_number);
+            throw_error("Not enough operands passsed!", line_number);
             free(label);
+            return;
+        }
+        else if(action_table[action_index].operands)
+        {
+            throw_error("Extraneous text!", line_number);
+            flagRegister.ERR;
             return;
         }
     }
@@ -153,6 +163,6 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
 found2:
-    IC->data += command_length;
+    IC->data += flagRegister.ERR ? 0 : command_length;
     free(label);
 }

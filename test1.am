@@ -10,7 +10,7 @@ LOOP: 	prn #48
 	bne END
 	cmp val1, #-6
 	bne END[r15]
-	dec K
+	dec K asdasf
 .entry MAIN
 	sub LOOP[r10], r14
 END:    stop

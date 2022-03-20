@@ -1,18 +1,5 @@
 #include "exec.h"
 
-int isWhiteSpaceOnly(char *input)
-{
-	int i = 0;
-	for (i = 0; i < strlen(input); i++)
-	{
-		if (!isspace(input[i]))
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
 int getNumber(char *num, PSW* flagRegister)
 {
 	int i = 0;
@@ -55,10 +42,17 @@ bool isDirect(char *line, int *address, SymbolList *head)
 {
 	if (line)
 	{
-		/* if it is: return address somehow */
-		memmove(line, line + strlen(line), strlen(line));
-		/* else alert error */
-		return true;
+		int i;
+    	bool valid = true;
+		/* first we check that the first character is a letter */
+    	valid = isalpha(line[0]) ? valid : false; 
+
+    	for(i = 1; i < strlen(line) - 1; i++){
+        	if(!isalpha(line[i]) && !isdigit(line[i])) valid = false;
+    	}
+		
+		if(valid)
+			return true;
 	}
 
 	return false;
@@ -109,7 +103,7 @@ bool isRegisterDirect(char *line, int *number)
 
 void throw_error(char *message, int line_number)
 {
-	printf("ERROR: in line %d: %s\n", line_number, message);
+	printf("Line %d: %s\n", line_number, message);
 }
 
 char* encode_immediate(int num){
@@ -130,7 +124,6 @@ char* encode_immediate(int num){
 		bin_str[i] = (num & mask) ? '1' : '0';
 	}
 
-	
 	bin_str[WORD_SIZE] = 0;
 	return bin_str;
 }
@@ -151,4 +144,12 @@ char* encode_command_opcode(int action_index){
 	bin_str[WORD_SIZE] = 0;
 
 	return bin_str;
+}
+
+bool is_empty_line(char *line){
+	int i;
+	for(i = 0; i < strlen(line); i++){
+		if(!isspace(line[i])) return false;
+	}
+	return true;
 }

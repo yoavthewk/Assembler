@@ -78,7 +78,7 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
             flagRegister.ERR = 1;
             return;
         }
-        att[2] = true;
+        att[CODE] = true;
         insertSymbol(&head, initSymbolNode(NULL, name, IC->data, IC->data - (IC->data % 16), IC->data % 16, att)); /* add the command to the list */
         offset += 2 + strlen(name);
         name = strtok(NULL, " ");
@@ -96,7 +96,7 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
     /* if it isn't, we print an error */
     if (!action_table[i].op_code && !action_table[i].operands)
     {
-        fprintf(stderr, "Command does not exist: %s\n", name);
+        printf("Line %d: Command does not exist: %s\n", line_number, name);
         free(line);
         return;
     }
@@ -143,21 +143,18 @@ void handle_extern(char *line, SymbolList *head, int line_number)
     /* get the name of the symbol first */
     char *name;
     bool att[] = {false, false, false, false};
-    name = strtok(line, " ");
-    while (!strcmp(name, ".extern"))
-    {
-        name = strtok(NULL, " ");
-    }
+    strtok(line, " ");
     name = strtok(NULL, " ");
 
     if (!name || !isValidExtern(name, head)){
+        printf("%s", name);
         /* throw errors */
         printf("Line %d: Invalid name or already in use!\n", line_number);
         flagRegister.ERR = 1;
         return;
     }
     
-    att[0] = true;
+    att[EXTERN] = true;
     insertSymbol(&head, initSymbolNode(NULL, name, 0, 0, 0, att));
 }
 
@@ -206,7 +203,7 @@ bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC, int
         /* canBeData is the name of the symbol in this case. */
         canBeData[strlen(canBeData) - 1] = 0; /* removed the : */
         /* add to symbol table */
-        att[3] = true;
+        att[DATA] = true;
         strcpy(name, canBeData);
         canBeData = strtok(NULL, " "); /* get the next word (or the only word) */
     }
@@ -239,7 +236,6 @@ void process_data(char *line, hregister* DC, int line_number)
             if(flagRegister.ERR){
                 /* alert error */
                 printf("Line %d: Invalid Number Entered!\n", line_number);
-                free(line);
                 return;
             }
             printf("num: %d\n", num);
