@@ -3,6 +3,7 @@
 #include "../Hardware/hardware.h"
 #include "symbol_list.h"
 #include "../PreAssembler/pre_assembler.h"
+#include "../CommandParsing/exec.h"
 
 #define BASE 0
 #define OFFSET 0

@@ -2,6 +2,7 @@
 #define SYMBOL_LIST_SEEN
 #define SIZE_OF_COMMAND 80
 #define SYMBOL_SIZE 83
+#define ENTRY 1
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -28,6 +29,7 @@ void freeSymbolList(SymbolList *head);
 void insertSymbol(SymbolList **head, SymbolList *node);
 int getSymbolListSize(SymbolList *head);
 bool contains(SymbolList *head, char *name);
+void updateEntry(SymbolList* head, char *name);
 void printSymbolList(SymbolList* head);
 
 #endif /* !SYMBOL_LIST_SEEN */

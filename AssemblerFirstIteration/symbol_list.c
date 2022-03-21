@@ -109,6 +109,17 @@ bool contains(SymbolList *head, char *name)
     return false;
 }
 
+void updateEntry(SymbolList* head, char *name){
+    do
+    {
+        if (!strncmp(head->s.name, name, SYMBOL_SIZE)){
+            head->s.attributes[ENTRY] = true;
+            return true;
+        }
+    } while ((head = head->next));
+    return false;
+}
+
 void printSymbolList(SymbolList *head)
 {
     int i;
