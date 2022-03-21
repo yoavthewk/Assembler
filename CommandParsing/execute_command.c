@@ -1,6 +1,6 @@
 #include "exec.h"
 
-void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister* IC, hregister* DC, PSW *flagRegister)
+void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flagRegister)
 {
     int i, number, index, address;
     char *label = NULL;
@@ -18,7 +18,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
             /* encode and return. */
             return;
         }
-        /* if not, we raise an error and return */  
+        /* if not, we raise an error and return */
         throw_error("Not enough operands passed!", line_number);
         return;
     }
@@ -97,25 +97,18 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     {
         if (action_table[action_index].operands)
         {
-            
+
             /* encode */
             IC->data += command_length;
             free(label);
             return;
-            
         }
         /* not enough operands */
         throw_error("Not enough operands passsed!", line_number);
         free(label);
         return;
     }
-    else if (action_table[action_index].operands)
-    {
-        throw_error("Extraneous text!", line_number);
-        flagRegister->ERR;
-        return;
-    }
-    
+
     strcpy(line_backup, tok);
     /* we can just use strtok to get to the , and then to the rest of the word.
     /* encode the first operand with what we found */
@@ -127,33 +120,33 @@ found: /* it means the first operand is being addressed in a valid way, therefor
         {
             switch (i)
             {
-                case IMMEDIATE:
-                    if (isImmediate(tok, &number, flagRegister))
-                    {
-                        command_length += 1; /* add the word of the immediate */
-                        goto found2;
-                    }
-                    break;
-                case INDEX:
-                    if (isIndex(tok, label, &index, flagRegister))
-                    {
-                        command_length += 2; /* add the base address and the offset */
-                        goto found2;
-                    }
-                    break;
-                case REGISTER_DIRECT:
-                    if (isRegisterDirect(tok, &number, flagRegister))
-                    {
-                        goto found2;
-                    }
-                    break;
-                case DIRECT:
-                    if (isDirect(tok, &address, head))
-                    {
-                        command_length += 2; /* add base and offset */
-                        goto found2;
-                    }
-                    break;
+            case IMMEDIATE:
+                if (isImmediate(tok, &number, flagRegister))
+                {
+                    command_length += 1; /* add the word of the immediate */
+                    goto found2;
+                }
+                break;
+            case INDEX:
+                if (isIndex(tok, label, &index, flagRegister))
+                {
+                    command_length += 2; /* add the base address and the offset */
+                    goto found2;
+                }
+                break;
+            case REGISTER_DIRECT:
+                if (isRegisterDirect(tok, &number, flagRegister))
+                {
+                    goto found2;
+                }
+                break;
+            case DIRECT:
+                if (isDirect(tok, &address, head))
+                {
+                    command_length += 2; /* add base and offset */
+                    goto found2;
+                }
+                break;
             }
         }
         strcpy(line_backup, line);

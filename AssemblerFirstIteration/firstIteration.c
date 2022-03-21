@@ -21,7 +21,7 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     /* Initialization of variables */
     int i;
     size_t offset = 0;
-    char *name;
+    char *name, *tok;
     char line_backup[MAX_LEN] = {0};
     bool att[] = {false, false, false, false};
     flagRegister->SYM = 0;
@@ -30,6 +30,8 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     line = parse_line_first_iteration(line, flagRegister); /* getting the parsed command */
     if (flagRegister->ERR)
     {
+        throw_error("Invalid comma", line_number);
+        free(line);
         return;
     }
     line[strcspn(line, "\n")] = 0;
@@ -106,9 +108,53 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
         return;
     }
 
+    strcpy(line_backup, line);
+    /* trying to check for externous text; */
+    if (externousText(line, action_table[i].operands, flagRegister, line_number))
+        return;
+
+    strcpy(line, line_backup);
     /* if it is, we call the function that executes the command */
     parse_command(line, head, i, line_number, IC, DC, flagRegister);
     free(line);
+}
+
+bool externousText(char *line, int operands, PSW *flagRegister, int line_number)
+{
+    char *tok;
+    char* tmp = line;
+    if (operands == 2)
+    {
+        tok = strtok(line, ",");
+        tok = strtok(NULL, " ");
+        tok = strtok(NULL, " ");
+    }
+    else
+    {
+        while (*line)
+        {
+            if (*line == ',')
+            {
+                throw_error("Extraneous text!", line_number);
+                flagRegister->ERR = 1;
+                return true;
+            }
+            line++;
+        }
+        line = tmp;
+
+        memmove(line, line + 1, strlen(line));
+        tok = strtok(line, " ");
+        tok = strtok(NULL, " ");
+    }
+    /* trying to check for externous text; */
+    if (tok)
+    {
+        throw_error("Extraneous text!", line_number);
+        flagRegister->ERR = 1;
+        return true;
+    }
+    return false;
 }
 
 bool is_valid_label_name(char *name)
