@@ -20,6 +20,5 @@ typedef struct PSW {
 
 static word memory[MEMORY_SIZE] = {0};
 static hregister registers[NUM_OF_REGISTERS] = {0};
-static PSW flagRegister = {0, 0};
 
 #endif /* !HARDWARE_SEEN */

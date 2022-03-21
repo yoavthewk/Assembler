@@ -1,14 +1,14 @@
 #include "firstIteration.h"
 #include "../CommandParsing/exec.h"
 
-void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister* IC, hregister* DC)
+void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister *IC, hregister *DC, PSW *flagRegister)
 {
     int line_number = 0;
     char *line;
 
     while ((line = get_next_line(fp)) != NULL)
     {
-        process_line(line, head, line_number++, IC, DC);
+        process_line(line, head, line_number++, IC, DC, flagRegister);
         free(line);
     }
     updateSymbolList(head, IC);
@@ -16,7 +16,7 @@ void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister* IC, 
     fclose(fp);
 }
 
-void process_line(char *line, SymbolList *head, int line_number, hregister* IC, hregister* DC)
+void process_line(char *line, SymbolList *head, int line_number, hregister *IC, hregister *DC, PSW *flagRegister)
 {
     /* Initialization of variables */
     int i;
@@ -24,10 +24,14 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
     char *name;
     char line_backup[MAX_LEN] = {0};
     bool att[] = {false, false, false, false};
-    flagRegister.SYM = 0;
-    flagRegister.ERR = 0;
+    flagRegister->SYM = 0;
+    flagRegister->ERR = 0;
 
-    line = parse_line_first_iteration(line); /* getting the parsed command */
+    line = parse_line_first_iteration(line, flagRegister); /* getting the parsed command */
+    if (flagRegister->ERR)
+    {
+        return;
+    }
     line[strcspn(line, "\n")] = 0;
     strcpy(line_backup, line);
     if (!line[0])
@@ -36,10 +40,10 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
         return;
     }
 
-    contains_label(line_backup, head, line_number);
+    contains_label(line_backup, head, line_number, flagRegister);
     strcpy(line_backup, line);
 
-    if (handle_data(line_backup, head, IC, DC, line_number))
+    if (handle_data(line_backup, head, IC, DC, line_number, flagRegister))
     {
         free(line);
         line = NULL;
@@ -47,7 +51,7 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
     }
     strcpy(line_backup, line);
 
-    if (is_entry(line_backup))
+    if (is_entry(line_backup, flagRegister))
     {
         free(line);
         line = NULL;
@@ -55,10 +59,10 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
     }
     strcpy(line_backup, line);
 
-    if (is_extern(line_backup))
+    if (is_extern(line_backup, flagRegister))
     {
         strcpy(line_backup, line);
-        handle_extern(line_backup, head, line_number);
+        handle_extern(line_backup, head, line_number, flagRegister);
         free(line);
         line = NULL;
         return;
@@ -68,14 +72,15 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
     /* if it's not any one of those, it is a command, and so if it is a symbol we add it */
     /* check if the symbol exists or is illegal */
     name = strtok(line_backup, " ");
-    
-    if (flagRegister.SYM)
+
+    if (flagRegister->SYM)
     {
         name[strlen(name) - 1] = 0;
-        if(!isValidLabel(name, head)){
+        if (!isValidLabel(name, head))
+        {
             /* alert error */
             printf("Line %d: label name \"%s\" already in use!\n", line_number, name);
-            flagRegister.ERR = 1;
+            flagRegister->ERR = 1;
             return;
         }
         att[CODE] = true;
@@ -102,25 +107,29 @@ void process_line(char *line, SymbolList *head, int line_number, hregister* IC, 
     }
 
     /* if it is, we call the function that executes the command */
-    parse_command(line, head, i, line_number, IC, DC);
+    parse_command(line, head, i, line_number, IC, DC, flagRegister);
     free(line);
 }
 
-bool is_valid_label_name(char* name){
+bool is_valid_label_name(char *name)
+{
     bool valid = true;
     int i;
 
     /* first we check that the first character is a letter */
-    valid = isalpha(name[0]) ? valid : false; 
+    valid = isalpha(name[0]) ? valid : false;
 
-    for(i = 1; i < strlen(name) - 1; i++){
-        if(!isalpha(name[i]) && !isdigit(name[i])) valid = false;
+    for (i = 1; i < strlen(name) - 1; i++)
+    {
+        if (!isalpha(name[i]) && !isdigit(name[i]))
+            valid = false;
     }
-    
+
     return valid;
 }
 
-bool isValidLabel(char* label, SymbolList* head){
+bool isValidLabel(char *label, SymbolList *head)
+{
     return is_valid_label_name(label) && !contains(head, label);
 }
 
@@ -134,11 +143,12 @@ bool contains_not_extern(SymbolList *head, char *name)
     return false;
 }
 
-bool isValidExtern(char* label, SymbolList* head){
+bool isValidExtern(char *label, SymbolList *head)
+{
     return !contains_not_extern(head, label) && is_valid_label_name(label);
 }
 
-void handle_extern(char *line, SymbolList *head, int line_number)
+void handle_extern(char *line, SymbolList *head, int line_number, PSW *flagRegister)
 {
     /* get the name of the symbol first */
     char *name;
@@ -146,22 +156,26 @@ void handle_extern(char *line, SymbolList *head, int line_number)
     strtok(line, " ");
     name = strtok(NULL, " ");
 
-    if (!name || !isValidExtern(name, head)){
+    if (!name || !isValidExtern(name, head))
+    {
         printf("%s", name);
         /* throw errors */
         printf("Line %d: Invalid name or already in use!\n", line_number);
-        flagRegister.ERR = 1;
+        flagRegister->ERR = 1;
         return;
     }
-    
+
     att[EXTERN] = true;
     insertSymbol(&head, initSymbolNode(NULL, name, 0, 0, 0, att));
 }
 
-void updateSymbolList(SymbolList* head, hregister* IC){
-    SymbolList* temp = head;
-    while(temp){
-        if(temp->s.attributes[DATA]){
+void updateSymbolList(SymbolList *head, hregister *IC)
+{
+    SymbolList *temp = head;
+    while (temp)
+    {
+        if (temp->s.attributes[DATA])
+        {
             temp->s.value += IC->data;
             temp->s.offset = temp->s.value % 16;
             temp->s.baseAddress = temp->s.value - (temp->s.value % 16);
@@ -170,35 +184,36 @@ void updateSymbolList(SymbolList* head, hregister* IC){
     }
 }
 
-void contains_label(char *line, SymbolList* head, int line_number)
+void contains_label(char *line, SymbolList *head, int line_number, PSW *flagRegister)
 {
     char *canBeLabel = strtok(line, " "); /* get the first (or only) word in the line. */
     if (!strcspn(canBeLabel, ":") || strcspn(canBeLabel, ":") == strlen(canBeLabel))
     {
-        flagRegister.SYM = 0;
+        flagRegister->SYM = 0;
     }
     else
     {
-        if(!isValidLabel(canBeLabel, head)){
+        if (!isValidLabel(canBeLabel, head))
+        {
             /* raise an error */
             printf("Line %d: Label %s Already Exists!", line_number, canBeLabel);
-            flagRegister.ERR = 1;
-            flagRegister.SYM = 0;
+            flagRegister->ERR = 1;
+            flagRegister->SYM = 0;
             return;
         }
         /* if there is a definition of symbol */
-        flagRegister.SYM = 1;
+        flagRegister->SYM = 1;
     }
 }
 
-bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC, int line_number)
+bool handle_data(char *line, SymbolList *head, hregister *IC, hregister *DC, int line_number, PSW *flagRegister)
 {
     char lineBackup[MAX_LEN] = {0}, name[MAX_LEN] = {0};
     char *canBeData = NULL; /* get the first (or only) word in the line. */
     bool att[] = {false, false, false, false};
     strcpy(lineBackup, line);
     canBeData = strtok(line, " ");
-    if (flagRegister.SYM)
+    if (flagRegister->SYM)
     {
         /* canBeData is the name of the symbol in this case. */
         canBeData[strlen(canBeData) - 1] = 0; /* removed the : */
@@ -211,29 +226,31 @@ bool handle_data(char *line, SymbolList *head, hregister* IC, hregister* DC, int
     if (!strcmp(canBeData, ".data") || !strcmp(canBeData, ".string"))
     {
         strcpy(line, lineBackup);
-        if (flagRegister.SYM){
+        if (flagRegister->SYM)
+        {
             insertSymbol(&head, initSymbolNode(NULL, name, DC->data, 0, 0, att));
         }
         /* add to data table */
-        process_data(line, DC, line_number);
+        process_data(line, DC, line_number, flagRegister);
         return true;
     }
     return false;
 }
 
-void process_data(char *line, hregister* DC, int line_number)
+void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister)
 {
     int num, i;
-    char* binary_line;
+    char *binary_line;
     char *data = strtok(line, " "); /* get the first (or only) word in the line. */
-    data = flagRegister.SYM ? strtok(NULL, " ") : data;
+    data = flagRegister->SYM ? strtok(NULL, " ") : data;
     if (!strcmp(data, ".data"))
     {
         printf(".Data: \n");
         while ((data = strtok(NULL, ",")))
         {
-            num = getNumber(data, &flagRegister);
-            if(flagRegister.ERR){
+            num = getNumber(data, flagRegister);
+            if (flagRegister->ERR)
+            {
                 /* alert error */
                 printf("Line %d: Invalid Number Entered!\n", line_number);
                 return;
@@ -251,7 +268,8 @@ void process_data(char *line, hregister* DC, int line_number)
         /*printf("%s\n", data);
         data = strtok(NULL, "\"");*/
         printf("%s String: \n", data);
-        for(i = 0; data[i] != 0; i++){
+        for (i = 0; data[i] != 0; i++)
+        {
             binary_line = encode_immediate(data[i]);
             printf("%s\n", binary_line);
             free(binary_line);
@@ -263,17 +281,17 @@ void process_data(char *line, hregister* DC, int line_number)
     }
 }
 
-bool is_extern(char *line)
+bool is_extern(char *line, PSW *flagRegister)
 {
     char *cmd;
     cmd = strtok(line, " ");
-    return flagRegister.SYM ? !strcmp(strtok(NULL, " "), ".extern") : !strcmp(cmd, ".extern"); /* if .extern can be with a symbol before */
+    return flagRegister->SYM ? !strcmp(strtok(NULL, " "), ".extern") : !strcmp(cmd, ".extern"); /* if .extern can be with a symbol before */
     /* else: if(flagRegister.SYM) show error return false... else return !strcmp(cmd, ".extern"); */
 }
 
-bool is_entry(char *line)
+bool is_entry(char *line, PSW *flagRegister)
 {
     char *cmd;
     cmd = strtok(line, " ");
-    return flagRegister.SYM ? !strcmp(strtok(NULL, " "), ".entry") : !strcmp(cmd, ".entry");
+    return flagRegister->SYM ? !strcmp(strtok(NULL, " "), ".entry") : !strcmp(cmd, ".entry");
 }

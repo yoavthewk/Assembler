@@ -17,7 +17,7 @@ int getNumber(char *num, PSW* flagRegister)
 	return atoi(number);
 }
 
-bool isImmediate(char *line, int *number)
+bool isImmediate(char *line, int *number, PSW *flagRegister)
 {
 	char *tok;
 	char* binary_line; 
@@ -27,8 +27,8 @@ bool isImmediate(char *line, int *number)
 		return false;
 	memmove(line, line + 1, strlen(line)); /* skip over it */
 
-	*number = getNumber(line, &flagRegister); /* get the argument */
-	if (flagRegister.ERR)
+	*number = getNumber(line, flagRegister); /* get the argument */
+	if (flagRegister->ERR)
 	{
 		return false;
 	}
@@ -58,7 +58,7 @@ bool isDirect(char *line, int *address, SymbolList *head)
 	return false;
 }
 
-bool isIndex(char *line, char *label, int *index)
+bool isIndex(char *line, char *label, int *index, PSW *flagRegister)
 {
 	char *tok;
 	tok = strtok(line, "[");
@@ -71,8 +71,8 @@ bool isIndex(char *line, char *label, int *index)
 		if (tok && tok[0] == 'r')
 		{
 			memmove(tok, tok + 1, strlen(tok));
-			*index = getNumber(tok, &flagRegister);
-			if(flagRegister.ERR)
+			*index = getNumber(tok, flagRegister);
+			if(flagRegister->ERR)
 			{
 				/* index is illegal */
 				/* throw an error and flag */
@@ -84,15 +84,15 @@ bool isIndex(char *line, char *label, int *index)
 	return false;
 }
 
-bool isRegisterDirect(char *line, int *number)
+bool isRegisterDirect(char *line, int *number, PSW *flagRegister)
 {
 	char *tok;
 	int num;
 	if (line[0] == 'r')
 	{
 		memmove(line, line + 1, strlen(line));
-		*number = getNumber(line, &flagRegister);
-		if(flagRegister.ERR)
+		*number = getNumber(line, flagRegister);
+		if(flagRegister->ERR)
 		{
 			return false;
 		}

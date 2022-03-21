@@ -1,7 +1,7 @@
 .entry LIST
 .extern W
 
-MAIN: 	add r3, LIST
+MAIN: 	add r3,, LIST
 LOOP: 	prn #48
 	lea STR, r6
 	inc r6

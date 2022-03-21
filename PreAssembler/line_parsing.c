@@ -40,11 +40,11 @@ char *parse_line(char *line)
     return new_line;
 }
 
-char *parse_line_first_iteration(char *line)
+char *parse_line_first_iteration(char *line, PSW *flagRegister)
 {
     char *new_line;
     char last_char = ' ';
-    int i, j;
+    int i, j, commaCount = 0;
     if (!line)
     {
         free(line);
@@ -63,6 +63,14 @@ char *parse_line_first_iteration(char *line)
             new_line[j++] = *(line + i);
             last_char = *(line + i);
             i++;
+            if (last_char == ',')
+            {
+                commaCount++;
+                if (commaCount > 1)
+                {
+                    flagRegister->ERR = 1;
+                }
+            }
         }
         if (last_char != ',')
         {

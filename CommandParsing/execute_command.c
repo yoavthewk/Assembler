@@ -1,6 +1,6 @@
 #include "exec.h"
 
-void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister* IC, hregister* DC)
+void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister* IC, hregister* DC, PSW *flagRegister)
 {
     int i, number, index, address;
     char *label = NULL;
@@ -46,21 +46,21 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 switch (i)
                 {
                 case IMMEDIATE:
-                    if (isImmediate(tok, &number))
+                    if (isImmediate(tok, &number, flagRegister))
                     {
                         command_length++; /* add the word of the immediate */
                         goto found;
                     }
                     break;
                 case INDEX:
-                    if (isIndex(tok, label, &index))
+                    if (isIndex(tok, label, &index, flagRegister))
                     {
                         command_length += 2; /* add the base address and the offset */
                         goto found;
                     }
                     break;
                 case REGISTER_DIRECT:
-                    if (isRegisterDirect(tok, &number))
+                    if (isRegisterDirect(tok, &number, flagRegister))
                     {
                         goto found;
                     }
@@ -82,40 +82,40 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         /* break */
         free(label);
         return;
-
-    found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
-        if (flagRegister.ERR)
-        {
-            free(label);
-            return;
-        }
-
-        strcpy(line, line_backup);
-        strtok(line, ",");
-        tok = strtok(NULL, ","); /* get the rest */
-        if (!tok || tok[0] == '\n' || !tok[0])
-        {
-            if (action_table[action_index].operands)
-            {
-                
-                /* encode */
-                IC->data += command_length;
-                free(label);
-                return;
-                
-            }
-            /* not enough operands */
-            throw_error("Not enough operands passsed!", line_number);
-            free(label);
-            return;
-        }
-        else if(action_table[action_index].operands)
-        {
-            throw_error("Extraneous text!", line_number);
-            flagRegister.ERR;
-            return;
-        }
     }
+found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
+    if (flagRegister->ERR)
+    {
+        free(label);
+        return;
+    }
+
+    strcpy(line, line_backup);
+    strtok(line, ",");
+    tok = strtok(NULL, ","); /* get the rest */
+    if (!tok || tok[0] == '\n' || !tok[0])
+    {
+        if (action_table[action_index].operands)
+        {
+            
+            /* encode */
+            IC->data += command_length;
+            free(label);
+            return;
+            
+        }
+        /* not enough operands */
+        throw_error("Not enough operands passsed!", line_number);
+        free(label);
+        return;
+    }
+    else if (action_table[action_index].operands)
+    {
+        throw_error("Extraneous text!", line_number);
+        flagRegister->ERR;
+        return;
+    }
+    
     strcpy(line_backup, tok);
     /* we can just use strtok to get to the , and then to the rest of the word.
     /* encode the first operand with what we found */
@@ -128,21 +128,21 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
             switch (i)
             {
                 case IMMEDIATE:
-                    if (isImmediate(tok, &number))
+                    if (isImmediate(tok, &number, flagRegister))
                     {
                         command_length += 1; /* add the word of the immediate */
                         goto found2;
                     }
                     break;
                 case INDEX:
-                    if (isIndex(tok, label, &index))
+                    if (isIndex(tok, label, &index, flagRegister))
                     {
                         command_length += 2; /* add the base address and the offset */
                         goto found2;
                     }
                     break;
                 case REGISTER_DIRECT:
-                    if (isRegisterDirect(tok, &number))
+                    if (isRegisterDirect(tok, &number, flagRegister))
                     {
                         goto found2;
                     }
@@ -163,6 +163,6 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
 found2:
-    IC->data += flagRegister.ERR ? 0 : command_length;
+    IC->data += flagRegister->ERR ? 0 : command_length;
     free(label);
 }

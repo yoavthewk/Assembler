@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     bool test[] = {false, false, false, true}; /* delete this later */
     hregister *IC = (hregister *)malloc(sizeof(hregister));
     hregister *DC = (hregister *)malloc(sizeof(hregister));
+    PSW* flagRegister = (PSW*)malloc(sizeof(PSW));
     IC->data = 100;
     DC->data = 0;
     /* if there are no files, we print an error and exit. */
@@ -34,7 +35,7 @@ int main(int argc, char *argv[])
             fp = open_file(file_name, true);
             if (fp)
             {
-                firstIteration(file_name, fp, symbolHead, IC, DC);
+                firstIteration(file_name, fp, symbolHead, IC, DC, flagRegister);
             }
         }
         else
@@ -44,6 +45,7 @@ int main(int argc, char *argv[])
         num_of_files--;
     }
     free(IC);
+    free(flagRegister);
     free(DC);
     freeSymbolList(symbolHead);
     freeListFromMemory(macroHead);

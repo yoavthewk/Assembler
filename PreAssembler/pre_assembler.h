@@ -27,7 +27,7 @@ char* getNewSubstringFrom(char* line, int start);
  * @param line the given line
  * @return char* the changed line
  */
-char *parse_line_first_iteration(char *line);
+char *parse_line_first_iteration(char *line, PSW *flagRegister);
 
 /*
  * This function pre-assembles the input file.
