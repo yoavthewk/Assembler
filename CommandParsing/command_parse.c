@@ -58,7 +58,7 @@ bool isDirect(char *line, int *address, SymbolList *head)
 	return false;
 }
 
-bool isIndex(char *line, char *label, int *index, PSW *flagRegister)
+bool isIndex(char *line, char *label, int *index, PSW *flagRegister, int line_number)
 {
 	char *tok;
 	tok = strtok(line, "[");
@@ -72,13 +72,18 @@ bool isIndex(char *line, char *label, int *index, PSW *flagRegister)
 		{
 			memmove(tok, tok + 1, strlen(tok));
 			*index = getNumber(tok, flagRegister);
-			if(flagRegister->ERR)
+			if(flagRegister->ERR == 1)
 			{
 				/* index is illegal */
 				/* throw an error and flag */
+				throw_error("Invalid Index!", line_number);
 				return false;
 			}
 			return true;
+		} else if(tok){
+			flagRegister->ERR = 1;
+			throw_error("Index must be a register!", line_number);
+			return false;
 		}
 	}
 	return false;

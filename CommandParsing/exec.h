@@ -22,7 +22,7 @@
 void executeCommand();
 bool isImmediate(char *line, int *number, PSW *flagRegister);
 bool isDirect(char *line, int *address, SymbolList *head);
-bool isIndex(char *line, char *label, int *index, PSW *flagRegister);
+bool isIndex(char *line, char *label, int *index, PSW *flagRegister, int line_number);
 bool isRegisterDirect(char *line, int *number, PSW *flagRegister);
 void throw_error(char *message, int line_number);
 char *encode_immediate(int num);

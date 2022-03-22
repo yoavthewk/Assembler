@@ -6,7 +6,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     char *label = NULL;
     char *tok, line_backup[MAX_LEN] = {0};
     int command_length = 0;
-
+    
     /* firstly, we check if the command has any continuation */
     if (line[0] != ' ')
     {
@@ -51,7 +51,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 }
                 break;
             case INDEX:
-                if (isIndex(tok, label, &index, flagRegister))
+                if (isIndex(tok, label, &index, flagRegister, line_number))
                 {
                     command_length += 2; /* add the base address and the offset */
                     goto found;
@@ -130,7 +130,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
                 }
                 break;
             case INDEX:
-                if (isIndex(tok, label, &index, flagRegister))
+                if (isIndex(tok, label, &index, flagRegister, line_number))
                 {
                     command_length += 2; /* add the base address and the offset */
                     goto found2;
@@ -158,6 +158,10 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
 found2:
+    if(flagRegister->ERR){
+        free(label);
+        return;
+    }
     IC->data += flagRegister->ERR ? 0 : command_length;
     free(label);
 }
