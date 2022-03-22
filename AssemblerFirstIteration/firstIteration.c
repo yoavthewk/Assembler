@@ -1,5 +1,5 @@
 #include "firstIteration.h"
-#include "../CommandParsing/exec.h"
+
 
 void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister *IC, hregister *DC, PSW *flagRegister)
 {
