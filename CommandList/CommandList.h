@@ -22,7 +22,7 @@ typedef struct CommandList {
  * @param next optional, a pointer to the next node
  * @return a new node for the list
  */
-CommandList *initCommandNode(CommandList* next, int L, int IC, char* str1, char** strArray);
+CommandList *initCommandNode(CommandList* next, int L, int IC, char** strArray);
 
 /**
  * This function inserts a node to the end of the list

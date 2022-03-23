@@ -1,6 +1,6 @@
 #include "CommandList.h"
 
-CommandList *initCommandNode(CommandList *next, int L, int IC, char *str1, char **strArray)
+CommandList *initCommandNode(CommandList *next, int L, int IC, char **strArray)
 {
     int i = 0;
     CommandList *tmp = (CommandList *)malloc(sizeof(CommandList));
@@ -15,6 +15,7 @@ CommandList *initCommandNode(CommandList *next, int L, int IC, char *str1, char 
         if (strArray[i])
             strcpy(tmp->arr[i], strArray[i]);
     }
+    return tmp;
 }
 
 void insertCommandLast(CommandList *head, CommandList *node)
@@ -45,7 +46,7 @@ void printCommandList(CommandList *head)
 
     while (head)
     {
-        printf("%s, %s, %s, %s; IC=%d, L=%d", head->arr[0], head->arr[1], head->arr[2], head->arr[3], head->IC, head->L);
+        printf("%s, %s, %s, %s; IC=%d, L=%d\n", head->arr[0], head->arr[1], head->arr[2], head->arr[3], head->IC, head->L);
         head = head->next;
     }
 }
