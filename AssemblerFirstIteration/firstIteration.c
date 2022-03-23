@@ -16,6 +16,9 @@ void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister *IC, 
     fclose(fp);
 }
 
+/* 
+    This method processes the line given and analyzes it 
+*/
 void process_line(char *line, SymbolList *head, int line_number, hregister *IC, hregister *DC, PSW *flagRegister)
 {
     /* Initialization of variables */
@@ -36,9 +39,12 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
         return;
     }
 
+    /* check whether there's a symbol declaration */
     contains_label(line_backup, head, line_number, flagRegister);
-    strcpy(line_backup, line);
 
+    strcpy(line_backup, line);
+    
+    /* check if we need to handle data and if so, process it */
     if (handle_data(line_backup, head, IC, DC, line_number, flagRegister))
     {
         free(line);
@@ -47,6 +53,7 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     }
     strcpy(line_backup, line);
 
+    /* if it is an entry line, we'll handle it in the second iteration. */
     if (is_entry(line_backup, flagRegister))
     {
         free(line);
@@ -55,6 +62,7 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     }
     strcpy(line_backup, line);
 
+    /* if it is an extern line, we handle it */
     if (is_extern(line_backup, flagRegister))
     {
         strcpy(line_backup, line);
@@ -66,8 +74,9 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     strcpy(line_backup, line);
 
     /* if it's not any one of those, it is a command, and so if it is a symbol we add it */
-    /* check if the symbol exists or is illegal */
+    /* check if there are illegal commas */
     check_illegal_commas(line_backup, flagRegister);
+
     if (flagRegister->ERR)
     {
         throw_error("Invalid comma", line_number);
@@ -77,6 +86,8 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     strcpy(line_backup, line);
     name = strtok(line_backup, " ");
 
+    /* If there's a symbol declaration we check whether the symbol is valid and if it is insert it */
+    /* to our symbol list. */
     if (flagRegister->SYM)
     {
         name[strlen(name) - 1] = 0;
@@ -111,12 +122,14 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     }
 
     strcpy(line_backup, line);
+
     /* trying to check for externous text; */
     if (externousText(line, action_table[i].operands, flagRegister, line_number))
         return;
 
     strcpy(line, line_backup);
-    /* if it is, we call the function that executes the command */
+    
+    /* if it is, we call the function that validates and encodes the command */
     parse_command(line, head, i, line_number, IC, DC, flagRegister);
     free(line);
 }
@@ -284,6 +297,7 @@ bool handle_data(char *line, SymbolList *head, hregister *IC, hregister *DC, int
     if (!strcmp(canBeData, ".data") || !strcmp(canBeData, ".string"))
     {
         strcpy(line, lineBackup);
+        /* if it is a symbol, we add it to the symbol list */
         if (flagRegister->SYM)
         {
             insertSymbol(&head, initSymbolNode(NULL, name, DC->data, 0, 0, att));
