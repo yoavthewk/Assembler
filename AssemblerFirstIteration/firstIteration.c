@@ -28,12 +28,6 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     flagRegister->ERR = 0;
 
     line = parse_line_first_iteration(line, flagRegister); /* getting the parsed command */
-    if (flagRegister->ERR)
-    {
-        throw_error("Invalid comma", line_number);
-        free(line);
-        return;
-    }
     line[strcspn(line, "\n")] = 0;
     strcpy(line_backup, line);
     if (!line[0])
@@ -73,6 +67,14 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
 
     /* if it's not any one of those, it is a command, and so if it is a symbol we add it */
     /* check if the symbol exists or is illegal */
+    check_illegal_commas(line_backup, flagRegister);
+    if (flagRegister->ERR)
+    {
+        throw_error("Invalid comma", line_number);
+        free(line);
+        return;
+    }
+    strcpy(line_backup, line);
     name = strtok(line_backup, " ");
 
     if (flagRegister->SYM)
@@ -117,6 +119,16 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     /* if it is, we call the function that executes the command */
     parse_command(line, head, i, line_number, IC, DC, flagRegister);
     free(line);
+}
+
+void check_illegal_commas(char* line, PSW* flagRegister){
+    int i, comma_count = 0;
+
+    for(i = 0; i < strlen(line); i++){
+        comma_count += *(line + i) == ',' ? 1 : 0;
+    }
+
+    flagRegister->ERR = comma_count >= 2 ? 1 : flagRegister->ERR;
 }
 
 bool externousText(char *line, int operands, PSW *flagRegister, int line_number)
