@@ -304,13 +304,18 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister)
     if (!strcmp(data, ".data"))
     {
         printf(".Data: \n");
+        
         while ((data = strtok(NULL, ",")))
         {
+            if(contains_space(data, flagRegister)){
+                throw_error("Extraneous text!", line_number);
+                return;
+            }
             num = getNumber(data, flagRegister);
             if (flagRegister->ERR)
             {
                 /* alert error */
-                printf("Line %d: Invalid Number Entered!\n", line_number);
+                throw_error("Invalid number entered!", line_number);
                 return;
             }
             printf("num: %d\n", num);
@@ -352,4 +357,12 @@ bool is_entry(char *line, PSW *flagRegister)
     char *cmd;
     cmd = strtok(line, " ");
     return flagRegister->SYM ? !strcmp(strtok(NULL, " "), ".entry") : !strcmp(cmd, ".entry");
+}
+
+bool contains_space(char* data, PSW* flagRegister){
+    int i = 0;
+    for(; i < strlen(data); i++){
+        if(*(data + i) == ' ') return true;
+    }
+    return false;
 }

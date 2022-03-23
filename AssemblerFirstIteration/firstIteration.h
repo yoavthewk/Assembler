@@ -22,5 +22,6 @@ void handle_extern(char *line, SymbolList *head, int line_number, PSW *flagRegis
 void updateSymbolList(SymbolList* head, hregister* IC);
 bool externousText(char *line, int operands, PSW *flagRegister, int line_number);
 void check_illegal_commas(char* line, PSW* flagRegister);
+bool contains_space(char* data, PSW* flagRegister);
 
 #endif /* FIRSTITERATION_H */

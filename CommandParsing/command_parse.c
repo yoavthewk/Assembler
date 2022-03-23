@@ -8,7 +8,7 @@ int getNumber(char *num, PSW* flagRegister)
 	while ((isdigit(num[i]) || num[i] == '-' || num[i] == '+') && num[i] != ',')
 		number[j++] = num[i++];
 
-	if (j == 0 || num[i] == '.')
+	if (j == 0 || num[i] == '.' || isalpha(num[i]))
 	{
 		flagRegister->ERR = 1;
 		return -1;
