@@ -1,11 +1,5 @@
 #include "symbol_list.h"
 
-/*
- * This function creates a node and allocates memory to it
- * Input: the next node, the name of the curr node, the value of the current node, the addr of the node,
- * the offset of the node, the attributes of the node.
- * Output: none
- */
 SymbolList *initSymbolNode(SymbolList *next, char name[], unsigned int value, unsigned int addr, unsigned int offset, bool att[])
 {
     int i = 0;
@@ -27,23 +21,8 @@ SymbolList *initSymbolNode(SymbolList *next, char name[], unsigned int value, un
     return node;
 }
 
-/*
- * This function releases the memory allocated to the linked list
- * Input: the head of the list
- * Output: none
- */
 void freeSymbolList(SymbolList *head)
 {
-    /*
-    if (head)
-    {
-        freeListFromMemory(head->next);
-    }
-    free(head->m.data);
-    free(head->m.name);
-    free(head);
-    */
-
     SymbolList *temp;
     while (head)
     {
@@ -53,11 +32,6 @@ void freeSymbolList(SymbolList *head)
     }
 }
 
-/*
- * This function inserts a node at the end of the list
- * Input: the head of the list, the node to insert
- * Output: none
- */
 void insertSymbol(SymbolList **head, SymbolList *node)
 {
     SymbolList *temp = *head;
@@ -85,11 +59,6 @@ void insertSymbol(SymbolList **head, SymbolList *node)
     temp->next = node;
 }
 
-/*
- * This function returns the size of a linked list
- * Input: the head of the list
- * Output: the size of the list
- */
 int getSymbolListSize(SymbolList *head)
 {
     if (!head->next)
