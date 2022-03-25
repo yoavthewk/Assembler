@@ -31,7 +31,7 @@ command_list *init_command_node(command_list* next, int L, int IC, bool data, ch
  * @param head a pointer to the start of the list
  * @param node the node to insert
  */
-void insert_command_list(command_list *head, command_list *node);
+void insert_command_list(command_list **head, command_list *node);
 
 /**
  * This function frees the list from the given node onwards

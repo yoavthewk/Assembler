@@ -7,10 +7,10 @@ command_list *init_command_node(command_list *next, int L, int IC, bool data, ch
 
     tmp->IC = IC;
     tmp->L = L;
-    tmp->arr = (char**)calloc(sizeof(char*) * LINES, sizeof(char*));
+    tmp->arr = (char**)calloc(sizeof(char*) * L, sizeof(char*));
     tmp->data = data;
 
-    for (i = 0; i < LINES; i++)
+    for (i = 0; i < L; i++)
     {
         tmp->arr[i] = (char *)calloc(sizeof(char) * ENCODE_LENGTH, sizeof(char));
         if (str_array[i]){
@@ -22,25 +22,30 @@ command_list *init_command_node(command_list *next, int L, int IC, bool data, ch
     return tmp;
 }
 
-void insert_command_list(command_list *head, command_list *node)
+void insert_command_list(command_list **head, command_list *node)
 {
-    if (!node)
+    command_list *temp = *head;
+    int i = 0;
+    static int callNum = 0;
+    if (++callNum == 1)
     {
-        fprintf(stderr, "ERROR: node is pointing to NULL");
+        temp->next = node->next;
+        temp->IC = node->IC;
+        temp->L = node->L;
+        temp->data = node->data;
+        for (i = 0; i < LINES; i++)
+        {
+            strcpy(temp->arr[i], node->arr[i]);
+        }
+        free_command_list(node);
         return;
     }
 
-    if (!head)
+    while (temp->next)
     {
-        head = node;
-        return;
+        temp = temp->next;
     }
-
-    while (head->next)
-    {
-        head = head->next;
-    }
-    head->next = node;
+    temp->next = node;
 }
 
 void print_command_list(command_list *head)
@@ -58,6 +63,7 @@ void print_command_list(command_list *head)
 void free_command_list(command_list *node)
 {
     command_list *tmp = node;
+    int i = 0;
 
     if (!node)
         return;
@@ -65,10 +71,9 @@ void free_command_list(command_list *node)
     while (tmp)
     {
         tmp = node->next;
-        free(node->arr[0]);
-        free(node->arr[1]);
-        free(node->arr[2]);
-        free(node->arr[3]);
+        for (i = 0; i < node->L; ++i) {
+            free(node->arr[i]);
+        }
         free(node->arr);
         free(node);
         node = tmp;

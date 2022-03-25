@@ -18,7 +18,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
             command_length += 1;
             arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
             arr[list_index] = encode_command_opcode(action_index);
-            insert_command_list(command_head, init_command_node(NULL, command_length, IC->data, false, arr));
+            insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
             IC->data += command_length;
             return;
         }
@@ -112,7 +112,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
                 else{
                     arr[list_index++] = encode_command_registers(-1, number, action_index, -1, dst);
                 }
-                insert_command_list(command_head, init_command_node(NULL, command_length, IC->data, false, arr));
+                insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
             }
             IC->data += command_length;
             free(label);
@@ -199,7 +199,7 @@ found2:
     }
     else arr[list_index++] = encode_command_registers(-1, -1, action_index, src, dst);
 
-    insert_command_list(command_head, init_command_node(NULL, command_length, IC->data, false, arr));
+    insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
     
     IC->data += command_length;
     free(label);

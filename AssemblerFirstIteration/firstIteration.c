@@ -336,6 +336,9 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister,
         while ((data = strtok(NULL, ",")))
         {
             length++;
+            if (length > LINES) {
+                arr = (char**)realloc(&arr, sizeof(char*) * length);
+            }
             if(contains_space(data, flagRegister)){
                 throw_error("Extraneous text!", line_number);
                 for (i = 0; i < list_index; i++)
@@ -362,12 +365,15 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister,
             arr[list_index++] = encode_immediate(num);
             printf("%s\n", arr[list_index - 1]);
         }
-        insert_command_list(head, init_command_node(NULL, length, DC->data, true, arr));
+        insert_command_list(&head, init_command_node(NULL, length, DC->data, true, arr));
         DC->data += length;
     }
     else
     {
         data = strtok(NULL, " \"");
+        if (strlen(data) > LINES) {
+            arr = (char**)realloc(&arr, sizeof(char*) * strlen(data));
+        }
         /*printf("%s\n", data);
         data = strtok(NULL, "\"");*/
         printf("%s String: \n", data);
@@ -378,7 +384,7 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister,
         }
         arr[list_index++] = encode_immediate(0);
         printf("%s\n", arr[list_index - 1]);
-        insert_command_list(head, init_command_node(NULL, strlen(data) + 1, DC->data, true, arr));
+        insert_command_list(&head, init_command_node(NULL, strlen(data) + 1, DC->data, true, arr));
 
         DC->data += strlen(data) + 1;
     }
