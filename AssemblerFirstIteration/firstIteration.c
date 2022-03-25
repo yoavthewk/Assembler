@@ -13,6 +13,7 @@ void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister *IC, 
     }
     updateSymbolList(head, IC);
     update_command_list(command_head, IC);
+    print_command_list(command_head);
     printSymbolList(head);
     fclose(fp);
 }

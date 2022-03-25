@@ -50,12 +50,18 @@ void insert_command_list(command_list **head, command_list *node)
 
 void print_command_list(command_list *head)
 {
+    int i = 0;
     if (!head)
         return;
 
     while (head)
     {
-        printf("%s, %s, %s, %s; IC=%d, L=%d\n", head->arr[0], head->arr[1], head->arr[2], head->arr[3], head->IC, head->L);
+        for (i = 0; i < head->L; i++)
+        {
+            puts(head->arr[i]);
+        }
+        
+        printf("IC=%d, L=%d\n", head->IC, head->L);
         head = head->next;
     }
 }
