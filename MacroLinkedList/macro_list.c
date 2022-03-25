@@ -32,16 +32,6 @@ MacroList* initNode(MacroList* next, char* name, char* content)
 */
 void freeListFromMemory(MacroList *head)
 {
-    /*
-    if (head)
-    {
-        freeListFromMemory(head->next);
-    }
-    free(head->m.data);
-    free(head->m.name);
-    free(head);
-    */
-
     MacroList* temp;
     while(head){
         temp = head;

@@ -21,19 +21,103 @@
 #define DATA 3
 
 /* Helper functions */
-void executeCommand();
+
+/**
+* @brief checks if an operand is using immediate addressing
+* @param line pointer to the line to check
+* @param number pointer to the number addressed
+* @param flagRegister pointer to the flag register
+* @return true if addressing method is immediate
+*/
 bool isImmediate(char *line, int *number, PSW *flagRegister);
+
+/**
+* @brief checks if an operand is using direct addressing
+* @param line pointer to the line to check
+* @param address pointer to the address
+* @param head pointer to the head of the symbol list
+* @return true if addressing method is direct
+*/
 bool isDirect(char *line, int *address, SymbolList *head);
+
+/**
+* @brief checks if an operand is using index addressing
+* @param line pointer to the line to check
+* @param label pointer to a label
+* @param flagRegister pointer to the special flag register
+* @param line_number number of current line
+* @return true if addressing method is index
+*/
 bool isIndex(char *line, char *label, int *index, PSW *flagRegister, int line_number);
+
+/**
+* @brief checks if an operand is using register-direct addressing
+* @param line pointer to the line to check
+* @param number the number addressed
+* @param flagRegister pointer to the special flag register
+* @return true if operand is using register-direct addressing
+*/
 bool isRegisterDirect(char *line, int *number, PSW *flagRegister);
+
+/**
+* @brief throw an error message
+* @param message the error
+* @param line_number the no. of the line in which the error occured
+*/
 void throw_error(char *message, int line_number);
+
+/**
+* @brief encoding an immediate operand
+* @param num the immediate number
+* @return the encoded operand
+*/
 char *encode_immediate(int num);
+
+/**
+* @brief encoding the opcode
+* @param action_index index of the action in the action table
+* @return the encoding of the opcode
+*/
 char *encode_command_opcode(int action_index);
+
+/**
+* @brief encoding the registers
+* @param src
+* @param dst
+* @param action_index index of the action in the action table
+* @param src_addressing
+* @param dst_addressing
+* @param two_operands true if the command has two operands
+*/
 char *encode_command_registers(int src, int dst, int action_index, int src_addressing, int dst_addressing, bool two_operands);
+
+/**
+* @brief getting a number from a string
+* @param num the number
+* @param flagRegister a pointer to the special flag register
+* @return the number from the string
+*/
 int getNumber(char *num, PSW *flagRegister);
+
+/**
+* @brief checks whether a line is empty
+* @param line pointer to the line to check
+* @return true if empty
+*/
 bool is_empty_line(char *line);
 
 /* Execution functions */
+/**
+* @brief this function parses a command line
+* @param line the line to parse
+* @param head pointer to the start of the symbol list
+* @param action_index index of the action in the action table
+* @param line_number the number of the current line
+* @param IC pointer to the instruction counter register
+* @param DC pointer to the data counter register
+* @param flagRegister pointer to the special flag register
+* @param command_head pointer to the head of the command list
+*/
 void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flagRegister, command_list *command_head);
 
 struct
