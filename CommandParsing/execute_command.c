@@ -184,20 +184,21 @@ found2:
     /* encode */
     arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
     arr[list_index++] = encode_command_opcode(action_index);
+
+    arr[list_index++] = src == REGISTER_DIRECT && dst == REGISTER_DIRECT ? encode_command_registers(number1, number, action_index, src, dst) 
+    : src == REGISTER_DIRECT ? encode_command_registers(number1, 0, action_index, src, dst) : dst == REGISTER_DIRECT 
+    ? encode_command_registers(0, number, action_index, src, dst) : encode_command_registers(0, 0, action_index, src, dst);
+
     if(src == IMMEDIATE && dst == IMMEDIATE){
-        arr[list_index++] = encode_command_registers(-1, -1, action_index, src, dst);
         arr[list_index++] = encode_immediate(number);
         arr[list_index++] = encode_immediate(number1);
     }
     else if(src == IMMEDIATE){
-        arr[list_index++] = number1 ? encode_command_registers(number1, -1, action_index, src, dst) : encode_command_registers(-1, -1, action_index, src, dst);
         arr[list_index++] = encode_immediate(number);
     }
     else if(dst == IMMEDIATE){
-        arr[list_index++] = number ? encode_command_registers(-1, number, action_index, src, dst) : encode_command_registers(-1, -1, action_index, src, dst);
         arr[list_index++] = encode_immediate(number1);
     }
-    else arr[list_index++] = encode_command_registers(-1, -1, action_index, src, dst);
 
     insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
     
