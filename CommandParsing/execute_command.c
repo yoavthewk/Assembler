@@ -6,9 +6,9 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     char *label = NULL;
     char *tok, line_backup[MAX_LEN] = {0}, tmp_tok[MAX_LEN] = {0};
     int command_length = 0;
-    char** arr = NULL;
+    char **arr = NULL;
     int src, dst;
-    
+
     /* firstly, we check if the command has any continuation */
     if (line[0] != ' ')
     {
@@ -16,7 +16,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         if (!action_table[action_index].operands)
         {
             command_length += 1;
-            arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
+            arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
             arr[list_index] = encode_command_opcode(action_index);
             insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
             IC->data += command_length;
@@ -32,7 +32,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         throw_error("Extraneous text!", line_number);
         return;
     }
-    
+
     memmove(line, line + 1, strlen(line)); /* skip the space */
     strcpy(line_backup, line);
     command_length += 2;
@@ -42,8 +42,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     for (i = 0; i < NUM_OF_ADDRESSING; i++)
     {
         strcpy(tmp_tok, tok);
-        if ((action_table[action_index].operands == 2 && action_table[action_index].first_operand_valid[i])
-            || (action_table[action_index].operands == 1 && action_table[action_index].second_operand_valid[i]))
+        if ((action_table[action_index].operands == 2 && action_table[action_index].first_operand_valid[i]) || (action_table[action_index].operands == 1 && action_table[action_index].second_operand_valid[i]))
         {
             switch (i)
             {
@@ -85,7 +84,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     /* break */
     free(label);
     return;
-    
+
 found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
     if (flagRegister->ERR)
     {
@@ -95,22 +94,26 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     dst = i; /* get the addressing */
 
     strcpy(line, line_backup);
-    if(action_table[action_index].operands == 2) strtok(line, ",");
+    if (action_table[action_index].operands == 2)
+        strtok(line, ",");
     tok = strtok(NULL, ","); /* get the rest */
     if (!tok || tok[0] == '\n' || !tok[0])
     {
         if (action_table[action_index].operands == 1)
         {
             /* encode */
-            if(dst == IMMEDIATE || dst == REGISTER_DIRECT){
-                arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
+            if (dst == IMMEDIATE || dst == REGISTER_DIRECT)
+            {
+                arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
                 arr[list_index++] = encode_command_opcode(action_index);
-                if(dst == IMMEDIATE){
-                    arr[list_index++] = encode_command_registers(-1, -1, action_index, -1, dst);
+                if (dst == IMMEDIATE)
+                {
+                    arr[list_index++] = encode_command_registers(0, 0, action_index, 0, dst, false);
                     arr[list_index++] = encode_immediate(number);
                 }
-                else{
-                    arr[list_index++] = encode_command_registers(-1, number, action_index, -1, dst);
+                else
+                {
+                    arr[list_index++] = encode_command_registers(0, number, action_index, 0, dst, false);
                 }
                 insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
             }
@@ -122,7 +125,9 @@ found: /* it means the first operand is being addressed in a valid way, therefor
         throw_error("Not enough operands passsed!", line_number);
         free(label);
         return;
-    } else if(action_table[action_index].operands == 1){
+    }
+    else if (action_table[action_index].operands == 1)
+    {
         throw_error("Extraneous text!", line_number);
         free(label);
         return;
@@ -175,33 +180,40 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
 found2:
-    if(flagRegister->ERR){
+    if (flagRegister->ERR)
+    {
         free(label);
         return;
     }
     src = i;
 
+
     /* encode */
-    arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
+    arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
     arr[list_index++] = encode_command_opcode(action_index);
 
-    arr[list_index++] = src == REGISTER_DIRECT && dst == REGISTER_DIRECT ? encode_command_registers(number1, number, action_index, src, dst) 
-    : src == REGISTER_DIRECT ? encode_command_registers(number1, 0, action_index, src, dst) : dst == REGISTER_DIRECT 
-    ? encode_command_registers(0, number, action_index, src, dst) : encode_command_registers(0, 0, action_index, src, dst);
+    arr[list_index++] = src == REGISTER_DIRECT && dst == REGISTER_DIRECT ? encode_command_registers(number1, number, action_index, src, dst, true)
+                        : src == REGISTER_DIRECT                         ? encode_command_registers(number1, 0, action_index, src, dst, true)
+                        : dst == REGISTER_DIRECT
+                            ? encode_command_registers(0, number, action_index, src, dst, true)
+                            : encode_command_registers(0, 0, action_index, src, dst, true);
 
-    if(src == IMMEDIATE && dst == IMMEDIATE){
+    if (src == IMMEDIATE && dst == IMMEDIATE)
+    {
         arr[list_index++] = encode_immediate(number);
         arr[list_index++] = encode_immediate(number1);
     }
-    else if(src == IMMEDIATE){
+    else if (src == IMMEDIATE)
+    {
         arr[list_index++] = encode_immediate(number);
     }
-    else if(dst == IMMEDIATE){
+    else if (dst == IMMEDIATE)
+    {
         arr[list_index++] = encode_immediate(number1);
     }
 
     insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
-    
+
     IC->data += command_length;
     free(label);
     return;

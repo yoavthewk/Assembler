@@ -29,7 +29,7 @@ bool isRegisterDirect(char *line, int *number, PSW *flagRegister);
 void throw_error(char *message, int line_number);
 char *encode_immediate(int num);
 char *encode_command_opcode(int action_index);
-char *encode_command_registers(int src, int dst, int action_index, int src_addressing, int dst_addressing);
+char *encode_command_registers(int src, int dst, int action_index, int src_addressing, int dst_addressing, bool two_operands);
 int getNumber(char *num, PSW *flagRegister);
 bool is_empty_line(char *line);
 

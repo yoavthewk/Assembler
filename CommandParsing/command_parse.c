@@ -156,7 +156,7 @@ char *encode_command_opcode(int action_index)
 	/* insert opcode */
 	for (; i < WORD_SIZE; i++)
 	{
-		bin_str[i] = ((i - ARE_SIZE + 1) == action_table[action_index].op_code) ? '1' : '0';
+		bin_str[i] = (i == WORD_SIZE - action_table[action_index].op_code - 1) ? '1' : '0';
 	}
 
 	/* insert terminator */
@@ -165,16 +165,26 @@ char *encode_command_opcode(int action_index)
 	return bin_str;
 }
 
-char *encode_command_registers(int src, int dst, int action_index, int src_addressing, int dst_addressing)
+char *encode_command_registers(int src, int dst, int action_index, int src_addressing, int dst_addressing, bool two_operands)
 {
 	const size_t ADDRESSING = 2;
 	const size_t REGISTER = 4;
 	const size_t FUNCT = 4;
 	const size_t ARE_SIZE = 3;
 	const size_t A = 1;
-
+	src_addressing = src_addressing == 3 ? 1 : src_addressing == 1 ? 3 : src_addressing;
+    dst_addressing = dst_addressing == 3 ? 1 : dst_addressing == 1 ? 3 : dst_addressing;
+    if (two_operands) {
+        src ^= dst;
+        dst ^= src;
+        src ^= dst;
+        src_addressing ^= dst_addressing;
+        dst_addressing ^= src_addressing;
+        src_addressing ^= dst_addressing;
+    }
+	
 	char *bin_str = (char *)malloc(WORD_SIZE + 1);
-	unsigned int i, mask;
+	unsigned int i, mask, j;
 
 	/* insert ARE */
 	for (i = 0; i < ARE_SIZE + 1; i++)
@@ -183,37 +193,37 @@ char *encode_command_registers(int src, int dst, int action_index, int src_addre
 	}
 
 	/* insert funct */
-	for (; i < ARE_SIZE + 1 + FUNCT; i++)
+	for (j = 0; j < FUNCT; i++, j++)
 	{
-		mask = 1u << (FUNCT - 1 - (i - (ARE_SIZE + 1)));
+		mask = 1u << (FUNCT - 1 - j);
 		bin_str[i] = (action_table[action_index].funct & mask) ? '1' : '0';
 	}
 
 	/* insert src */
-	for (; i < ARE_SIZE + 1 + FUNCT + REGISTER; i++)
+	for (j = 0; j < REGISTER; i++, j++)
 	{
-		mask = 1u << (REGISTER - 1 - (i - (ARE_SIZE + 1 + FUNCT)));
+		mask = 1u << (REGISTER - 1 - j);
 		bin_str[i] = (src & mask) ? '1' : '0';
 	}
 
 	/* insert addressing */
-	for (; i < ARE_SIZE + 1 + FUNCT + REGISTER + ADDRESSING; i++)
+	for (j = 0; j < ADDRESSING; i++, j++)
 	{
-		mask = 1u << (ADDRESSING - 1 - (i - (ARE_SIZE + 1 + FUNCT + REGISTER)));
+		mask = 1u << (ADDRESSING - 1 - j);
 		bin_str[i] = (src_addressing & mask) ? '1' : '0';
 	}
 
 	/* insert dst */
-	for (; i < ARE_SIZE + 1 + FUNCT + 2 * REGISTER + ADDRESSING; i++)
+	for (j = 0; j < REGISTER; i++, j++)
 	{
-		mask = 1u << (REGISTER - 1 - (i - (ARE_SIZE + 1 + FUNCT + REGISTER + ADDRESSING)));
+		mask = 1u << (REGISTER - 1 - j);
 		bin_str[i] = (dst & mask) ? '1' : '0';
 	}
 
 	/* insert addressing */
-	for (; i < WORD_SIZE; i++)
+	for (j = 0; j < ADDRESSING; i++, j++)
 	{
-		mask = 1u << (ADDRESSING - 1 - (i - (WORD_SIZE - ADDRESSING)));
+		mask = 1u << (ADDRESSING - 1 - j);
 		bin_str[i] = (dst_addressing & mask) ? '1' : '0';
 	}
 
