@@ -205,7 +205,7 @@ found2:
     }
     else if (src == IMMEDIATE)
     {
-        arr[list_index++] = encode_immediate(number);
+        arr[list_index + 2] = encode_immediate(number); /* we leave 2 spots for the labels */
     }
     else if (dst == IMMEDIATE)
     {
