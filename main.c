@@ -7,6 +7,8 @@ int main(int argc, char *argv[])
     FILE *fp; /*, *newMacroFile*/
     MacroList *macroHead;
     SymbolList *symbolHead;
+    command_list* command_head;
+
     int num_of_files = argc - 1, file_index = 1, line_number = 0;
     bool test[] = {false, false, false, true}; /* delete this later */
     hregister *IC = (hregister *)malloc(sizeof(hregister));
@@ -22,6 +24,7 @@ int main(int argc, char *argv[])
     }
     macroHead = initNode(NULL, "someMacro", "NULL");
     symbolHead = initSymbolNode(NULL, "someSymbol", 'h', 220, 10, test);
+    command_head = NULL;
     /* open each file and process it */
     while (num_of_files > 0)
     {
@@ -35,7 +38,7 @@ int main(int argc, char *argv[])
             fp = open_file(file_name, true);
             if (fp)
             {
-                firstIteration(file_name, fp, symbolHead, IC, DC, flagRegister);
+                firstIteration(file_name, fp, symbolHead, IC, DC, flagRegister, command_head);
             }
         }
         else
@@ -49,5 +52,6 @@ int main(int argc, char *argv[])
     free(DC);
     freeSymbolList(symbolHead);
     freeListFromMemory(macroHead);
+    free_command_list(command_head);
     return 0;
 }

@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "../AssemblerFirstIteration/symbol_list.h"
 #include "../Hardware/hardware.h"
+#include "../AssemblerFirstIteration/command_list.h"
 
 #define MAX_LEN 83
 #define NUM_OF_ADDRESSING 4
@@ -27,11 +28,12 @@ bool isRegisterDirect(char *line, int *number, PSW *flagRegister);
 void throw_error(char *message, int line_number);
 char *encode_immediate(int num);
 char *encode_command_opcode(int action_index);
+char *encode_command_registers(int src, int dst, int action_index, int src_addressing, int dst_addressing);
 int getNumber(char *num, PSW *flagRegister);
 bool is_empty_line(char *line);
 
 /* Execution functions */
-void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flagRegister);
+void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flagRegister, command_list *command_head);
 
 struct
 {

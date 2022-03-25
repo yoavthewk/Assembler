@@ -1,11 +1,13 @@
 #include "exec.h"
 
-void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flagRegister)
+void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flagRegister, command_list *command_head)
 {
-    int i, number, index, address;
+    int i, number, number1, index, address, list_index;
     char *label = NULL;
     char *tok, line_backup[MAX_LEN] = {0};
     int command_length = 0;
+    char** arr = {0};
+    int src, dst;
     
     /* firstly, we check if the command has any continuation */
     if (line[0] != ' ')
@@ -14,8 +16,9 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         if (!action_table[action_index].operands)
         {
             command_length += 1;
-            IC->data++;
-            /* encode and return. */
+            arr[list_index] = encode_command_opcode(action_index);
+            insert_command_list(command_head, init_command_node(NULL, command_length, IC->data, false, arr));
+            IC->data += command_length;
             return;
         }
         /* if not, we raise an error and return */
@@ -88,6 +91,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
         free(label);
         return;
     }
+    dst = i; /* get the addressing */
 
     strcpy(line, line_backup);
     if(action_table[action_index].operands == 2) strtok(line, ",");
@@ -97,6 +101,17 @@ found: /* it means the first operand is being addressed in a valid way, therefor
         if (action_table[action_index].operands == 1)
         {
             /* encode */
+            if(dst == IMMEDIATE || dst == REGISTER_DIRECT){
+                arr[list_index++] = encode_command_opcode(action_index);
+                if(dst == IMMEDIATE){
+                    arr[list_index++] = encode_command_registers(-1, -1, action_index, -1, dst);
+                    arr[list_index++] = encode_immediate(number);
+                }
+                else{
+                    arr[list_index++] = encode_command_registers(-1, number, action_index, -1, dst);
+                }
+                insert_command_list(command_head, init_command_node(NULL, command_length, IC->data, false, arr));
+            }
             IC->data += command_length;
             free(label);
             return;
@@ -123,7 +138,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
             switch (i)
             {
             case IMMEDIATE:
-                if (isImmediate(tok, &number, flagRegister))
+                if (isImmediate(tok, &number1, flagRegister))
                 {
                     command_length += 1; /* add the word of the immediate */
                     goto found2;
@@ -137,7 +152,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
                 }
                 break;
             case REGISTER_DIRECT:
-                if (isRegisterDirect(tok, &number, flagRegister))
+                if (isRegisterDirect(tok, &number1, flagRegister))
                 {
                     goto found2;
                 }
@@ -162,6 +177,29 @@ found2:
         free(label);
         return;
     }
-    IC->data += flagRegister->ERR ? 0 : command_length;
+    src = i;
+
+    /* encode */
+    
+    arr[list_index++] = encode_command_opcode(action_index);
+    if(src == IMMEDIATE && dst == IMMEDIATE){
+        arr[list_index++] = encode_command_registers(-1, -1, action_index, src, dst);
+        arr[list_index++] = encode_immediate(number);
+        arr[list_index++] = encode_immediate(number1);
+    }
+    else if(src == IMMEDIATE){
+        arr[list_index++] = number1 ? encode_command_registers(number1, -1, action_index, src, dst) : encode_command_registers(-1, -1, action_index, src, dst);
+        arr[list_index++] = encode_immediate(number);
+    }
+    else if(dst == IMMEDIATE){
+        arr[list_index++] = number ? encode_command_registers(-1, number, action_index, src, dst) : encode_command_registers(-1, -1, action_index, src, dst);
+        arr[list_index++] = encode_immediate(number1);
+    }
+    else arr[list_index++] = encode_command_registers(-1, -1, action_index, src, dst);
+
+    insert_command_list(command_head, init_command_node(NULL, command_length, IC->data, false, arr));
+    
+    IC->data += command_length;
     free(label);
+    return;
 }

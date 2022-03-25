@@ -1,24 +1,27 @@
-#include "CommandList.h"
+#include "command_list.h"
 
-CommandList *initCommandNode(CommandList *next, int L, int IC, char **strArray)
+command_list *init_command_node(command_list *next, int L, int IC, bool data, char **str_array)
 {
     int i = 0;
-    CommandList *tmp = (CommandList *)malloc(sizeof(CommandList));
+    command_list *tmp = (command_list *)malloc(sizeof(command_list));
 
     tmp->IC = IC;
     tmp->L = L;
     tmp->arr = (char **)malloc(sizeof(char *) * LINES);
+    tmp->data = data;
 
     for (i = 0; i < LINES; i++)
     {
         tmp->arr[i] = (char *)calloc(sizeof(char) * ENCODE_LENGTH, sizeof(char));
-        if (strArray[i])
-            strcpy(tmp->arr[i], strArray[i]);
+        if (str_array[i]){
+            strcpy(tmp->arr[i], str_array[i]);
+            free(str_array[i]);
+        }
     }
     return tmp;
 }
 
-void insertCommandLast(CommandList *head, CommandList *node)
+void insert_command_list(command_list *head, command_list *node)
 {
     if (!node)
     {
@@ -39,7 +42,7 @@ void insertCommandLast(CommandList *head, CommandList *node)
     head->next = node;
 }
 
-void printCommandList(CommandList *head)
+void print_command_list(command_list *head)
 {
     if (!head)
         return;
@@ -51,9 +54,9 @@ void printCommandList(CommandList *head)
     }
 }
 
-void freeCommandList(CommandList *node)
+void free_command_list(command_list *node)
 {
-    CommandList *tmp = node;
+    command_list *tmp = node;
 
     if (!node)
         return;

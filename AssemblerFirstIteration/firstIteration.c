@@ -1,17 +1,18 @@
 #include "firstIteration.h"
 
 
-void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister *IC, hregister *DC, PSW *flagRegister)
+void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister *IC, hregister *DC, PSW *flagRegister, command_list *command_head)
 {
     int line_number = 0;
     char *line;
 
     while ((line = get_next_line(fp)) != NULL)
     {
-        process_line(line, head, line_number++, IC, DC, flagRegister);
+        process_line(line, head, line_number++, IC, DC, flagRegister, command_head);
         free(line);
     }
     updateSymbolList(head, IC);
+    update_command_list(command_head, IC);
     printSymbolList(head);
     fclose(fp);
 }
@@ -19,7 +20,7 @@ void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister *IC, 
 /* 
     This method processes the line given and analyzes it 
 */
-void process_line(char *line, SymbolList *head, int line_number, hregister *IC, hregister *DC, PSW *flagRegister)
+void process_line(char *line, SymbolList *head, int line_number, hregister *IC, hregister *DC, PSW *flagRegister, command_list *command_head)
 {
     /* Initialization of variables */
     int i;
@@ -45,7 +46,7 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     strcpy(line_backup, line);
     
     /* check if we need to handle data and if so, process it */
-    if (handle_data(line_backup, head, IC, DC, line_number, flagRegister))
+    if (handle_data(line_backup, head, IC, DC, line_number, flagRegister, command_head))
     {
         free(line);
         line = NULL;
@@ -130,7 +131,7 @@ void process_line(char *line, SymbolList *head, int line_number, hregister *IC, 
     strcpy(line, line_backup);
     
     /* if it is, we call the function that validates and encodes the command */
-    parse_command(line, head, i, line_number, IC, DC, flagRegister);
+    parse_command(line, head, i, line_number, IC, DC, flagRegister, command_head);
     free(line);
 }
 
@@ -255,6 +256,18 @@ void updateSymbolList(SymbolList *head, hregister *IC)
     }
 }
 
+void update_command_list(command_list *head, hregister *IC){
+    command_list *temp = head;
+    while (temp)
+    {
+        if (temp->data)
+        {
+            temp->IC += IC->data;
+        }
+        temp = temp->next;
+    }
+}
+
 void contains_label(char *line, SymbolList *head, int line_number, PSW *flagRegister)
 {
     char *canBeLabel = strtok(line, " "); /* get the first (or only) word in the line. */
@@ -277,7 +290,7 @@ void contains_label(char *line, SymbolList *head, int line_number, PSW *flagRegi
     }
 }
 
-bool handle_data(char *line, SymbolList *head, hregister *IC, hregister *DC, int line_number, PSW *flagRegister)
+bool handle_data(char *line, SymbolList *head, hregister *IC, hregister *DC, int line_number, PSW *flagRegister, command_list* command_head)
 {
     char lineBackup[MAX_LEN] = {0}, name[MAX_LEN] = {0};
     char *canBeData = NULL; /* get the first (or only) word in the line. */
@@ -303,17 +316,18 @@ bool handle_data(char *line, SymbolList *head, hregister *IC, hregister *DC, int
             insertSymbol(&head, initSymbolNode(NULL, name, DC->data, 0, 0, att));
         }
         /* add to data table */
-        process_data(line, DC, line_number, flagRegister);
+        process_data(line, DC, line_number, flagRegister, command_head);
         return true;
     }
     return false;
 }
 
-void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister)
+void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister, command_list* head)
 {
-    int num, i;
+    int num, i, list_index = 0, length = 0;
     char *binary_line;
     char *data = strtok(line, " "); /* get the first (or only) word in the line. */
+    char** arr = {0};
     data = flagRegister->SYM ? strtok(NULL, " ") : data;
     if (!strcmp(data, ".data"))
     {
@@ -321,6 +335,7 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister)
         
         while ((data = strtok(NULL, ",")))
         {
+            length++;
             if(contains_space(data, flagRegister)){
                 throw_error("Extraneous text!", line_number);
                 return;
@@ -333,11 +348,11 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister)
                 return;
             }
             printf("num: %d\n", num);
-            binary_line = encode_immediate(num);
-            printf("%s\n", binary_line);
-            free(binary_line);
-            DC->data++;
+            arr[list_index++] = encode_immediate(num);
+            printf("%s\n", arr[list_index]);
         }
+        insert_command_list(head, init_command_node(NULL, length, DC->data, true, arr));
+        DC->data += length;
     }
     else
     {
@@ -347,13 +362,13 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister)
         printf("%s String: \n", data);
         for (i = 0; data[i] != 0; i++)
         {
-            binary_line = encode_immediate(data[i]);
-            printf("%s\n", binary_line);
-            free(binary_line);
+            arr[list_index++] = encode_immediate(data[i]);
+            printf("%s\n", arr[list_index]);
         }
-        binary_line = encode_immediate(0);
+        arr[list_index++] = encode_immediate(0);
         printf("%s\n", binary_line);
-        free(binary_line);
+        insert_command_list(head, init_command_node(NULL, strlen(data) + 1, DC->data, true, arr));
+
         DC->data += strlen(data) + 1;
     }
 }

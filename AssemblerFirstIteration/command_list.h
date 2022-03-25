@@ -4,16 +4,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define ENCODE_LENGTH 21
 #define LINES 4
 
-typedef struct CommandList {
-    struct CommandList *next;
+typedef struct command_list {
+    struct command_list *next;
     int L;
     int IC;
+    bool data;
     char** arr;
-} CommandList;
+} command_list;
 
 /**
  * This function create a new list node.
@@ -22,25 +24,25 @@ typedef struct CommandList {
  * @param next optional, a pointer to the next node
  * @return a new node for the list
  */
-CommandList *initCommandNode(CommandList* next, int L, int IC, char** strArray);
+command_list *init_command_node(command_list* next, int L, int IC, bool data, char** str_array);
 
 /**
  * This function inserts a node to the end of the list
  * @param head a pointer to the start of the list
  * @param node the node to insert
  */
-void insertCommandLast(CommandList *head, CommandList *node);
+void insert_command_list(command_list *head, command_list *node);
 
 /**
  * This function frees the list from the given node onwards
  * @param node the node to free from
  */
-void freeCommandList(CommandList *node);
+void free_command_list(command_list *node);
 
 /**
  * This function prints a string linked list
  * @param head a pointer to the start of the list
  */
-void printCommandList(CommandList *head);
+void print_command_list(command_list *head);
 
 #endif /* COMMAND_LIST_H */

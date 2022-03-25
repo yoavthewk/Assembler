@@ -1,6 +1,6 @@
 CFLAGS = -c -ansi -Wall -pedantic -m32 -g
 EXEFLAGS = -ansi -Wall -pedantic -g -m32
-OBJ_SRC = main.o firstIteration.o macro_parsing.o files.o symbol_list.o line_parsing.o execute_command.o command_parse.o macro_list.o
+OBJ_SRC = main.o firstIteration.o macro_parsing.o files.o symbol_list.o line_parsing.o execute_command.o command_parse.o macro_list.o command_list.o
 CC = gcc
 OUT = prog
  
@@ -33,7 +33,10 @@ execute_command.o: CommandParsing/execute_command.c CommandParsing/exec.h
 
 symbol_list.o: AssemblerFirstIteration/symbol_list.c AssemblerFirstIteration/symbol_list.h
 	$(CC) $(CFLAGS) AssemblerFirstIteration/symbol_list.c -std=c90
-    
+
+command_list.o: AssemblerFirstIteration/command_list.c AssemblerFirstIteration/command_list.h
+	$(CC) $(CFLAGS) AssemblerFirstIteration/command_list.c -std=c90
+  
 clean:
 	rm -f $(OBJ_SRC) $(OUT)
  
