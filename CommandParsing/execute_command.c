@@ -2,11 +2,11 @@
 
 void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flagRegister, command_list *command_head)
 {
-    int i, number, number1, index, address, list_index;
+    int i = 0, number = 0, number1 = 0, index = 0, address = 0, list_index = 0;
     char *label = NULL;
-    char *tok, line_backup[MAX_LEN] = {0};
+    char *tok, line_backup[MAX_LEN] = {0}, tmp_tok[MAX_LEN] = {0};
     int command_length = 0;
-    char** arr = {0};
+    char** arr = NULL;
     int src, dst;
     
     /* firstly, we check if the command has any continuation */
@@ -16,6 +16,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
         if (!action_table[action_index].operands)
         {
             command_length += 1;
+            arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
             arr[list_index] = encode_command_opcode(action_index);
             insert_command_list(command_head, init_command_node(NULL, command_length, IC->data, false, arr));
             IC->data += command_length;
@@ -37,10 +38,10 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     command_length += 2;
     label = (char *)calloc(MAX_LEN, sizeof(char));
     tok = strtok(line, ",");
-
+    strcpy(tmp_tok, tok);
     for (i = 0; i < NUM_OF_ADDRESSING; i++)
     {
-        strcpy(line, tok);
+        strcpy(tmp_tok, tok);
         if ((action_table[action_index].operands == 2 && action_table[action_index].first_operand_valid[i])
             || (action_table[action_index].operands == 1 && action_table[action_index].second_operand_valid[i]))
         {
@@ -75,7 +76,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
                 break;
             }
         }
-        strcpy(tok, line);
+        strcpy(tok, tmp_tok);
     }
 
     /* alert error */
@@ -102,6 +103,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
         {
             /* encode */
             if(dst == IMMEDIATE || dst == REGISTER_DIRECT){
+                arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
                 arr[list_index++] = encode_command_opcode(action_index);
                 if(dst == IMMEDIATE){
                     arr[list_index++] = encode_command_registers(-1, -1, action_index, -1, dst);
@@ -127,7 +129,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     }
 
     strcpy(line_backup, tok);
-
+    strcpy(tmp_tok, tok);
     /* we can just use strtok to get to the , and then to the rest of the word.
     /* encode the first operand with what we found */
     /* afterwards, do the same for the rest */
@@ -166,7 +168,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
                 break;
             }
         }
-        strcpy(tok, line_backup);
+        strcpy(tok, tmp_tok);
     }
 
     /* alert error and break */
@@ -180,7 +182,7 @@ found2:
     src = i;
 
     /* encode */
-    
+    arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
     arr[list_index++] = encode_command_opcode(action_index);
     if(src == IMMEDIATE && dst == IMMEDIATE){
         arr[list_index++] = encode_command_registers(-1, -1, action_index, src, dst);

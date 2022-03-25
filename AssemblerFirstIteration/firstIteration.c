@@ -4,7 +4,7 @@
 void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister *IC, hregister *DC, PSW *flagRegister, command_list *command_head)
 {
     int line_number = 0;
-    char *line;
+    char *line = NULL;
 
     while ((line = get_next_line(fp)) != NULL)
     {
@@ -23,9 +23,9 @@ void firstIteration(char *file_name, FILE *fp, SymbolList *head, hregister *IC, 
 void process_line(char *line, SymbolList *head, int line_number, hregister *IC, hregister *DC, PSW *flagRegister, command_list *command_head)
 {
     /* Initialization of variables */
-    int i;
+    int i = 0;
     size_t offset = 0;
-    char *name, *tok;
+    char *name = NULL, *tok = NULL;
     char line_backup[MAX_LEN] = {0};
     bool att[] = {false, false, false, false};
     flagRegister->SYM = 0;
@@ -327,7 +327,7 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister,
     int num, i, list_index = 0, length = 0;
     char *binary_line;
     char *data = strtok(line, " "); /* get the first (or only) word in the line. */
-    char** arr = {0};
+    char** arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
     data = flagRegister->SYM ? strtok(NULL, " ") : data;
     if (!strcmp(data, ".data"))
     {
@@ -338,6 +338,12 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister,
             length++;
             if(contains_space(data, flagRegister)){
                 throw_error("Extraneous text!", line_number);
+                for (i = 0; i < list_index; i++)
+                {
+                    free(arr[i]);
+                }
+                
+                free(arr);
                 return;
             }
             num = getNumber(data, flagRegister);
@@ -345,11 +351,16 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister,
             {
                 /* alert error */
                 throw_error("Invalid number entered!", line_number);
+                for (i = 0; i < list_index; i++)
+                {
+                    free(arr[i]);
+                }
+                free(arr);
                 return;
             }
             printf("num: %d\n", num);
             arr[list_index++] = encode_immediate(num);
-            printf("%s\n", arr[list_index]);
+            printf("%s\n", arr[list_index - 1]);
         }
         insert_command_list(head, init_command_node(NULL, length, DC->data, true, arr));
         DC->data += length;
@@ -363,10 +374,10 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flagRegister,
         for (i = 0; data[i] != 0; i++)
         {
             arr[list_index++] = encode_immediate(data[i]);
-            printf("%s\n", arr[list_index]);
+            printf("%s\n", arr[list_index - 1]);
         }
         arr[list_index++] = encode_immediate(0);
-        printf("%s\n", binary_line);
+        printf("%s\n", arr[list_index - 1]);
         insert_command_list(head, init_command_node(NULL, strlen(data) + 1, DC->data, true, arr));
 
         DC->data += strlen(data) + 1;

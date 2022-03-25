@@ -3,11 +3,11 @@
 command_list *init_command_node(command_list *next, int L, int IC, bool data, char **str_array)
 {
     int i = 0;
-    command_list *tmp = (command_list *)malloc(sizeof(command_list));
+    command_list *tmp = (command_list *)calloc(sizeof(command_list), sizeof(command_list));
 
     tmp->IC = IC;
     tmp->L = L;
-    tmp->arr = (char **)malloc(sizeof(char *) * LINES);
+    tmp->arr = (char**)calloc(sizeof(char*) * LINES, sizeof(char*));
     tmp->data = data;
 
     for (i = 0; i < LINES; i++)
@@ -18,6 +18,7 @@ command_list *init_command_node(command_list *next, int L, int IC, bool data, ch
             free(str_array[i]);
         }
     }
+    free(str_array);
     return tmp;
 }
 
@@ -60,7 +61,7 @@ void free_command_list(command_list *node)
 
     if (!node)
         return;
-        
+    
     while (tmp)
     {
         tmp = node->next;

@@ -9,6 +9,7 @@
 
 #define MAX_LEN 83
 #define NUM_OF_ADDRESSING 4
+#define MAX_WORD_SIZE 4
 #define IMMEDIATE 0
 #define REGISTER_DIRECT 1
 #define INDEX 2

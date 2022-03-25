@@ -115,8 +115,8 @@ char* encode_immediate(int num){
 	const size_t BITS = 16;
 	const size_t ARE_SIZE = 3;
 	const size_t A = 1;
-	char* bin_str = (char*)malloc(WORD_SIZE);
-	unsigned int i, mask;
+	char* bin_str = (char*)calloc(WORD_SIZE + 1, sizeof(char));
+	unsigned int i, mask = 0;
 
 	/* insert ARE */
 	for(i = 0; i < ARE_SIZE + 1; i++){
@@ -134,7 +134,7 @@ char* encode_immediate(int num){
 }
 
 char* encode_command_opcode(int action_index){
-	char* bin_str = (char*)malloc(WORD_SIZE + 1);
+	char* bin_str = (char*)calloc(WORD_SIZE + 1, sizeof(char));
 	unsigned int i;
 
 	/* insert opcode */
@@ -158,7 +158,7 @@ char *encode_command_registers(int src, int dst, int action_index, int src_addre
 	const size_t ARE_SIZE = 3;
 	const size_t A = 1;
 
-	char* bin_str = (char*)malloc(WORD_SIZE);
+	char* bin_str = (char*)malloc(WORD_SIZE + 1);
 	unsigned int i, mask;
 
 	/* insert ARE */
