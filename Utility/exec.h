@@ -120,6 +120,10 @@ bool is_empty_line(char *line);
 */
 void parse_command(char *line, symbol_list *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head);
 
+char *encode_label_value(int value);
+
+char *encode_label_offset(int value);
+
 struct
 {
 	char name[8];

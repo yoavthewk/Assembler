@@ -46,4 +46,15 @@ void write_line(FILE *fp, char *input);
  */
 int clear_file(char *file_name);
 
+/**
+ * @brief Open an object file
+ * @param file_name the name of the file 
+ * @return FILE* of the object file
+ */
+FILE* create_object_file(char* file_name);
+
+FILE *create_entry_file(char *file_name);
+
+FILE *create_extern_file(char *file_name);
+
 #endif /* FILES_H */
