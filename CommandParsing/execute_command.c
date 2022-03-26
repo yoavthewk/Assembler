@@ -47,27 +47,27 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
             switch (i)
             {
             case IMMEDIATE:
-                if (isImmediate(tok, &number, flag_register))
+                if (is_immediate(tok, &number, flag_register))
                 {
                     command_length++; /* add the word of the immediate */
                     goto found;
                 }
                 break;
             case INDEX:
-                if (isIndex(tok, label, &index, flag_register, line_number))
+                if (is_index(tok, label, &index, flag_register, line_number))
                 {
                     command_length += 2; /* add the base address and the offset */
                     goto found;
                 }
                 break;
             case REGISTER_DIRECT:
-                if (isRegisterDirect(tok, &number, flag_register))
+                if (is_register_direct(tok, &number, flag_register))
                 {
                     goto found;
                 }
                 break;
             case DIRECT:
-                if (isDirect(tok, &address, head))
+                if (is_direct(tok, &address, head))
                 {
                     command_length += 2; /* add base and offset */
                     goto found;
@@ -149,27 +149,27 @@ found: /* it means the first operand is being addressed in a valid way, therefor
             switch (i)
             {
             case IMMEDIATE:
-                if (isImmediate(tok, &number1, flag_register))
+                if (is_immediate(tok, &number1, flag_register))
                 {
                     command_length += 1; /* add the word of the immediate */
                     goto found2;
                 }
                 break;
             case INDEX:
-                if (isIndex(tok, label, &index, flag_register, line_number))
+                if (is_index(tok, label, &index, flag_register, line_number))
                 {
                     command_length += 2; /* add the base address and the offset */
                     goto found2;
                 }
                 break;
             case REGISTER_DIRECT:
-                if (isRegisterDirect(tok, &number1, flag_register))
+                if (is_register_direct(tok, &number1, flag_register))
                 {
                     goto found2;
                 }
                 break;
             case DIRECT:
-                if (isDirect(tok, &address, head))
+                if (is_direct(tok, &address, head))
                 {
                     command_length += 2; /* add base and offset */
                     goto found2;

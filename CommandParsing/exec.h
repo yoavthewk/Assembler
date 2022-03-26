@@ -29,7 +29,7 @@
 * @param flag_register pointer to the flag register
 * @return true if addressing method is immediate
 */
-bool isImmediate(char *line, int *number, PSW *flag_register);
+bool is_immediate(char *line, int *number, PSW *flag_register);
 
 /**
 * @brief checks if an operand is using direct addressing
@@ -38,7 +38,7 @@ bool isImmediate(char *line, int *number, PSW *flag_register);
 * @param head pointer to the head of the symbol list
 * @return true if addressing method is direct
 */
-bool isDirect(char *line, int *address, symbol_list *head);
+bool is_direct(char *line, int *address, symbol_list *head);
 
 /**
 * @brief checks if an operand is using index addressing
@@ -48,7 +48,7 @@ bool isDirect(char *line, int *address, symbol_list *head);
 * @param line_number number of current line
 * @return true if addressing method is index
 */
-bool isIndex(char *line, char *label, int *index, PSW *flag_register, int line_number);
+bool is_index(char *line, char *label, int *index, PSW *flag_register, int line_number);
 
 /**
 * @brief checks if an operand is using register-direct addressing
@@ -57,7 +57,7 @@ bool isIndex(char *line, char *label, int *index, PSW *flag_register, int line_n
 * @param flag_register pointer to the special flag register
 * @return true if operand is using register-direct addressing
 */
-bool isRegisterDirect(char *line, int *number, PSW *flag_register);
+bool is_register_direct(char *line, int *number, PSW *flag_register);
 
 /**
 * @brief throw an error message

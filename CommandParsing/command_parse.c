@@ -17,7 +17,7 @@ int getNumber(char *num, PSW *flag_register)
 	return atoi(number);
 }
 
-bool isImmediate(char *line, int *number, PSW *flag_register)
+bool is_immediate(char *line, int *number, PSW *flag_register)
 {
 	char *binary_line;
 
@@ -37,7 +37,7 @@ bool isImmediate(char *line, int *number, PSW *flag_register)
 	return true;
 }
 
-bool isDirect(char *line, int *address, symbol_list *head)
+bool is_direct(char *line, int *address, symbol_list *head)
 {
 	if (line)
 	{
@@ -59,7 +59,7 @@ bool isDirect(char *line, int *address, symbol_list *head)
 	return false;
 }
 
-bool isIndex(char *line, char *label, int *index, PSW *flag_register, int line_number)
+bool is_index(char *line, char *label, int *index, PSW *flag_register, int line_number)
 {
 	char *tok;
 	tok = strtok(line, "[");
@@ -92,7 +92,7 @@ bool isIndex(char *line, char *label, int *index, PSW *flag_register, int line_n
 	return false;
 }
 
-bool isRegisterDirect(char *line, int *number, PSW *flag_register)
+bool is_register_direct(char *line, int *number, PSW *flag_register)
 {
 	if (line[0] == 'r')
 	{

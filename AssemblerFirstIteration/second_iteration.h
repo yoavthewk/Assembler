@@ -17,4 +17,4 @@ bool is_data(char *line, PSW* flag_register);
  * @param flag_register the flag register.
  * @param line_number the current line number.
  */
-void handle_entry(char *line, SymbolList* head, PSW* flag_register, int line_number);
+void handle_entry(char *line, symbol_list* head, PSW* flag_register, int line_number);
