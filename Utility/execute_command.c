@@ -220,5 +220,4 @@ found2:
 
     IC->data += command_length;
     free(label);
-    return;
 }
