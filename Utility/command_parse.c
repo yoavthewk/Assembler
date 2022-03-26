@@ -173,7 +173,7 @@ char *encode_label_value(int value)
 	/* insert ARE */
 	for (i = 0; i < ARE_SIZE + 1; i++)
 	{
-		bin_str[i] = i == 2 ? '1' : '0';
+		bin_str[i] = i == B ? '1' : '0';
 	}
 
 	/* insert opcode */
@@ -198,7 +198,7 @@ char *encode_label_offset(int offset)
 	/* insert ARE */
 	for (i = 0; i < ARE_SIZE + 1; i++)
 	{
-		bin_str[i] = i == 2 ? '1' : '0';
+		bin_str[i] = i == B ? '1' : '0';
 	}
 
 	/* insert opcode */

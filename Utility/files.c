@@ -67,3 +67,36 @@ void write_line(FILE *fp, char *input)
 {
     fprintf(fp, "%s", input);
 }
+
+FILE *create_object_file(char *file_name)
+{
+    FILE *object_fp;
+    const int ob_length = 3;
+    file_name = (char *)realloc(file_name, strlen(file_name) + ob_length);
+    strncat(file_name, ".ob", ob_length);
+    object_fp = fopen(file_name, "a");
+    
+    return object_fp;
+}
+
+FILE *create_entry_file(char *file_name)
+{
+    FILE *entry_fp;
+    const int ent_length = 3;
+    file_name = (char *)realloc(file_name, strlen(file_name) + ent_length);
+    strncat(file_name, ".ent", ent_length);
+    entry_fp = fopen(file_name, "a");
+    
+    return entry_fp;
+}
+
+FILE *create_extern_file(char *file_name)
+{
+    const int ext_length = 3;
+    FILE *ext_fp;
+    file_name = (char *)realloc(file_name, strlen(file_name) + ext_length);
+    strncat(file_name, ".ent", ext_length);
+    ext_fp = fopen(file_name, "a");
+    
+    return ext_fp;
+}

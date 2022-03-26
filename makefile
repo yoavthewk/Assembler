@@ -1,6 +1,6 @@
 CFLAGS = -c -ansi -Wall -pedantic -m32 -g
 EXEFLAGS = -ansi -Wall -pedantic -g -m32
-OBJ_SRC = main.o first_iteration.o macro_parsing.o files.o symbol_list.o line_parsing.o execute_command.o command_parse.o macro_list.o command_list.o
+OBJ_SRC = main.o first_iteration.o second_iteration.o macro_parsing.o files.o symbol_list.o line_parsing.o execute_command.o command_parse.o macro_list.o command_list.o
 CC = gcc
 OUT = prog
  
@@ -12,6 +12,9 @@ main.o: main.c main.h
     
 first_iteration.o: Main/first_iteration.c Main/first_iteration.h
 	$(CC) $(CFLAGS) Main/first_iteration.c
+
+second_iteration.o: Main/second_iteration.c Main/second_iteration.h
+	$(CC) $(CFLAGS) Main/second_iteration.c
     
 macro_parsing.o: Main/macro_parsing.c Main/pre_assembler.h
 	$(CC) $(CFLAGS) Main/macro_parsing.c
@@ -36,7 +39,7 @@ symbol_list.o: Utility/symbol_list.c Utility/symbol_list.h
 
 command_list.o: Utility/command_list.c Utility/command_list.h
 	$(CC) $(CFLAGS) Utility/command_list.c -std=c90
-  
+
 clean:
 	rm -f $(OBJ_SRC) $(OUT)
  

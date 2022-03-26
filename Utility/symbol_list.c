@@ -86,7 +86,6 @@ void update_entry(symbol_list* head, char *name){
             return;
         }
     } while ((head = head->next));
-    return;
 }
 
 void print_symbol_list(symbol_list *head)
