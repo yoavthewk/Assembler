@@ -205,11 +205,11 @@ found2:
     }
     else if (src == IMMEDIATE)
     {
-        arr[list_index + 2] = encode_immediate(number); /* we leave 2 spots for the labels */
+        arr[list_index + 2] = encode_immediate(number1); /* we leave 2 spots for the labels */
     }
     else if (dst == IMMEDIATE)
     {
-        arr[list_index++] = encode_immediate(number1);
+        arr[list_index++] = encode_immediate(number);
     }
 
     insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
