@@ -1,32 +1,35 @@
 #include "second_iteration.h"
+#include <stdio.h>
 
-void second_iteration(char *file_name, FILE *fp, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register)
+void second_iteration(char *file_name, FILE *fp, int ICF, symbol_list *head, command_list *command_head, PSW *flag_register)
 {
     char *line = NULL;
+    int line_number = 0;
     FILE *obfp = create_object_file(file_name);
     FILE *entfp = create_entry_file(file_name);
     FILE *extfp = create_extern_file(file_name);
 
     while ((line = get_next_line(fp)) != NULL)
     {
-        second_line_process(obfp, line, ICF, line_number, head, command_head, flag_register);
+        second_line_process(obfp, line, ICF, line_number++, head, command_head, flag_register);
         free(line);
     }
-
+    print_command_list(command_head);
     write_entry_to_file(entfp, head);
     write_extern_to_file(extfp, head);
     fclose(obfp);
     fclose(extfp);
     fclose(entfp);
-    fclose(fp);
 }
 
 void second_line_process(FILE *objfp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register)
 {
-    char *line_backup = {0};
-    char *tok, offset;
+    char line_backup[MAX_LEN] = {0};
+    char *tok;
     char* label = NULL;
-    int IC = 0;
+    static int IC = 100;
+    int offset = 0;
+    flag_register->ERR = flag_register->SYM = 0;
 
     line = parse_line_first_iteration(line, flag_register); /* getting the parsed command */
 
@@ -40,32 +43,43 @@ void second_line_process(FILE *objfp, char *line, int ICF, int line_number, symb
 
     contains_label(line_backup, head, line_number, flag_register);
     strcpy(line_backup, line);
-    tok = strtok(line_backup, " ");
-    offset += strlen(tok) + 1;
+    if (flag_register->SYM) {
+        tok = strtok(line_backup, " ");
+        offset += strlen(tok) + 1;
+    }
+    else
+    {
+        offset += 2;
+    }
     strcpy(line_backup, line);
 
     if (is_data(line_backup, flag_register))
     {
+        free(line);
         return;
     }
     strcpy(line_backup, line);
     if (is_extern(line_backup, flag_register))
     {
+        free(line);
         return;
     }
     strcpy(line_backup, line);
 
     if (is_entry(line_backup, flag_register))
     {
+        strcpy(line_backup, line);
         handle_entry(line_backup, head, flag_register, line_number);
+        free(line);
         return;
     }
-
+    strcpy(line_backup, line);
     /* if we got this far, it is a command */    
-
     /* check if we need to complete words */
     if(!need_completion(command_head, IC)){
+        IC = get_next_IC(IC, command_head);
         /* if not, we return */
+        free(line);
         return;
     }
 
@@ -74,13 +88,12 @@ void second_line_process(FILE *objfp, char *line, int ICF, int line_number, symb
     /* skip the command name */
     tok = strtok(line, " ");
     offset += strlen(tok);
-
-    memmove(line, line + offset, strlen(line)); /* get the rest of the line after the command */
-
+    strcpy(line, line_backup);
+    memmove(line, line + offset - 1, strlen(line) + 1); /* get the rest of the line after the command */
     /* get the first operand */
     tok = strtok(line, ",");
-
     /* if it starts with # it's an immediate, and we need to encode the second operand. */
+    label = (char*)malloc(MAX_LEN);
     if(tok[0] == '#')
         label = strtok(NULL, ",");
     
@@ -94,17 +107,30 @@ void second_line_process(FILE *objfp, char *line, int ICF, int line_number, symb
 
         register_number = atoi(number);
         if(register_number >= 0 && register_number <= 15){
-            label = strtok(NULL, ",");
+            strcpy(label, strtok(NULL, ","));
         }
     }
     else{
-        label = tok;
+        strcpy(label, tok);
     }
 
-    fill_command_list(head, command_head, flag_register, label, IC);
+    fill_command_list(head, &command_head, flag_register, label, IC);
     if(flag_register->ERR){
         throw_error("Label does not exist!", line_number);
     }
+    IC = get_next_IC(IC, command_head);
+    free(label);
+    free(line);
+}
+
+int get_next_IC(int IC, command_list* head)
+{
+    while (head)
+    {
+        if (IC < head->IC) return head->IC;
+        head = head->next;
+    }
+    return 0;
 }
 
 bool need_completion(command_list *head, int IC)
@@ -118,17 +144,27 @@ bool need_completion(command_list *head, int IC)
     return false;
 }
 
-void fill_command_list(symbol_list *head, command_list *command_head, PSW* flag_register, char* label, int IC)
+void fill_command_list(symbol_list *head, command_list **command_head, PSW* flag_register, char* label, int IC)
 {
     int i;
+    char* is_index = strchr(label, '[');
     bool found = false;
+    command_list * tmp = * command_head;
+    char* substr = NULL;
+
+    if (is_index)
+    {
+        substr = get_new_substring_with_indexes(label, 0, strcspn(label, "["));
+        strcpy(label, substr);
+        free(substr);
+    }
 
     do
     {
-        if (command_head->IC == IC){
+        if (tmp->IC == IC){
             break;
         }
-    } while ((command_head = command_head->next));
+    } while ((tmp = tmp->next));
 
     do
     {
@@ -143,11 +179,13 @@ void fill_command_list(symbol_list *head, command_list *command_head, PSW* flag_
         return;
     }
 
-    for(i = 0; command_head->arr[i][0] != '?'; i++)
+    for(i = 0; tmp->arr[i][0] != '?'; i++)
         ;
 
-    command_head->arr[i++] = encode_label_value(head->s.value);
-    command_head->arr[i] = encode_label_offset(head->s.offset);
+    free(tmp->arr[i]);
+    tmp->arr[i++] = encode_label_value(head->s.value - head->s.value % 16);
+    free(tmp->arr[i]);
+    tmp->arr[i] = encode_label_offset(head->s.value % 16);
 }
 
 bool is_data(char *line, PSW *flag_register)
@@ -186,7 +224,7 @@ void write_entry_to_file(FILE* fp, symbol_list *head)
     do
     {
         if (head->s.attributes[ENTRY]){
-            fprintf(fp, "%s,%04d,%04d", head->s.name, head->s.base_address, head->s.offset);
+            fprintf(fp, "%s,%04d,%04d\n", head->s.name, head->s.base_address, head->s.offset);
         }
     } while ((head = head->next));
 }
@@ -196,7 +234,7 @@ void write_extern_to_file(FILE* fp, symbol_list *head)
     do
     {
         if (head->s.attributes[EXTERN]){
-            fprintf(fp, "%s BASE %04d", head->s.name, head->s.base_address);
+            fprintf(fp, "%s BASE %04d\n", head->s.name, head->s.base_address);
             fprintf(fp, "%s OFFSET %04d\n", head->s.name, head->s.offset);
         }
     } while ((head = head->next));
@@ -221,7 +259,7 @@ void format_object_file(FILE *fp, int IC, int DC, command_list *head)
     append_to_object_file(fp, " "); /* adding space */
 
     sprintf(str, "%d", DC);
-    append_to_object_file(fp, DC); /* same for DC */
+    append_to_object_file(fp, str); /* same for DC */
 
     for (i = 0; i < cond; i++)
     {
@@ -238,12 +276,11 @@ char *get_new_substring_with_indexes(char *line, int start, int end)
     char *tmp = (char *)malloc(strlen(line));
     int i = 0;
 
-    for (i; i + start < end; i++)
+    for (; i + start < end; i++)
     {
         tmp[i] = line[i + start];
     }
     tmp[i++] = '\0';
-    tmp = (char *)realloc(tmp, strlen(tmp));
     return tmp;
 }
 
@@ -258,8 +295,9 @@ char *special_base(char *line)
         num = (int)strtol(substr, NULL, 2);
         letter = 'A' + i;
         strncat(tmp, &letter, 1);
-        fprintf(tok, "%X", num);
+        snprintf(tok, 1, "%X", num);
         strncat(tmp, tok, 1);
+        strncat(tmp, "-", 2);
         free(substr);
     }
     strncpy(line, tmp, ENCODE_LENGTH);

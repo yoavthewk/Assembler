@@ -44,7 +44,7 @@ void write_line(FILE *fp, char *input);
  * Parameters:
  * char* filename - the name of the file to open.
  */
-int clear_file(char *file_name);
+int clear_file(char *file_name, char* extension);
 
 /**
  * @brief Open an object file

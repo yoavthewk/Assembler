@@ -135,7 +135,7 @@ void preassemble(char *file_name, FILE *fp, macro_list *head)
     char *original_line;
     FILE *preassembled_file;
 
-    if (clear_file(file_name))
+    if (clear_file(file_name, ".am"))
     { /* clear the pre assembler file */
         while ((line = get_next_line(fp)) != NULL)
         {

@@ -165,31 +165,36 @@ char *encode_command_opcode(int action_index)
 
 char *encode_label_value(int value)
 {
-	const size_t ARE_SIZE = 3;
-	const size_t B = 2;
-	char *bin_str = (char *)calloc(WORD_SIZE + 1, sizeof(char));
-	unsigned int i;
+    int mask = 0;
+    const size_t BITS = 16;
+    const size_t ARE_SIZE = 3;
+    const size_t B = 2;
+    char *bin_str = (char *)calloc(WORD_SIZE + 1, sizeof(char));
+    unsigned int i;
 
-	/* insert ARE */
-	for (i = 0; i < ARE_SIZE + 1; i++)
-	{
-		bin_str[i] = i == B ? '1' : '0';
-	}
+    /* insert ARE */
+    for (i = 0; i < ARE_SIZE + 1; i++)
+    {
+        bin_str[i] = i == B ? '1' : '0';
+    }
 
-	/* insert opcode */
-	for (; i < WORD_SIZE; i++)
-	{
-		bin_str[i] = (i == WORD_SIZE - value - 1) ? '1' : '0';
-	}
+    /* insert opcode */
+    for (; i < WORD_SIZE; i++)
+    {
+        mask = 1u << (BITS - 1 - (i - (ARE_SIZE + 1)));
+        bin_str[i] = (value & mask) ? '1' : '0';
+    }
 
-	/* insert terminator */
-	bin_str[WORD_SIZE] = 0;
+    /* insert terminator */
+    bin_str[WORD_SIZE] = 0;
 
-	return bin_str;
+    return bin_str;
 }
 
 char *encode_label_offset(int offset)
 {
+    int mask = 0;
+    const size_t BITS = 16;
 	const size_t ARE_SIZE = 3;
 	const size_t B = 2;
 	char *bin_str = (char *)calloc(WORD_SIZE + 1, sizeof(char));
@@ -204,7 +209,8 @@ char *encode_label_offset(int offset)
 	/* insert opcode */
 	for (; i < WORD_SIZE; i++)
 	{
-		bin_str[i] = (i == WORD_SIZE - offset - 1) ? '1' : '0';
+        mask = 1u << (BITS - 1 - (i - (ARE_SIZE + 1)));
+        bin_str[i] = (offset & mask) ? '1' : '0';
 	}
 
 	/* insert terminator */

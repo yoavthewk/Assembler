@@ -15,7 +15,6 @@ void firstIteration(char *file_name, FILE *fp, symbol_list *head, hregister *IC,
     update_command_list(command_head, IC);
     print_command_list(command_head);
     print_symbol_list(head);
-    fclose(fp);
 }
 
 /* 

@@ -46,6 +46,13 @@ int main(int argc, char *argv[])
             if (fp)
             {
                 firstIteration(file_name, fp, symbol_head, IC, DC, flag_register, command_head);
+                fclose(fp);
+            }
+            fp = open_file(file_name, true);
+            if (fp)
+            {
+                second_iteration(file_name, fp, IC->data, symbol_head, command_head, flag_register);
+                fclose(fp);
             }
         }
         else

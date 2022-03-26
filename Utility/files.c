@@ -46,12 +46,12 @@ FILE *open_file_create(char *file_name)
     return fp;
 }
 
-int clear_file(char *file_name)
+int clear_file(char *file_name, char* extension)
 {
     FILE *fp; /* initiating a file pointer */
-    char *temp = (char *)calloc(strlen(file_name) + strlen(".am") + 1, sizeof(char));
+    char *temp = (char *)calloc(strlen(file_name) + strlen(extension) + 1, sizeof(char));
     strcpy(temp, file_name); /* temp holds the name of the file with the .am extension */
-    get_file_name_pre(temp);
+    strncat(temp, extension, strlen(extension));
     fp = fopen(temp, "w"); /* opening with write permissions; therefore clearing */
     free(temp); /* we have no use for the filename from now on */
 
@@ -72,31 +72,37 @@ FILE *create_object_file(char *file_name)
 {
     FILE *object_fp;
     const int ob_length = 3;
-    file_name = (char *)realloc(file_name, strlen(file_name) + ob_length);
-    strncat(file_name, ".ob", ob_length);
-    object_fp = fopen(file_name, "a");
-    
+    char* tmp_name = (char*)malloc(MAX_LEN);
+    clear_file(file_name, ".ob");
+    strcpy(tmp_name, file_name);
+    strncat(tmp_name, ".ob", ob_length);
+    object_fp = fopen(tmp_name, "a");
+    free(tmp_name);
     return object_fp;
 }
 
 FILE *create_entry_file(char *file_name)
 {
     FILE *entry_fp;
-    const int ent_length = 3;
-    file_name = (char *)realloc(file_name, strlen(file_name) + ent_length);
-    strncat(file_name, ".ent", ent_length);
-    entry_fp = fopen(file_name, "a");
-    
+    const int ent_length = 4;
+    char* tmp_name = (char*)malloc(MAX_LEN);
+    clear_file(file_name, ".ent");
+    strcpy(tmp_name, file_name);
+    strncat(tmp_name, ".ent", ent_length);
+    entry_fp = fopen(tmp_name, "a");
+    free(tmp_name);
     return entry_fp;
 }
 
 FILE *create_extern_file(char *file_name)
 {
-    const int ext_length = 3;
+    const int ext_length = 4;
     FILE *ext_fp;
-    file_name = (char *)realloc(file_name, strlen(file_name) + ext_length);
-    strncat(file_name, ".ent", ext_length);
+    char* tmp_name = (char*)malloc(MAX_LEN);
+    clear_file(file_name, ".ext");
+    strcpy(tmp_name, file_name);
+    strncat(file_name, ".ext", ext_length);
     ext_fp = fopen(file_name, "a");
-    
+    free(tmp_name);
     return ext_fp;
 }
