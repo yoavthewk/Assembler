@@ -1,6 +1,6 @@
 #include "exec.h"
 
-int getNumber(char *num, PSW *flagRegister)
+int getNumber(char *num, PSW *flag_register)
 {
 	int i = 0;
 	int j = 0;
@@ -10,14 +10,14 @@ int getNumber(char *num, PSW *flagRegister)
 
 	if (j == 0 || num[i] == '.' || isalpha(num[i]))
 	{
-		flagRegister->ERR = 1;
+		flag_register->ERR = 1;
 		return -1;
 	}
 
 	return atoi(number);
 }
 
-bool isImmediate(char *line, int *number, PSW *flagRegister)
+bool isImmediate(char *line, int *number, PSW *flag_register)
 {
 	char *tok;
 	char *binary_line;
@@ -27,8 +27,8 @@ bool isImmediate(char *line, int *number, PSW *flagRegister)
 		return false;
 	memmove(line, line + 1, strlen(line)); /* skip over it */
 
-	*number = getNumber(line, flagRegister); /* get the argument */
-	if (flagRegister->ERR)
+	*number = getNumber(line, flag_register); /* get the argument */
+	if (flag_register->ERR)
 	{
 		return false;
 	}
@@ -38,7 +38,7 @@ bool isImmediate(char *line, int *number, PSW *flagRegister)
 	return true;
 }
 
-bool isDirect(char *line, int *address, SymbolList *head)
+bool isDirect(char *line, int *address, symbol_list *head)
 {
 	if (line)
 	{
@@ -60,7 +60,7 @@ bool isDirect(char *line, int *address, SymbolList *head)
 	return false;
 }
 
-bool isIndex(char *line, char *label, int *index, PSW *flagRegister, int line_number)
+bool isIndex(char *line, char *label, int *index, PSW *flag_register, int line_number)
 {
 	char *tok;
 	tok = strtok(line, "[");
@@ -73,8 +73,8 @@ bool isIndex(char *line, char *label, int *index, PSW *flagRegister, int line_nu
 		if (tok && tok[0] == 'r')
 		{
 			memmove(tok, tok + 1, strlen(tok));
-			*index = getNumber(tok, flagRegister);
-			if (flagRegister->ERR == 1)
+			*index = getNumber(tok, flag_register);
+			if (flag_register->ERR == 1)
 			{
 				/* index is illegal */
 				/* throw an error and flag */
@@ -85,7 +85,7 @@ bool isIndex(char *line, char *label, int *index, PSW *flagRegister, int line_nu
 		}
 		else if (tok)
 		{
-			flagRegister->ERR = 1;
+			flag_register->ERR = 1;
 			throw_error("Index must be a register!", line_number);
 			return false;
 		}
@@ -93,15 +93,15 @@ bool isIndex(char *line, char *label, int *index, PSW *flagRegister, int line_nu
 	return false;
 }
 
-bool isRegisterDirect(char *line, int *number, PSW *flagRegister)
+bool isRegisterDirect(char *line, int *number, PSW *flag_register)
 {
 	char *tok;
 	int num;
 	if (line[0] == 'r')
 	{
 		memmove(line, line + 1, strlen(line));
-		*number = getNumber(line, flagRegister);
-		if (flagRegister->ERR)
+		*number = getNumber(line, flag_register);
+		if (flag_register->ERR)
 		{
 			return false;
 		}

@@ -1,6 +1,6 @@
 #include "exec.h"
 
-void parse_command(char *line, SymbolList *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flagRegister, command_list *command_head)
+void parse_command(char *line, symbol_list *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
     int i = 0, number = 0, number1 = 0, index = 0, address = 0, list_index = 0;
     char *label = NULL;
@@ -47,21 +47,21 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
             switch (i)
             {
             case IMMEDIATE:
-                if (isImmediate(tok, &number, flagRegister))
+                if (isImmediate(tok, &number, flag_register))
                 {
                     command_length++; /* add the word of the immediate */
                     goto found;
                 }
                 break;
             case INDEX:
-                if (isIndex(tok, label, &index, flagRegister, line_number))
+                if (isIndex(tok, label, &index, flag_register, line_number))
                 {
                     command_length += 2; /* add the base address and the offset */
                     goto found;
                 }
                 break;
             case REGISTER_DIRECT:
-                if (isRegisterDirect(tok, &number, flagRegister))
+                if (isRegisterDirect(tok, &number, flag_register))
                 {
                     goto found;
                 }
@@ -86,7 +86,7 @@ void parse_command(char *line, SymbolList *head, int action_index, int line_numb
     return;
 
 found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
-    if (flagRegister->ERR)
+    if (flag_register->ERR)
     {
         free(label);
         return;
@@ -147,21 +147,21 @@ found: /* it means the first operand is being addressed in a valid way, therefor
             switch (i)
             {
             case IMMEDIATE:
-                if (isImmediate(tok, &number1, flagRegister))
+                if (isImmediate(tok, &number1, flag_register))
                 {
                     command_length += 1; /* add the word of the immediate */
                     goto found2;
                 }
                 break;
             case INDEX:
-                if (isIndex(tok, label, &index, flagRegister, line_number))
+                if (isIndex(tok, label, &index, flag_register, line_number))
                 {
                     command_length += 2; /* add the base address and the offset */
                     goto found2;
                 }
                 break;
             case REGISTER_DIRECT:
-                if (isRegisterDirect(tok, &number1, flagRegister))
+                if (isRegisterDirect(tok, &number1, flag_register))
                 {
                     goto found2;
                 }
@@ -182,7 +182,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
 found2:
-    if (flagRegister->ERR)
+    if (flag_register->ERR)
     {
         free(label);
         return;

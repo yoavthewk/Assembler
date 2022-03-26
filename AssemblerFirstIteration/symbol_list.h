@@ -18,11 +18,11 @@ typedef struct symbol
     /* att[0] = external; att[1] = entry; att[2] = code; att[3] = data; */
 } symbol;
 
-typedef struct SymbolList
+typedef struct symbol_list
 {
     symbol s;
-    struct SymbolList *next;
-} SymbolList;
+    struct symbol_list *next;
+} symbol_list;
 
 /*
  * This function creates a node and allocates memory to it
@@ -30,48 +30,48 @@ typedef struct SymbolList
  * the offset of the node, the attributes of the node.
  * Output: none
  */
-SymbolList *initSymbolNode(SymbolList *next, char name[], unsigned int value, unsigned int addr, unsigned int offset, bool att[]);
+symbol_list *initSymbolNode(symbol_list *next, char name[], unsigned int value, unsigned int addr, unsigned int offset, bool att[]);
 
 /*
  * This function releases the memory allocated to the linked list
  * Input: the head of the list
  * Output: none
  */
-void freeSymbolList(SymbolList *head);
+void free_symbol_list(symbol_list *head);
 
 /*
  * This function inserts a node at the end of the list
  * Input: the head of the list, the node to insert
  * Output: none
  */
-void insertSymbol(SymbolList **head, SymbolList *node);
+void insert_symbol(symbol_list **head, symbol_list *node);
 
 /*
  * This function returns the size of a linked list
  * Input: the head of the list
  * Output: the size of the list
  */
-int getSymbolListSize(SymbolList *head);
+int get_symbol_list_size(symbol_list *head);
 
 /*
 * This function checks if the symbol list contains a symbol by name
 * Input: the head of the list, the name to find
 * Output: true if name in list
 */
-bool contains(SymbolList *head, char *name);
+bool contains(symbol_list *head, char *name);
 
 /*
 * This function updates an attribute in a node, by name
 * Input: the head, and the name of the node to update
 * Output: none
 */
-void updateEntry(SymbolList* head, char *name);
+void updateEntry(symbol_list* head, char *name);
 
 /*
 * This function prints the symbol list
 * Input: the head of the list
 * Output: none
 */
-void printSymbolList(SymbolList* head);
+void printsymbol_list(symbol_list* head);
 
 #endif /* !SYMBOL_LIST_SEEN */

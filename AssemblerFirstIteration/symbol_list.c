@@ -1,9 +1,9 @@
 #include "symbol_list.h"
 
-SymbolList *initSymbolNode(SymbolList *next, char name[], unsigned int value, unsigned int addr, unsigned int offset, bool att[])
+symbol_list *init_symbol_node(symbol_list *next, char name[], unsigned int value, unsigned int addr, unsigned int offset, bool att[])
 {
     int i = 0;
-    SymbolList *node = (SymbolList *)malloc(sizeof(SymbolList));
+    symbol_list *node = (symbol_list *)malloc(sizeof(symbol_list));
 
     if (name)
     {
@@ -21,9 +21,9 @@ SymbolList *initSymbolNode(SymbolList *next, char name[], unsigned int value, un
     return node;
 }
 
-void freeSymbolList(SymbolList *head)
+void free_symbol_list(symbol_list *head)
 {
-    SymbolList *temp;
+    symbol_list *temp;
     while (head)
     {
         temp = head;
@@ -32,9 +32,9 @@ void freeSymbolList(SymbolList *head)
     }
 }
 
-void insertSymbol(SymbolList **head, SymbolList *node)
+void insert_symbol(symbol_list **head, symbol_list *node)
 {
-    SymbolList *temp = *head;
+    symbol_list *temp = *head;
     int i = 0;
     static int callNum = 0;
     if (++callNum == 1)
@@ -59,16 +59,16 @@ void insertSymbol(SymbolList **head, SymbolList *node)
     temp->next = node;
 }
 
-int getSymbolListSize(SymbolList *head)
+int get_symbol_list_size(symbol_list *head)
 {
     if (!head->next)
     {
         return 1;
     }
-    return getSymbolListSize(head->next) + 1;
+    return get_symbol_list_size(head->next) + 1;
 }
 
-bool contains(SymbolList *head, char *name)
+bool contains(symbol_list *head, char *name)
 {
     do
     {
@@ -78,7 +78,7 @@ bool contains(SymbolList *head, char *name)
     return false;
 }
 
-void updateEntry(SymbolList* head, char *name){
+void updateEntry(symbol_list* head, char *name){
     do
     {
         if (!strncmp(head->s.name, name, SYMBOL_SIZE)){
@@ -89,7 +89,7 @@ void updateEntry(SymbolList* head, char *name){
     return false;
 }
 
-void printSymbolList(SymbolList *head)
+void print_symbol_list(symbol_list *head)
 {
     int i;
     while (head)

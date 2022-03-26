@@ -5,8 +5,8 @@ int main(int argc, char *argv[])
     char *file_name, **test_arr = NULL;
     /*char *original_line, *line;*/
     FILE *fp; /*, *newMacroFile*/
-    MacroList *macroHead;
-    SymbolList *symbolHead;
+    MacroList *macro_head;
+    symbol_list *symbol_head;
     command_list* command_head;
 
     int num_of_files = argc - 1, file_index = 1, line_number = 0, i = 0;
@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
         printf("No files provided\n");
         return 1;
     }
-    macroHead = initNode(NULL, "someMacro", "NULL");
-    symbolHead = initSymbolNode(NULL, "someSymbol", 'h', 220, 10, test);
+    macro_head = initNode(NULL, "someMacro", "NULL");
+    symbol_head = init_symbol_node(NULL, "someSymbol", 'h', 220, 10, test);
     test_arr = (char**)calloc(sizeof(char*) * LINES, sizeof(char*));
     for (i = 0; i < LINES; i++)
     {
@@ -41,11 +41,11 @@ int main(int argc, char *argv[])
 
         if (fp)
         {
-            preassemble(file_name, fp, macroHead);
+            preassemble(file_name, fp, macro_head);
             fp = open_file(file_name, true);
             if (fp)
             {
-                firstIteration(file_name, fp, symbolHead, IC, DC, flagRegister, command_head);
+                firstIteration(file_name, fp, symbol_head, IC, DC, flagRegister, command_head);
             }
         }
         else
@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
     free(IC);
     free(flagRegister);
     free(DC);
-    freeSymbolList(symbolHead);
-    freeListFromMemory(macroHead);
+    free_symbol_list(symbol_head);
+    freeListFromMemory(macro_head);
     free_command_list(command_head);
     return 0;
 }

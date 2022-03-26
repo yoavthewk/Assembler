@@ -1,10 +1,10 @@
 #include "second_iteration.h"
 
-void second_iteration(char *line, int ICF, int line_number, SymbolList* head, PSW* flagRegister){
+void second_iteration(char *line, int ICF, int line_number, symbol_list* head, PSW* flag_register){
     char* line_backup;
     char** binary_encoding = (char**)malloc(ICF * sizeof(char*));
 
-    line = parse_line_first_iteration(line, flagRegister); /* getting the parsed command */
+    line = parse_line_first_iteration(line, flag_register); /* getting the parsed command */
 
     line[strcspn(line, "\n")] = 0;
     strcpy(line_backup, line);
@@ -14,34 +14,34 @@ void second_iteration(char *line, int ICF, int line_number, SymbolList* head, PS
         return;
     }
 
-    contains_label(line_backup, head, line_number, flagRegister);
+    contains_label(line_backup, head, line_number, flag_register);
     strcpy(line_backup, line);
 
-    if(is_data(line_backup, flagRegister)){
+    if(is_data(line_backup, flag_register)){
         return;
     }
     strcpy(line_backup, line);
-    if(is_extern(line_backup, flagRegister)){
+    if(is_extern(line_backup, flag_register)){
         return;
     }
     strcpy(line_backup, line);
 
-    if(is_entry(line_backup, flagRegister)){
-        handle_entry(line_backup, head, flagRegister, line_number);
+    if(is_entry(line_backup, flag_register)){
+        handle_entry(line_backup, head, flag_register, line_number);
         return;
     }
 }
 
-bool is_data(char *line, PSW* flagRegister){
+bool is_data(char *line, PSW* flag_register){
     char* cmd;
 
     cmd = strtok(line, " ");
-    if (flagRegister->SYM) cmd = strtok(NULL, " "); /* get the next word (or the only word) */
+    if (flag_register->SYM) cmd = strtok(NULL, " "); /* get the next word (or the only word) */
 
     return !strcmp(cmd, ".data") || !strcmp(cmd, ".string");
 }
 
-void handle_entry(char *line, SymbolList* head, PSW* flagRegister, int line_number){
+void handle_entry(char *line, symbol_list* head, PSW* flag_register, int line_number){
     char* label_name; 
 
     /* skip the .entry */
@@ -52,7 +52,7 @@ void handle_entry(char *line, SymbolList* head, PSW* flagRegister, int line_numb
 
     if(!contains(head, label_name)){
         throw_error("Entry label does not exist!", line_number); /* Symbol does not exist */
-        flagRegister->ERR = 1;
+        flag_register->ERR = 1;
         return;
     }
 
