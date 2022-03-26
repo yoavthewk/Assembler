@@ -65,4 +65,6 @@ bool need_completion(command_list *head, int IC);
 
 void fill_command_list(symbol_list *head, command_list **command_head, PSW* flag_register, FILE* fp, char* label, int IC);
 
-void second_iteration(char *file_name, FILE *fp, int ICF, symbol_list *head, command_list *command_head, PSW *flag_register);
+void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *head, command_list *command_head, PSW *flag_register);
+
+void format_object_file(FILE *fp, int IC, int DC, command_list *head);

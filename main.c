@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
             fp = open_file(file_name, true);
             if (fp)
             {
-                second_iteration(file_name, fp, IC->data, symbol_head, command_head, flag_register);
+                second_iteration(file_name, fp, IC->data, DC->data, symbol_head, command_head, flag_register);
                 fclose(fp);
             }
         }

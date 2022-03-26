@@ -1,7 +1,7 @@
 #include "second_iteration.h"
 #include <stdio.h>
 
-void second_iteration(char *file_name, FILE *fp, int ICF, symbol_list *head, command_list *command_head, PSW *flag_register)
+void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *head, command_list *command_head, PSW *flag_register)
 {
     char *line = NULL;
     int line_number = 0;
@@ -15,6 +15,7 @@ void second_iteration(char *file_name, FILE *fp, int ICF, symbol_list *head, com
         free(line);
     }
     print_command_list(command_head);
+    format_object_file(obfp, ICF, DCF, command_head);
     write_entry_to_file(entfp, head);
     fclose(obfp);
     fclose(extfp);
@@ -94,7 +95,7 @@ void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_
     /* if it starts with # it's an immediate, and we need to encode the second operand. */
     label = (char*)malloc(MAX_LEN);
     if(tok[0] == '#')
-        label = strtok(NULL, ",");
+        strcpy(label, strtok(NULL, ","));
     
     /* check if it's a register direct */
     else if(tok[0] == 'r'){
@@ -185,10 +186,10 @@ void fill_command_list(symbol_list *head, command_list **command_head, PSW* flag
         write_extern_to_file(fp, head->s.name, tmp->IC + i, tmp->IC + i + 1);
     }
     
-    free(tmp->arr[i]);
-    tmp->arr[i++] = encode_label_value(head->s.value - head->s.value % 16);
-    free(tmp->arr[i]);
-    tmp->arr[i] = encode_label_offset(head->s.value % 16);
+    /*free(tmp->arr[i]);*/
+    tmp->arr[i++] = encode_label_value(head->s.value - head->s.value % 16, head->s.attributes[EXTERN]);
+    /*free(tmp->arr[i]);*/
+    tmp->arr[i] = encode_label_offset(head->s.value % 16, head->s.attributes[EXTERN]);
 }
 
 bool is_data(char *line, PSW *flag_register)
@@ -251,19 +252,19 @@ void format_object_file(FILE *fp, int IC, int DC, command_list *head)
     char str[WORD_SIZE] = {0}; /* creating a temporary string to hold the integers */
     int i = 0, cond = get_command_size(head), j = 0;
 
-    sprintf(str, "%d", IC);         /* converting IC to char* */
+    sprintf(str, "%d", (IC - 100));         /* converting IC to char* */
     append_to_object_file(fp, str); /* appending it to the file */
 
     append_to_object_file(fp, " "); /* adding space */
 
-    sprintf(str, "%d", DC);
+    sprintf(str, "%d\n", DC);
     append_to_object_file(fp, str); /* same for DC */
 
     for (i = 0; i < cond; i++)
     {
-        for (j = 0; j < head->next->IC - head->IC; j++)
+        for (j = 0; j < head->L; j++)
         {
-            fprintf(fp, "%04d %s", head->IC, special_base(head->arr[j]));
+            fprintf(fp, "%04d %s\n", (head->IC + j), special_base(head->arr[j]));
         }
         head = head->next;
     }
@@ -293,11 +294,12 @@ char *special_base(char *line)
         num = (int)strtol(substr, NULL, 2);
         letter = 'A' + i;
         strncat(tmp, &letter, 1);
-        snprintf(tok, 1, "%X", num);
+        sprintf(tok, "%x", num);
         strncat(tmp, tok, 1);
         strncat(tmp, "-", 2);
         free(substr);
     }
+    tmp[strlen(tmp) - 1] = '\0';
     strncpy(line, tmp, ENCODE_LENGTH);
     return line;
 }

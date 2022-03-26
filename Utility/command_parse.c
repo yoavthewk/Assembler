@@ -163,19 +163,19 @@ char *encode_command_opcode(int action_index)
 	return bin_str;
 }
 
-char *encode_label_value(int value)
+char *encode_label_value(int value, bool external)
 {
     int mask = 0;
     const size_t BITS = 16;
     const size_t ARE_SIZE = 3;
-    const size_t B = 2;
+    const size_t ARE = external ? 3 : 2;
     char *bin_str = (char *)calloc(WORD_SIZE + 1, sizeof(char));
     unsigned int i;
-
+	
     /* insert ARE */
     for (i = 0; i < ARE_SIZE + 1; i++)
     {
-        bin_str[i] = i == B ? '1' : '0';
+        bin_str[i] = i == ARE ? '1' : '0';
     }
 
     /* insert opcode */
@@ -191,19 +191,19 @@ char *encode_label_value(int value)
     return bin_str;
 }
 
-char *encode_label_offset(int offset)
+char *encode_label_offset(int offset, bool external)
 {
     int mask = 0;
     const size_t BITS = 16;
 	const size_t ARE_SIZE = 3;
-	const size_t B = 2;
+	const size_t ARE = external ? 3 : 2;
 	char *bin_str = (char *)calloc(WORD_SIZE + 1, sizeof(char));
 	unsigned int i;
 
 	/* insert ARE */
 	for (i = 0; i < ARE_SIZE + 1; i++)
 	{
-		bin_str[i] = i == B ? '1' : '0';
+		bin_str[i] = i == ARE ? '1' : '0';
 	}
 
 	/* insert opcode */

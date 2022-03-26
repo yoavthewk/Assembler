@@ -21,6 +21,7 @@ command_list *init_command_node(command_list *next, int L, int IC, bool data, ch
             strncpy(tmp->arr[i], "????????????????????", ENCODE_LENGTH);
         }
     }
+
     free(str_array);
     return tmp;
 }
@@ -62,7 +63,7 @@ void print_command_list(command_list *head)
         printf("IC=%d, L=%d\n", head->IC, head->L);
         for (i = 0; i < head->L; i++)
         {
-            puts(head->arr[i]);
+            if (head->arr[i]) puts(head->arr[i]);
         }
         
         head = head->next;

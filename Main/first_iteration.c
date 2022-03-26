@@ -401,7 +401,7 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
     {
         data = strtok(NULL, " \"");
         if (strlen(data) > LINES) {
-            arr = (char**)realloc(&arr, sizeof(char*) * strlen(data));
+            arr = (char**)realloc(arr, sizeof(char*) * (strlen(data) + 1));
         }
         /*printf("%s\n", data);
         data = strtok(NULL, "\"");*/
