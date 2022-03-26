@@ -1,8 +1,8 @@
 #ifndef PRE_ASSEMBLER_H
 #define PRE_ASSEMBLER_H
-#include "../FileHandling/files.h"
-#include "../MacroLinkedList/macro_list.h"
-#include "../Hardware/hardware.h"
+#include "../Utility/files.h"
+#include "../Utility/macro_list.h"
+#include "../Utility/hardware.h"
 #include <ctype.h>
 
 void copy_macro_to_file(macro_list* head, char* macroName, char* filename);

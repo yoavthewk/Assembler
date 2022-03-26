@@ -3,9 +3,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-#include "../AssemblerFirstIteration/symbol_list.h"
-#include "../Hardware/hardware.h"
-#include "../AssemblerFirstIteration/command_list.h"
+#include "symbol_list.h"
+#include "hardware.h"
+#include "command_list.h"
 
 #define MAX_LEN 83
 #define NUM_OF_ADDRESSING 4

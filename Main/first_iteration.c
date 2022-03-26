@@ -1,4 +1,4 @@
-#include "firstIteration.h"
+#include "first_iteration.h"
 
 
 void firstIteration(char *file_name, FILE *fp, symbol_list *head, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
@@ -331,8 +331,6 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
     data = flag_register->SYM ? strtok(NULL, " ") : data;
     if (!strcmp(data, ".data"))
     {
-        printf(".Data: \n");
-        
         while ((data = strtok(NULL, ",")))
         {
             length++;
@@ -361,9 +359,7 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
                 free(arr);
                 return;
             }
-            printf("num: %d\n", num);
             arr[list_index++] = encode_immediate(num);
-            printf("%s\n", arr[list_index - 1]);
         }
         insert_command_list(&head, init_command_node(NULL, length, DC->data, true, arr));
         DC->data += length;
@@ -376,14 +372,11 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
         }
         /*printf("%s\n", data);
         data = strtok(NULL, "\"");*/
-        printf("%s String: \n", data);
         for (i = 0; data[i] != 0; i++)
         {
             arr[list_index++] = encode_immediate(data[i]);
-            printf("%s\n", arr[list_index - 1]);
         }
         arr[list_index++] = encode_immediate(0);
-        printf("%s\n", arr[list_index - 1]);
         insert_command_list(&head, init_command_node(NULL, strlen(data) + 1, DC->data, true, arr));
 
         DC->data += strlen(data) + 1;

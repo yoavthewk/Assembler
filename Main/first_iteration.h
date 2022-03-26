@@ -1,10 +1,10 @@
 #ifndef FIRSTITERATION_H
 #define FIRSTITERATION_H
-#include "../Hardware/hardware.h"
-#include "symbol_list.h"
-#include "../PreAssembler/pre_assembler.h"
-#include "../CommandParsing/exec.h"
-#include "command_list.h"
+#include "../Utility/hardware.h"
+#include "../Utility/symbol_list.h"
+#include "pre_assembler.h"
+#include "../Utility/exec.h"
+#include "../Utility/command_list.h"
 
 #define BASE 0
 #define OFFSET 0
