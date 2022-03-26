@@ -4,7 +4,7 @@
  * Input: a specific line in the program
  * Output: Boolean, true if macro.
  */
-bool isMacro(MacroList *head, char *input, FILE *fp, char *filename)
+bool is_macro(macro_list *head, char *input, FILE *fp, char *filename)
 {
     char *line = (char *)malloc(strlen(input) + 1), *cmd;
     strcpy(line, input);
@@ -14,9 +14,9 @@ bool isMacro(MacroList *head, char *input, FILE *fp, char *filename)
     {
         /* If the word is not "macro" */
         cmd[strlen(cmd) - 1] = 0;
-        if (!containsSpace(cmd) && containsName(head, cmd)) /* we check if it is a name of a macro */
+        if (!has_space(cmd) && contains_name(head, cmd)) /* we check if it is a name of a macro */
         {                                         
-            copyMacroToFile(head, cmd, filename); /* if it is, we copy it's contents to the pre-assembled file */
+            copy_macro_to_file(head, cmd, filename); /* if it is, we copy it's contents to the pre-assembled file */
             free(line);
             return true;
         }
@@ -27,7 +27,7 @@ bool isMacro(MacroList *head, char *input, FILE *fp, char *filename)
         return false;
 
     cmd = strtok(NULL, "\n");       /* get the name of the macro */
-    addMacroToTable(head, fp, cmd); /* add the macro to the table. */
+    add_macro_to_table(head, fp, cmd); /* add the macro to the table. */
     free(line);
     return true;
 }
@@ -37,15 +37,15 @@ bool isMacro(MacroList *head, char *input, FILE *fp, char *filename)
  * Input: a macro name, and the macro table head
  * Output: Boolean, true if in the list.
  */
-bool containsName(MacroList *macroTableHead, char *name)
+bool contains_name(macro_list *head, char *name)
 {
-    while (macroTableHead)
+    while (head)
     {
-        if (!strcmp(macroTableHead->m.name, name))
+        if (!strcmp(head->m.name, name))
         {
             return true;
         }
-        macroTableHead = macroTableHead->next;
+        head = head->next;
     }
     return false;
 }
@@ -55,7 +55,7 @@ bool containsName(MacroList *macroTableHead, char *name)
  * Input: the macto list, the assembly file (to get the content of the macro), and the macro name
  * Output: none.
  */
-void addMacroToTable(MacroList *head, FILE *fp, char *name)
+void add_macro_to_table(macro_list *head, FILE *fp, char *name)
 {
     char *content = (char *)calloc(MAX_LEN, sizeof(char));
     char *line;
@@ -86,7 +86,7 @@ void addMacroToTable(MacroList *head, FILE *fp, char *name)
     }
     free(line);
     free(originalLine);
-    insertAtEnd(&head, initNode(NULL, name, content)); /* insert the macro to the macro list */
+    insert_at_end(&head, init_node(NULL, name, content)); /* insert the macro to the macro list */
     free(content);
 }
 
@@ -95,7 +95,7 @@ void addMacroToTable(MacroList *head, FILE *fp, char *name)
  * Input: the macro name, the file name, and the macro list
  * Output: none.
  */
-void copyMacroToFile(MacroList *head, char *macroName, char *filename)
+void copy_macro_to_file(macro_list *head, char *macroName, char *filename)
 {
     FILE *newMacroFile;
 
@@ -116,7 +116,7 @@ void copyMacroToFile(MacroList *head, char *macroName, char *filename)
  * Input: possible name.
  * Output: Boolean, true if it does, false elsewise.
  */
-bool containsSpace(char *name)
+bool has_space(char *name)
 {
     int i = 0;
     for (; i < strlen(name); i++)
@@ -129,7 +129,7 @@ bool containsSpace(char *name)
     return false;
 }
 
-void preassemble(char *file_name, FILE *fp, MacroList *head)
+void preassemble(char *file_name, FILE *fp, macro_list *head)
 {
     char *line;
     char *original_line;
@@ -142,7 +142,7 @@ void preassemble(char *file_name, FILE *fp, MacroList *head)
             original_line = (char *)malloc(strlen(line) + 1);
             strcpy(original_line, line);
             line = parse_line(line);
-            if (!isMacro(head, line, fp, file_name))
+            if (!is_macro(head, line, fp, file_name))
             {
                 preassembled_file = open_file_create(file_name);
                 write_line(preassembled_file, original_line);

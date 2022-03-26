@@ -19,7 +19,6 @@ int getNumber(char *num, PSW *flag_register)
 
 bool isImmediate(char *line, int *number, PSW *flag_register)
 {
-	char *tok;
 	char *binary_line;
 
 	/* check if it starts with a # */
@@ -95,8 +94,6 @@ bool isIndex(char *line, char *label, int *index, PSW *flag_register, int line_n
 
 bool isRegisterDirect(char *line, int *number, PSW *flag_register)
 {
-	char *tok;
-	int num;
 	if (line[0] == 'r')
 	{
 		memmove(line, line + 1, strlen(line));
@@ -172,6 +169,9 @@ char *encode_command_registers(int src, int dst, int action_index, int src_addre
 	const size_t FUNCT = 4;
 	const size_t ARE_SIZE = 3;
 	const size_t A = 1;
+	char *bin_str = (char *)malloc(WORD_SIZE + 1);
+	unsigned int i, mask, j;
+	
 	src_addressing = src_addressing == 3 ? 1 : src_addressing == 1 ? 3 : src_addressing;
     dst_addressing = dst_addressing == 3 ? 1 : dst_addressing == 1 ? 3 : dst_addressing;
     if (two_operands) {
@@ -183,8 +183,7 @@ char *encode_command_registers(int src, int dst, int action_index, int src_addre
         src_addressing ^= dst_addressing;
     }
 	
-	char *bin_str = (char *)malloc(WORD_SIZE + 1);
-	unsigned int i, mask, j;
+	
 
 	/* insert ARE */
 	for (i = 0; i < ARE_SIZE + 1; i++)

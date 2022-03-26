@@ -26,7 +26,7 @@ void process_line(char *line, symbol_list *head, int line_number, hregister *IC,
     /* Initialization of variables */
     int i = 0;
     size_t offset = 0;
-    char *name = NULL, *tok = NULL;
+    char *name = NULL;
     char line_backup[MAX_LEN] = {0};
     bool att[] = {false, false, false, false};
     flag_register->SYM = 0;
@@ -251,7 +251,7 @@ void update_symbol_list(symbol_list *head, hregister *IC)
         {
             temp->s.value += IC->data;
             temp->s.offset = temp->s.value % 16;
-            temp->s.baseAddress = temp->s.value - (temp->s.value % 16);
+            temp->s.base_address = temp->s.value - (temp->s.value % 16);
         }
         temp = temp->next;
     }
@@ -326,7 +326,6 @@ bool handle_data(char *line, symbol_list *head, hregister *IC, hregister *DC, in
 void process_data(char *line, hregister *DC, int line_number, PSW *flag_register, command_list* head)
 {
     int num, i, list_index = 0, length = 0;
-    char *binary_line;
     char *data = strtok(line, " "); /* get the first (or only) word in the line. */
     char** arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
     data = flag_register->SYM ? strtok(NULL, " ") : data;

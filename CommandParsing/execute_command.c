@@ -137,9 +137,11 @@ found: /* it means the first operand is being addressed in a valid way, therefor
 
     strcpy(line_backup, tok);
     strcpy(tmp_tok, tok);
-    /* we can just use strtok to get to the , and then to the rest of the word.
-    /* encode the first operand with what we found */
-    /* afterwards, do the same for the rest */
+    /* 
+       we can just use strtok to get to the , and then to the rest of the word.
+       encode the first operand with what we found
+       afterwards, do the same for the rest 
+    */
     for (i = 0; i < NUM_OF_ADDRESSING; i++)
     {
         if (action_table[action_index].second_operand_valid[i])

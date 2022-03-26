@@ -44,7 +44,7 @@ char *parse_line_first_iteration(char *line, PSW *flagRegister)
 {
     char *new_line;
     char last_char = ' ';
-    int i, j, commaCount = 0;
+    int i, j;
     if (!line)
     {
         free(line);
@@ -84,28 +84,4 @@ char *parse_line_first_iteration(char *line, PSW *flagRegister)
         new_line[j - 1] = 0;
     }
     return new_line;
-}
-
-char *getNewSubstringWithIndexes(char *line, int start, int end)
-{
-    char *tmp = (char *)malloc(strlen(line));
-    int i = 0;
-
-    for (i; i + start < end; i++)
-    {
-        tmp[i] = line[i + start];
-    }
-    tmp[i++] = '\0';
-    tmp = (char *)realloc(tmp, strlen(tmp));
-    return tmp;
-}
-
-char *getNewSubstringFrom(char *line, int start)
-{
-    return getNewSubstringWithIndexes(line, start, strlen(line));
-}
-
-char *getNewSubstringByCount(char *line, int start, int count)
-{
-    return getNewSubstringWithIndexes(line, start, start + count);
 }

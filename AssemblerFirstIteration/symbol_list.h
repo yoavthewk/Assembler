@@ -1,6 +1,5 @@
 #ifndef SYMBOL_LIST_SEEN
 #define SYMBOL_LIST_SEEN
-#define SIZE_OF_COMMAND 80
 #define SYMBOL_SIZE 83
 #define ENTRY 1
 #include <stdlib.h>
@@ -12,7 +11,7 @@ typedef struct symbol
 {
     char name[SYMBOL_SIZE];
     unsigned int value;
-    unsigned int baseAddress;
+    unsigned int base_address;
     unsigned int offset;
     bool attributes[4];
     /* att[0] = external; att[1] = entry; att[2] = code; att[3] = data; */
@@ -30,7 +29,7 @@ typedef struct symbol_list
  * the offset of the node, the attributes of the node.
  * Output: none
  */
-symbol_list *initSymbolNode(symbol_list *next, char name[], unsigned int value, unsigned int addr, unsigned int offset, bool att[]);
+symbol_list *init_symbol_node(symbol_list *next, char name[], unsigned int value, unsigned int addr, unsigned int offset, bool att[]);
 
 /*
  * This function releases the memory allocated to the linked list
@@ -65,13 +64,13 @@ bool contains(symbol_list *head, char *name);
 * Input: the head, and the name of the node to update
 * Output: none
 */
-void updateEntry(symbol_list* head, char *name);
+void update_entry(symbol_list* head, char *name);
 
 /*
 * This function prints the symbol list
 * Input: the head of the list
 * Output: none
 */
-void printsymbol_list(symbol_list* head);
+void print_symbol_list(symbol_list* head);
 
 #endif /* !SYMBOL_LIST_SEEN */

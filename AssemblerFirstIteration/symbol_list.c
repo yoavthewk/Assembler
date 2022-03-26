@@ -9,7 +9,7 @@ symbol_list *init_symbol_node(symbol_list *next, char name[], unsigned int value
     {
         strcpy(node->s.name, name);
     }
-    node->s.baseAddress = addr;
+    node->s.base_address = addr;
     node->s.offset = offset;
     node->s.value = value;
     for (i = 0; i < 4; i++)
@@ -43,7 +43,7 @@ void insert_symbol(symbol_list **head, symbol_list *node)
         strcpy(temp->s.name, node->s.name);
         temp->s.offset = node->s.offset;
         temp->s.value = node->s.value;
-        temp->s.baseAddress = node->s.baseAddress;
+        temp->s.base_address = node->s.base_address;
         for (i = 0; i < 4; i++)
         {
             temp->s.attributes[i] = node->s.attributes[i];
@@ -78,23 +78,22 @@ bool contains(symbol_list *head, char *name)
     return false;
 }
 
-void updateEntry(symbol_list* head, char *name){
+void update_entry(symbol_list* head, char *name){
     do
     {
         if (!strncmp(head->s.name, name, SYMBOL_SIZE)){
             head->s.attributes[ENTRY] = true;
-            return true;
+            return;
         }
     } while ((head = head->next));
-    return false;
+    return;
 }
 
 void print_symbol_list(symbol_list *head)
 {
-    int i;
     while (head)
     {
-        printf("name: %s\nval: %d\noffset: %d\nbase: %d\n", head->s.name, head->s.value, head->s.offset, head->s.baseAddress);
+        printf("name: %s\nval: %d\noffset: %d\nbase: %d\n", head->s.name, head->s.value, head->s.offset, head->s.base_address);
         head = head->next;
     }
 }

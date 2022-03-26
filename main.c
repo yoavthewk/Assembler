@@ -5,15 +5,15 @@ int main(int argc, char *argv[])
     char *file_name, **test_arr = NULL;
     /*char *original_line, *line;*/
     FILE *fp; /*, *newMacroFile*/
-    MacroList *macro_head;
+    macro_list *macro_head;
     symbol_list *symbol_head;
     command_list* command_head;
 
-    int num_of_files = argc - 1, file_index = 1, line_number = 0, i = 0;
+    int num_of_files = argc - 1, file_index = 1, i = 0;
     bool test[] = {false, false, false, true}; /* delete this later */
     hregister *IC = (hregister *)malloc(sizeof(hregister));
     hregister *DC = (hregister *)malloc(sizeof(hregister));
-    PSW* flagRegister = (PSW*)malloc(sizeof(PSW));
+    PSW* flag_register = (PSW*)malloc(sizeof(PSW));
     IC->data = 100;
     DC->data = 0;
     /* if there are no files, we print an error and exit. */
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         printf("No files provided\n");
         return 1;
     }
-    macro_head = initNode(NULL, "someMacro", "NULL");
+    macro_head = init_node(NULL, "someMacro", "NULL");
     symbol_head = init_symbol_node(NULL, "someSymbol", 'h', 220, 10, test);
     test_arr = (char**)calloc(sizeof(char*) * LINES, sizeof(char*));
     for (i = 0; i < LINES; i++)
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
             fp = open_file(file_name, true);
             if (fp)
             {
-                firstIteration(file_name, fp, symbol_head, IC, DC, flagRegister, command_head);
+                firstIteration(file_name, fp, symbol_head, IC, DC, flag_register, command_head);
             }
         }
         else
@@ -55,10 +55,10 @@ int main(int argc, char *argv[])
         num_of_files--;
     }
     free(IC);
-    free(flagRegister);
+    free(flag_register);
     free(DC);
     free_symbol_list(symbol_head);
-    freeListFromMemory(macro_head);
+    free_macro_list(macro_head);
     free_command_list(command_head);
     return 0;
 }

@@ -1,8 +1,8 @@
 #include "macro_list.h"
 
-MacroList* initNode(MacroList* next, char* name, char* content)
+macro_list* init_node(macro_list* next, char* name, char* content)
 {
-    MacroList* node = (MacroList*)malloc(sizeof(MacroList));
+    macro_list* node = (macro_list*)malloc(sizeof(macro_list));
     if(content != NULL){
         node->m.data = (char*)malloc(strlen(content) + 1);
         strcpy(node->m.data, content);
@@ -17,9 +17,9 @@ MacroList* initNode(MacroList* next, char* name, char* content)
     return node;
 }
 
-void freeListFromMemory(MacroList *head)
+void free_macro_list(macro_list *head)
 {
-    MacroList* temp;
+    macro_list* temp;
     while(head){
         temp = head;
         head = head->next;
@@ -29,9 +29,9 @@ void freeListFromMemory(MacroList *head)
     }
 }
 
-void insertAtEnd(MacroList** head, MacroList* node)
+void insert_at_end(macro_list** head, macro_list* node)
 {
-    MacroList* temp = *head;
+    macro_list* temp = *head;
     while (temp->next)
     {
         temp = temp->next;
@@ -39,7 +39,7 @@ void insertAtEnd(MacroList** head, MacroList* node)
     temp->next = node;
 }
 
-void printCommandList(MacroList* head)
+void print_macro_list(macro_list* head)
 {
     while (head)
     {
@@ -48,28 +48,11 @@ void printCommandList(MacroList* head)
     }
 }
 
-int getSize(MacroList* head)
+int get_size(macro_list* head)
 {
     if (!head->next)
     {
         return 1;
     }
-    return getSize(head->next) + 1;
-}
-
-MacroList* findNodeAt(MacroList* head, unsigned int place)
-{
-    if (place >= getSize(head))
-    {
-        puts("This index is out of bounds");
-        return NULL;
-    }
-
-    while (place > 0)
-    {
-        head = head->next;
-        place--;
-    }
-    
-    return head;
+    return get_size(head->next) + 1;
 }

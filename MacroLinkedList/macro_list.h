@@ -18,10 +18,10 @@ typedef struct macro {
 /*
 * Struct to represent a linked list containing macros
 */
-typedef struct MacroList {
+typedef struct macro_list {
     macro m;
-    struct MacroList* next;
-} MacroList;
+    struct macro_list* next;
+} macro_list;
 
 /*
 * @brief initiates a node for the macro list
@@ -30,40 +30,32 @@ typedef struct MacroList {
 * @param content: the content of the macro
 * @return pointer to a newly created node, allocated on the heap
 */
-MacroList* initNode(MacroList* next, char* name, char* content);
+macro_list* init_node(macro_list* next, char* name, char* content);
 
 /*
 * @brief frees all dynamic allocations done for the macro list
 * @param head pointer to the start of the list
 */
-void freeListFromMemory(MacroList* head);
+void free_macro_list(macro_list* head);
 
 /**
 * @brief inserting a node at the end of the list
 * @param head double pointer to the start of the list
 * @param node node to insert
 */
-void insertAtEnd(MacroList** head, MacroList* node);
+void insert_at_end(macro_list** head, macro_list* node);
 
 /**
 * @brief printing the command list
 * @param head pointer to the start of the list
 */
-void printCommandList(MacroList* head);
-
-/**
-* @brief finding a node at given poisiton
-* @param head pointer to the start of the list
-* @param place the index to retrieve node from
-* @return node; null if not found
-*/
-MacroList* findNodeAt(MacroList* head, unsigned int place);
+void print_macro_list(macro_list* head);
 
 /**
 * @brief return the size of the list
 * @param head pointer to the start of the list
 * @return the amount of nodes in the lists
 */
-int getSize(MacroList* head);
+int get_size(macro_list* head);
 
 #endif /* !MACRO_LIST_SEEN */

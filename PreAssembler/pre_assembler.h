@@ -5,21 +5,14 @@
 #include "../Hardware/hardware.h"
 #include <ctype.h>
 
-void copyMacroToFile(MacroList* head, char* macroName, char* filename);
-bool isMacro(MacroList* head, char* input, FILE* fp, char* filename);
-void addMacroToTable(MacroList* head, FILE* fp, char *name);
-bool containsName(MacroList* macroTableHead, char* name);
+void copy_macro_to_file(macro_list* head, char* macroName, char* filename);
+bool is_macro(macro_list* head, char* input, FILE* fp, char* filename);
+void add_macro_to_table(macro_list* head, FILE* fp, char *name);
+bool contains_name(macro_list* macroTableHead, char* name);
 char* parse_line(char* line);
-bool containsSpace(char* name);
+bool has_space(char* name);
 
-/**
- * @brief This function creates a new dynamicly-allocated char* that consists of the given line,
- * but only from a specific index.
- * @param line the line to get substring from
- * @param start index of the first char
- * @return char* - substring from index until the end.
- */
-char* getNewSubstringFrom(char* line, int start);
+
 
 /**
  * @brief This function takes a line from the preassembled file and removes spaces after the ','
@@ -36,15 +29,6 @@ char *parse_line_first_iteration(char *line, PSW *flagRegister);
  * FILE* fp - the file pointer of the input file.
  * head - the head of the macro list.
  */
-void preassemble(char *file_name, FILE *fp, MacroList *head);
-
-/**
- * @brief Get a new substring from given line, from position start to end (exclusive)
- * @param line the input line
- * @param start the start of the substring
- * @param end the end of the substring
- * @return char* 
- */
-char* getNewSubstringWithIndexes(char* line, int start, int end);
+void preassemble(char *file_name, FILE *fp, macro_list *head);
 
 #endif /* PRE_ASSEMBLER_H */

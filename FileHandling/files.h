@@ -15,7 +15,7 @@
  * Parameters:
  * char* filename - the name of the file to open.
  */
-FILE *open_file(char *filename, bool beenPreAssembled);
+FILE *open_file(char *filename, bool pre_assembled);
 
 /*
  * This function reads the next line from a file.

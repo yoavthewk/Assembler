@@ -1,12 +1,12 @@
 #include "files.h"
 
-FILE *open_file(char *filename, bool beenPreAssembled)
+FILE *open_file(char *filename, bool pre_assembled)
 {
     FILE *fp;
     char *temp = (char *)malloc(strlen(filename) + strlen(".as") + 1);
 
     strcpy(temp, filename); /* getting file name with correct extension */
-    if (beenPreAssembled) /* .am */
+    if (pre_assembled) /* .am */
     {
         get_file_name_pre(temp);
     }
