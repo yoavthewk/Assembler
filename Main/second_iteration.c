@@ -1,6 +1,22 @@
 #include "second_iteration.h"
 
-void second_iteration(char *line, int ICF, int line_number, symbol_list* head, PSW* flag_register){
+void second_iteration(char* file_name, FILE* fp, int ICF, int line_number, symbol_list* head, command_list* command_head, PSW* flag_register){
+    int line_number = 0;
+    char *line = NULL;
+
+    while ((line = get_next_line(fp)) != NULL)
+    {
+        process_line(line, head, line_number++, IC, DC, flag_register, command_head);
+        free(line);
+    }
+    update_symbol_list(head, IC);
+    update_command_list(command_head, IC);
+    print_command_list(command_head);
+    print_symbol_list(head);
+    fclose(fp);
+}
+
+void second_line_process(char *line, int ICF, int line_number, symbol_list* head, command_list* command_head, PSW* flag_register){
     char* line_backup;
     char* tok;
 
@@ -36,9 +52,6 @@ void second_iteration(char *line, int ICF, int line_number, symbol_list* head, P
     if(flag_register->SYM){
         memmove(line, line + strlen(tok) + 1, strlen(line)); /* skip the name of the symbol and a space */
     }
-
-
-    
 }
 
 bool is_data(char *line, PSW* flag_register){

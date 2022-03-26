@@ -1,5 +1,6 @@
 #include "first_iteration.h"
 
+
 /**
  * @brief checks if the line is data declaration.
  * 
@@ -18,3 +19,5 @@ bool is_data(char *line, PSW* flag_register);
  * @param line_number the current line number.
  */
 void handle_entry(char *line, symbol_list* head, PSW* flag_register, int line_number);
+
+void second_line_process(char *line, int ICF, int line_number, symbol_list* head, command_list* command_head, PSW* flag_register);
