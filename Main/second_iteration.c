@@ -11,7 +11,7 @@ void second_iteration(char *file_name, FILE *fp, int ICF, int line_number, symbo
         second_line_process(obfp, line, ICF, line_number, head, command_head, flag_register);
         free(line);
     }
-
+    
     fclose(obfp);
     fclose(fp);
 }
@@ -97,4 +97,68 @@ FILE *create_object_file(char *file_name)
     file_name = (char *)realloc(file_name, strlen(file_name) + obLength);
     strncat(file_name, ".ob", obLength);
     return objectFp;
+}
+
+void append_to_object_file(FILE *fp, char *word)
+{
+    if (fputs(word, fp) == EOF)
+    {
+        fprintf(stderr, "Failed to append to object file");
+    }
+}
+
+void format_object_file(FILE *fp, int IC, int DC, command_list *head)
+{
+    char str[WORD_SIZE] = {0}; /* creating a temporary string to hold the integers */
+    int i = 0, cond = get_command_size(head), j = 0;
+
+    sprintf(str, "%d", IC);         /* converting IC to char* */
+    append_to_object_file(fp, str); /* appending it to the file */
+
+    append_to_object_file(fp, " "); /* adding space */
+
+    sprintf(str, "%d", DC);
+    append_to_object_file(fp, DC); /* same for DC */
+
+    for (i = 0; i < cond; i++)
+    {
+        for (j = 0; j < head->next->IC - head->IC; j++)
+        {
+            fprintf(fp, "%04d %s", head->IC, special_base(head->arr[j]));
+        }
+        head = head->next;
+    }
+}
+
+char *get_new_substring_with_indexes(char *line, int start, int end)
+{
+    char *tmp = (char *)malloc(strlen(line));
+    int i = 0;
+
+    for (i; i + start < end; i++)
+    {
+        tmp[i] = line[i + start];
+    }
+    tmp[i++] = '\0';
+    tmp = (char *)realloc(tmp, strlen(tmp));
+    return tmp;
+}
+
+char *special_base(char *line)
+{
+    int i = 0;
+    int num = 0;
+    char tmp[ENCODE_LENGTH] = {0}, *substr, letter = ' ', tok[4] = {0};
+    for (i = 0; i < 5; i++)
+    {
+        substr = get_new_substring_with_indexes(line, i * 4, (i * 4 + 4));
+        num = (int)strtol(substr, NULL, 2);
+        letter = 'A' + i;
+        strncat(tmp, &letter, 1);
+        fprintf(tok, "%X", num);
+        strncat(tmp, tok, 1);
+        free(substr);
+    }
+    strncpy(line, tmp, ENCODE_LENGTH);
+    return line;
 }

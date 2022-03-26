@@ -89,3 +89,15 @@ void free_command_list(command_list *node)
     }
     node = NULL;
 }
+
+size_t get_command_size(command_list* head)
+{
+    size_t size = 0;
+    while (head)
+    {
+        size++;
+        head = head->next;
+    }
+    return size;
+    
+}

@@ -45,4 +45,11 @@ void free_command_list(command_list *node);
  */
 void print_command_list(command_list *head);
 
+/**
+ * @brief Get the size of the command list
+ * @param head pointer to the head of the list
+ * @return size_t size of the list
+ */
+size_t get_command_size(command_list* head);
+
 #endif /* COMMAND_LIST_H */
