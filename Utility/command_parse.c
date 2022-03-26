@@ -163,6 +163,56 @@ char *encode_command_opcode(int action_index)
 	return bin_str;
 }
 
+char *encode_label_value(int value)
+{
+	const size_t ARE_SIZE = 3;
+	const size_t B = 2;
+	char *bin_str = (char *)calloc(WORD_SIZE + 1, sizeof(char));
+	unsigned int i;
+
+	/* insert ARE */
+	for (i = 0; i < ARE_SIZE + 1; i++)
+	{
+		bin_str[i] = i == 2 ? '1' : '0';
+	}
+
+	/* insert opcode */
+	for (; i < WORD_SIZE; i++)
+	{
+		bin_str[i] = (i == WORD_SIZE - value - 1) ? '1' : '0';
+	}
+
+	/* insert terminator */
+	bin_str[WORD_SIZE] = 0;
+
+	return bin_str;
+}
+
+char *encode_label_offset(int offset)
+{
+	const size_t ARE_SIZE = 3;
+	const size_t B = 2;
+	char *bin_str = (char *)calloc(WORD_SIZE + 1, sizeof(char));
+	unsigned int i;
+
+	/* insert ARE */
+	for (i = 0; i < ARE_SIZE + 1; i++)
+	{
+		bin_str[i] = i == 2 ? '1' : '0';
+	}
+
+	/* insert opcode */
+	for (; i < WORD_SIZE; i++)
+	{
+		bin_str[i] = (i == WORD_SIZE - offset - 1) ? '1' : '0';
+	}
+
+	/* insert terminator */
+	bin_str[WORD_SIZE] = 0;
+
+	return bin_str;
+}
+
 char *encode_command_registers(int src, int dst, int action_index, int src_addressing, int dst_addressing, bool two_operands)
 {
 	const size_t ADDRESSING = 2;
