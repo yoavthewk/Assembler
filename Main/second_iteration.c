@@ -11,18 +11,17 @@ void second_iteration(char *file_name, FILE *fp, int ICF, symbol_list *head, com
 
     while ((line = get_next_line(fp)) != NULL)
     {
-        second_line_process(obfp, line, ICF, line_number++, head, command_head, flag_register);
+        second_line_process(extfp, line, ICF, line_number++, head, command_head, flag_register);
         free(line);
     }
     print_command_list(command_head);
     write_entry_to_file(entfp, head);
-    write_extern_to_file(extfp, head);
     fclose(obfp);
     fclose(extfp);
     fclose(entfp);
 }
 
-void second_line_process(FILE *objfp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register)
+void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register)
 {
     char line_backup[MAX_LEN] = {0};
     char *tok;
@@ -114,7 +113,7 @@ void second_line_process(FILE *objfp, char *line, int ICF, int line_number, symb
         strcpy(label, tok);
     }
 
-    fill_command_list(head, &command_head, flag_register, label, IC);
+    fill_command_list(head, &command_head, flag_register, fp, label, IC);
     if(flag_register->ERR){
         throw_error("Label does not exist!", line_number);
     }
@@ -144,7 +143,7 @@ bool need_completion(command_list *head, int IC)
     return false;
 }
 
-void fill_command_list(symbol_list *head, command_list **command_head, PSW* flag_register, char* label, int IC)
+void fill_command_list(symbol_list *head, command_list **command_head, PSW* flag_register, FILE* fp, char* label, int IC)
 {
     int i;
     char* is_index = strchr(label, '[');
@@ -182,6 +181,10 @@ void fill_command_list(symbol_list *head, command_list **command_head, PSW* flag
     for(i = 0; tmp->arr[i][0] != '?'; i++)
         ;
 
+    if(head->s.attributes[EXTERN]){
+        write_extern_to_file(fp, head->s.name, tmp->IC + i, tmp->IC + i + 1);
+    }
+    
     free(tmp->arr[i]);
     tmp->arr[i++] = encode_label_value(head->s.value - head->s.value % 16);
     free(tmp->arr[i]);
@@ -229,15 +232,10 @@ void write_entry_to_file(FILE* fp, symbol_list *head)
     } while ((head = head->next));
 }
 
-void write_extern_to_file(FILE* fp, symbol_list *head)
+void write_extern_to_file(FILE* fp, char* name, int address, int second_address)
 {
-    do
-    {
-        if (head->s.attributes[EXTERN]){
-            fprintf(fp, "%s BASE %04d\n", head->s.name, head->s.base_address);
-            fprintf(fp, "%s OFFSET %04d\n", head->s.name, head->s.offset);
-        }
-    } while ((head = head->next));
+    fprintf(fp, "%s BASE %04d\n", name, address);
+    fprintf(fp, "%s OFFSET %04d\n\n", name, second_address);
 }
 
 void append_to_object_file(FILE *fp, char *word)

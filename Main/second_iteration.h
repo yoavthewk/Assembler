@@ -59,10 +59,10 @@ void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_
 
 void write_entry_to_file(FILE* fp, symbol_list *head);
 
-void write_extern_to_file(FILE* fp, symbol_list *head);
+void write_extern_to_file(FILE* fp, char* name, int address, int second_address);
 
 bool need_completion(command_list *head, int IC);
 
-void fill_command_list(symbol_list *head, command_list **command_head, PSW* flag_register, char* label, int IC);
+void fill_command_list(symbol_list *head, command_list **command_head, PSW* flag_register, FILE* fp, char* label, int IC);
 
 void second_iteration(char *file_name, FILE *fp, int ICF, symbol_list *head, command_list *command_head, PSW *flag_register);
