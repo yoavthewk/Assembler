@@ -2,7 +2,7 @@
 
 void parse_command(char *line, symbol_list *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
-    int i = 0, number = 0, number1 = 0, index = 0, address = 0, list_index = 0;
+    int i = 0, number = 0, number1 = 0, index = 0, index1 = 0, address = 0, list_index = 0;
     char *label = NULL;
     char *tok, line_backup[MAX_LEN] = {0}, tmp_tok[MAX_LEN] = {0};
     int command_length = 0;
@@ -156,7 +156,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
                 }
                 break;
             case INDEX:
-                if (is_index(tok, label, &index, flag_register, line_number))
+                if (is_index(tok, label, &index1, flag_register, line_number))
                 {
                     command_length += 2; /* add the base address and the offset */
                     goto found2;
@@ -196,11 +196,15 @@ found2:
     arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
     arr[list_index++] = encode_command_opcode(action_index);
 
-    arr[list_index++] = src == REGISTER_DIRECT && dst == REGISTER_DIRECT ? encode_command_registers(number1, number, action_index, src, dst, true)
-                        : src == REGISTER_DIRECT                         ? encode_command_registers(number1, 0, action_index, src, dst, true)
-                        : dst == REGISTER_DIRECT
-                            ? encode_command_registers(0, number, action_index, src, dst, true)
-                            : encode_command_registers(0, 0, action_index, src, dst, true);
+    if(src == REGISTER_DIRECT && dst == REGISTER_DIRECT){
+        arr[list_index++] = encode_command_registers(number1, number, action_index, src, dst, true);
+    }
+    else{
+        int dst_register, src_register;
+        dst_register = dst == REGISTER_DIRECT ? number : dst == DIRECT ? 0 : index;
+        src_register = src == REGISTER_DIRECT ? number1 : src == DIRECT ? 0 : index1;
+        arr[list_index++] = encode_command_registers(src_register, dst_register, action_index, src, dst, true);
+    }
 
     if (src == IMMEDIATE && dst == IMMEDIATE)
     {
