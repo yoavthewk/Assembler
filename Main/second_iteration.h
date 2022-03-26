@@ -1,4 +1,4 @@
-#include "firstIteration.h"
+#include "first_iteration.h"
 
 /**
  * @brief checks if the line is data declaration.

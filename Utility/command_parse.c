@@ -98,7 +98,8 @@ bool is_register_direct(char *line, int *number, PSW *flag_register)
 	{
 		memmove(line, line + 1, strlen(line));
 		*number = getNumber(line, flag_register);
-		if (flag_register->ERR)
+
+		if (flag_register->ERR || (*number < 0 || *number > 15))
 		{
 			return false;
 		}

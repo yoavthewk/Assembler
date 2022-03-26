@@ -44,6 +44,12 @@ void process_line(char *line, symbol_list *head, int line_number, hregister *IC,
     /* check whether there's a symbol declaration */
     contains_label(line_backup, head, line_number, flag_register);
 
+    if (flag_register->ERR)
+    {
+        free(line);
+        return;
+    }
+
     strcpy(line_backup, line);
     
     /* check if we need to handle data and if so, process it */
@@ -93,10 +99,10 @@ void process_line(char *line, symbol_list *head, int line_number, hregister *IC,
     if (flag_register->SYM)
     {
         name[strlen(name) - 1] = 0;
-        if (!isValidLabel(name, head))
+        if (!is_valid_label(name, head))
         {
             /* alert error */
-            printf("Line %d: label name \"%s\" already in use!\n", line_number, name);
+            throw_error("Label name is invalid!", line_number);
             flag_register->ERR = 1;
             return;
         }
@@ -184,24 +190,52 @@ bool extraneous_text(char *line, int operands, PSW *flag_register, int line_numb
     return false;
 }
 
+
 bool is_valid_label_name(char *name)
 {
     bool valid = true;
-    int i;
+    int i, register_number;
 
     /* first we check that the first character is a letter */
-    valid = isalpha(name[0]) ? valid : false;
+    if(!isalpha(name[0])) return false;
 
     for (i = 1; i < strlen(name) - 1; i++)
     {
         if (!isalpha(name[i]) && !isdigit(name[i]))
-            valid = false;
+            return false;
+    }
+
+    /* Loop over each command, and check if it's name is equal to a known command */
+    for (i = 0; strcmp(action_table[i].name, "invalid"); i++)
+    {
+        if (!strcmp(name, action_table[i].name))
+            return false;
+    }
+
+    /* check other assembly saved words */
+    if(!strcmp(name, "extern") || !strcmp(name, "entry") || !strcmp(name, "string") || !strcmp(name, "data"))
+        return false;
+
+    /* check if it's a register name */
+    if(name[0] == 'r'){
+        int j = 0;
+	    char number[MAX_LEN] = {0};
+
+        i = 1;
+
+	    while ((isdigit(name[i]) || name[i] == '-' || name[i] == '+') && name[i] != ',')
+		    number[j++] = name[i++];
+
+        register_number = atoi(number);
+        if(register_number >= 0 && register_number <= 15){
+            return false;
+        }
     }
 
     return valid;
 }
 
-bool isValidLabel(char *label, symbol_list *head)
+bool is_valid_label(char *label, symbol_list *head)
 {
     return is_valid_label_name(label) && !contains(head, label);
 }
@@ -233,7 +267,7 @@ void handle_extern(char *line, symbol_list *head, int line_number, PSW *flag_reg
     {
         printf("%s", name);
         /* throw errors */
-        printf("Line %d: Invalid name or already in use!\n", line_number);
+        throw_error("Invalid name!", line_number);
         flag_register->ERR = 1;
         return;
     }
@@ -278,10 +312,10 @@ void contains_label(char *line, symbol_list *head, int line_number, PSW *flag_re
     }
     else
     {
-        if (!isValidLabel(canBeLabel, head))
+        if (!is_valid_label(canBeLabel, head))
         {
             /* raise an error */
-            printf("Line %d: Label %s Already Exists!", line_number, canBeLabel);
+            throw_error("Label name is invalid!", line_number);
             flag_register->ERR = 1;
             flag_register->SYM = 0;
             return;

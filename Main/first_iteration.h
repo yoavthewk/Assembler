@@ -20,7 +20,7 @@ void firstIteration(char *file_name, FILE *fp, symbol_list* head, hregister* IC,
 * @param head head of the symbol list.
 * @return true if the label given is valid.
 */
-bool isValidLabel(char* label, symbol_list* head);
+bool is_valid_label(char* label, symbol_list* head);
 
 /**
 * @brief checks if the line contains label declaration.

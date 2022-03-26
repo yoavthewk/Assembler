@@ -2,7 +2,7 @@
 
 void second_iteration(char *line, int ICF, int line_number, symbol_list* head, PSW* flag_register){
     char* line_backup;
-    char** binary_encoding = (char**)malloc(ICF * sizeof(char*));
+    char* tok;
 
     line = parse_line_first_iteration(line, flag_register); /* getting the parsed command */
 
@@ -15,6 +15,8 @@ void second_iteration(char *line, int ICF, int line_number, symbol_list* head, P
     }
 
     contains_label(line_backup, head, line_number, flag_register);
+    strcpy(line_backup, line);
+    tok = strtok(line_backup, " ");
     strcpy(line_backup, line);
 
     if(is_data(line_backup, flag_register)){
@@ -30,6 +32,13 @@ void second_iteration(char *line, int ICF, int line_number, symbol_list* head, P
         handle_entry(line_backup, head, flag_register, line_number);
         return;
     }
+
+    if(flag_register->SYM){
+        memmove(line, line + strlen(tok) + 1, strlen(line)); /* skip the name of the symbol and a space */
+    }
+
+
+    
 }
 
 bool is_data(char *line, PSW* flag_register){
