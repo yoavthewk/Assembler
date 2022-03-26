@@ -101,26 +101,28 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     {
         if (action_table[action_index].operands == 1)
         {
+            arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
+            arr[list_index++] = encode_command_opcode(action_index);
             /* encode */
-            if (dst == IMMEDIATE || dst == REGISTER_DIRECT)
+            if (dst == IMMEDIATE)
             {
-                arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
-                arr[list_index++] = encode_command_opcode(action_index);
-                if (dst == IMMEDIATE)
-                {
-                    arr[list_index++] = encode_command_registers(0, 0, action_index, 0, dst, false);
-                    arr[list_index++] = encode_immediate(number);
-                }
-                else
-                {
-                    arr[list_index++] = encode_command_registers(0, number, action_index, 0, dst, false);
-                }
-                insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
+                arr[list_index++] = encode_command_registers(0, 0, action_index, 0, dst, false);
+                arr[list_index++] = encode_immediate(number);
             }
+            else{
+                int dst_register;
+                dst_register = dst == REGISTER_DIRECT ? number : dst == DIRECT ? 0 : index;
+
+                arr[list_index++] = encode_command_registers(0, dst_register, action_index, 0, dst, false);
+            }
+        
+            
+            insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
             IC->data += command_length;
             free(label);
             return;
         }
+
         /* not enough operands */
         throw_error("Not enough operands passsed!", line_number);
         free(label);
