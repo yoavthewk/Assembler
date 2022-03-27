@@ -1,6 +1,17 @@
 #include "second_iteration.h"
 #include <stdio.h>
 
+/**
+ * @brief the second iteration over the file.
+ * 
+ * @param file_name the file to iterate over.
+ * @param fp the file pointer.
+ * @param ICF the final IC.
+ * @param DCF the final DC.
+ * @param head the head of the symbol list.
+ * @param command_head the head of the command list.
+ * @param flag_register the flag register.
+ */
 void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *head, command_list *command_head, PSW *flag_register)
 {
     char *line = NULL;
@@ -27,6 +38,18 @@ void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *
     fclose(entfp);
 }
 
+/**
+ * @brief processes each line in the second iteration, it is the main logic function.
+ * 
+ * @param fp the file pointer of the extern file.
+ * @param line the line to process.
+ * @param ICF the final IC.
+ * @param line_number the current line number.
+ * @param head the head of the symbol list.
+ * @param command_head the head of the command list.
+ * @param flag_register the flag register.
+ * @param IC the current IC.
+ */
 void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register, int* IC)
 {
     char line_backup[MAX_LEN] = {0};
@@ -133,6 +156,13 @@ void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_
     free(line);
 }
 
+/**
+ * @brief returns the next IC.
+ * 
+ * @param IC the current IC
+ * @param head the head of the command list.
+ * @return int the next IC.
+ */
 int get_next_IC(int IC, command_list *head)
 {
     while (head)
@@ -144,6 +174,13 @@ int get_next_IC(int IC, command_list *head)
     return 0;
 }
 
+/**
+ * @brief checks if a command needs completion to it's encoding.
+ * 
+ * @param head the head of the command list.
+ * @param IC the current IC.
+ * @return true if it needs completion.
+ */
 bool need_completion(command_list *head, int IC)
 {
     do
@@ -156,6 +193,16 @@ bool need_completion(command_list *head, int IC)
     return false;
 }
 
+/**
+ * @brief completes the encoding of a certain command in the command list.
+ * 
+ * @param head the head of the symbol list.
+ * @param command_head the head of the command list.
+ * @param flag_register the flag register.
+ * @param fp the extern file file pointer.
+ * @param label the label to fill.
+ * @param IC the current IC.
+ */
 void fill_command_list(symbol_list *head, command_list **command_head, PSW *flag_register, FILE *fp, char *label, int IC)
 {
     int i;
@@ -208,6 +255,13 @@ void fill_command_list(symbol_list *head, command_list **command_head, PSW *flag
     tmp->arr[i] = encode_label_offset(head->s.value % 16, head->s.attributes[EXTERN]);
 }
 
+/**
+ * @brief checks if the line is data declaration.
+ *
+ * @param line the line to check.
+ * @param flag_register the flag register.
+ * @return true if the line is data declaration.
+ */
 bool is_data(char *line, PSW *flag_register)
 {
     char *cmd;
@@ -219,6 +273,14 @@ bool is_data(char *line, PSW *flag_register)
     return !strcmp(cmd, ".data") || !strcmp(cmd, ".string");
 }
 
+/**
+ * @brief handles entry declaration by updating the symbol list.
+ *
+ * @param line the line to check.
+ * @param head the head of the symbol list.
+ * @param flag_register the flag register.
+ * @param line_number the current line number.
+ */
 void handle_entry(char *line, symbol_list *head, PSW *flag_register, int line_number)
 {
     char *label_name;
@@ -248,6 +310,12 @@ void handle_entry(char *line, symbol_list *head, PSW *flag_register, int line_nu
     update_entry(head, label_name);
 }
 
+/**
+ * @brief writes the entries to the entry file.
+ * 
+ * @param fp the entry file pointer.
+ * @param head the head of the symbol list.
+ */
 void write_entry_to_file(FILE *fp, symbol_list *head)
 {
     do
@@ -259,12 +327,25 @@ void write_entry_to_file(FILE *fp, symbol_list *head)
     } while ((head = head->next));
 }
 
+/**
+ * @brief writes the externals to the extern file.
+ * 
+ * @param fp the extern file pointer.
+ * @param name the name of the extern.
+ * @param address the address of the word the extern is referenced in.
+ * @param second_address the address of the second word the extern is referenced in.
+ */
 void write_extern_to_file(FILE *fp, char *name, int address, int second_address)
 {
     fprintf(fp, "%s BASE %04d\n", name, address);
     fprintf(fp, "%s OFFSET %04d\n\n", name, second_address);
 }
 
+/**
+ * @brief append a string to the object file
+ * @param fp object file pointer
+ * @param word the word to append
+ */
 void append_to_object_file(FILE *fp, char *word)
 {
     if (fputs(word, fp) == EOF)
@@ -273,6 +354,14 @@ void append_to_object_file(FILE *fp, char *word)
     }
 }
 
+/**
+ * @brief writes the final encoding to the object file.
+ * 
+ * @param fp the object file pointer.
+ * @param IC the IC.
+ * @param DC the DC.
+ * @param head the command list head.
+ */
 void format_object_file(FILE *fp, int IC, int DC, command_list *head)
 {
     char str[WORD_SIZE] = {0}; /* creating a temporary string to hold the integers */
@@ -296,6 +385,13 @@ void format_object_file(FILE *fp, int IC, int DC, command_list *head)
     }
 }
 
+/**
+ * @brief this function creates a newly allocated substring from [start] to [end]
+ * @param line substring origin
+ * @param start the start index
+ * @param end the end index
+ * @return a newly allocated substring
+ */
 char *get_new_substring_with_indexes(char *line, int start, int end)
 {
     char *tmp = (char *)malloc(strlen(line));
@@ -309,6 +405,11 @@ char *get_new_substring_with_indexes(char *line, int start, int end)
     return tmp;
 }
 
+/**
+ * @brief this function coverts a binary string to special base
+ * @param line the binary string
+ * @return special base string 
+ */
 char *special_base(char *line)
 {
     int i = 0;
