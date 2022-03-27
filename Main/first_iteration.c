@@ -380,7 +380,7 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
             length++;
             if (length > LINES)
             {
-                arr = (char **)realloc(&arr, sizeof(char *) * length);
+                arr = (char **)realloc(arr, sizeof(char *) * length);
             }
             if (contains_space(data, flag_register))
             {
