@@ -2,7 +2,7 @@
 
 void parse_command(char *line, symbol_list *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
-    int i = 0, number = 0, number1 = 0, index = 0, index1 = 0;
+    int number = 0, number1 = 0, index = 0, index1 = 0;
     char *tok, line_backup[MAX_LEN] = {0}, tmp_tok[MAX_LEN] = {0};
     int command_length = 0;
     char **arr = NULL;
