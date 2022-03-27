@@ -34,7 +34,7 @@ void process_line(char *line, symbol_list *head, int line_number, hregister *IC,
     line = parse_line_first_iteration(line, flag_register); /* getting the parsed command */
     line[strcspn(line, "\n")] = 0;
     strcpy(line_backup, line);
-    if (!line[0])
+    if (!line[0] || line[0] == ';')
     {
         free(line);
         return;
