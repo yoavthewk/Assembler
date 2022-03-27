@@ -210,6 +210,10 @@ void handle_entry(char *line, symbol_list *head, PSW *flag_register, int line_nu
     /* skip the .entry */
     strtok(line, " ");
 
+    if(flag_register->SYM){
+        strtok(NULL, " ");
+    }
+
     /* get the symbol after .entry */
     label_name = strtok(NULL, " ");
 
@@ -218,6 +222,10 @@ void handle_entry(char *line, symbol_list *head, PSW *flag_register, int line_nu
         throw_error("Entry label does not exist!", line_number); /* Symbol does not exist */
         flag_register->ERR = 1;
         return;
+    }
+    else if(flag_register->SYM)
+    {
+        printf("Warning in line %d: Label and entry are declared in the same line.", line_number);
     }
     
     update_entry(head, label_name);
