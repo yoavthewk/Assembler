@@ -1,4 +1,4 @@
-#include "../Main/pre_assembler.h"
+#include "line_parsing.h"
 
 char *parse_line(char *line)
 {

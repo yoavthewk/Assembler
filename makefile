@@ -23,7 +23,7 @@ macro_parsing.o: Main/macro_parsing.c Main/pre_assembler.h
 macro_list.o: Utility/macro_list.c Utility/macro_list.h
 	$(CC) $(CFLAGS) Utility/macro_list.c
     
-line_parsing.o: Utility/line_parsing.c Main/pre_assembler.h
+line_parsing.o: Utility/line_parsing.c Utility/line_parsing.h
 	$(CC) $(CFLAGS) Utility/line_parsing.c -std=c90
     
 files.o: Utility/files.c Utility/files.h

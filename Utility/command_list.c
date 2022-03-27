@@ -1,5 +1,12 @@
 #include "command_list.h"
 
+/**
+ * This function create a new list node.
+ * Notice that the output is on the heap -
+ * meaning it has memory allocated to it.
+ * @param next optional, a pointer to the next node
+ * @return a new node for the list
+ */
 command_list *init_command_node(command_list *next, int L, int IC, bool data, char **str_array)
 {
     int i = 0;
@@ -28,6 +35,12 @@ command_list *init_command_node(command_list *next, int L, int IC, bool data, ch
     return tmp;
 }
 
+
+/**
+ * This function inserts a node to the end of the list
+ * @param head a pointer to the start of the list
+ * @param node the node to insert
+ */
 void insert_command_list(command_list **head, command_list *node)
 {
     command_list *temp = *head;
@@ -54,6 +67,11 @@ void insert_command_list(command_list **head, command_list *node)
     temp->next = node;
 }
 
+
+/**
+ * This function prints a string linked list
+ * @param head a pointer to the start of the list
+ */
 void print_command_list(command_list *head)
 {
     int i = 0;
@@ -73,6 +91,10 @@ void print_command_list(command_list *head)
     }
 }
 
+/**
+ * This function frees the list from the given node onwards
+ * @param node the node to free from
+ */
 void free_command_list(command_list *node)
 {
     command_list *tmp = node;
@@ -95,6 +117,11 @@ void free_command_list(command_list *node)
     node = NULL;
 }
 
+/**
+ * @brief Get the size of the command list
+ * @param head pointer to the head of the list
+ * @return size_t size of the list
+ */
 size_t get_command_size(command_list *head)
 {
     size_t size = 0;

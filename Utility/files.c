@@ -1,5 +1,10 @@
 #include "files.h"
 
+/*
+ * This function opens the file and returns the file pointer.
+ * Parameters:
+ * char* filename - the name of the file to open.
+ */
 FILE *open_file(char *filename, bool pre_assembled)
 {
     FILE *fp;
@@ -21,6 +26,11 @@ FILE *open_file(char *filename, bool pre_assembled)
     return fp;
 }
 
+/*
+ * This function reads the next line from a file.
+ * Parameters:
+ * FILE* fp - the file pointer.
+ */
 char *get_next_line(FILE *fp)
 {
     /* creating line of size 83 to get file input */
@@ -34,6 +44,11 @@ char *get_next_line(FILE *fp)
     return NULL;
 }
 
+/*
+ * This function opens or creates the pre assembler file and returns the file pointer.
+ * Parameters:
+ * char* filename - the name of the file to open.
+ */
 FILE *open_file_create(char *file_name)
 {
     FILE *fp;
@@ -46,6 +61,11 @@ FILE *open_file_create(char *file_name)
     return fp;
 }
 
+/*
+ * This function clears the pre-assembled file.
+ * Parameters:
+ * char* filename - the name of the file to open.
+ */
 int clear_file(char *file_name, char *extension)
 {
     FILE *fp; /* initiating a file pointer */
@@ -63,11 +83,22 @@ int clear_file(char *file_name, char *extension)
     return 0;
 }
 
+/*
+ * This function writes a line to the pre-assembled file.
+ * Parameters:
+ * FILE* fp - the file pointer.
+ * char* input - the line to write.
+ */
 void write_line(FILE *fp, char *input)
 {
     fprintf(fp, "%s", input);
 }
 
+/**
+ * @brief creates \ opens an object file.
+ * @param file_name the name of the file
+ * @return FILE* of the object file
+ */
 FILE *create_object_file(char *file_name)
 {
     FILE *object_fp;
@@ -81,6 +112,11 @@ FILE *create_object_file(char *file_name)
     return object_fp;
 }
 
+/**
+ * @brief creates \ opens an entry file.
+ * @param file_name the name of the file
+ * @return FILE* of the object file
+ */
 FILE *create_entry_file(char *file_name)
 {
     FILE *entry_fp;
@@ -94,6 +130,11 @@ FILE *create_entry_file(char *file_name)
     return entry_fp;
 }
 
+/**
+ * @brief creates \ opens an extern file.
+ * @param file_name the name of the file
+ * @return FILE* of the object file
+ */
 FILE *create_extern_file(char *file_name)
 {
     const int ext_length = 4;
@@ -107,6 +148,10 @@ FILE *create_extern_file(char *file_name)
     return ext_fp;
 }
 
+/**
+ * @brief deletes an object file.
+ * @param file_name the name of the file
+ */
 void delete_object_file(char *file_name)
 {
     const int ob_length = 3;
@@ -121,6 +166,10 @@ void delete_object_file(char *file_name)
     free(tmp_name);
 }
 
+/**
+ * @brief deletes an entry file.
+ * @param file_name the name of the file
+ */
 void delete_entry_file(char *file_name)
 {
     const int ob_length = 4;
@@ -135,6 +184,11 @@ void delete_entry_file(char *file_name)
     free(tmp_name);
 }
 
+
+/**
+ * @brief deletes an extern file.
+ * @param file_name the name of the file
+ */
 void delete_extern_file(char *file_name)
 {
     const int ob_length = 4;
@@ -149,6 +203,11 @@ void delete_extern_file(char *file_name)
     free(tmp_name);
 }
 
+
+/**
+ * @brief deletes an am file.
+ * @param file_name the name of the file
+ */
 void delete_am_file(char *file_name)
 {
     const int ob_length = 3;
