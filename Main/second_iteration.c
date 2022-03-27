@@ -11,15 +11,21 @@ void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *
 
     while ((line = get_next_line(fp)) != NULL)
     {
+        if(flag_register->ERR) flag_register->ENC = 1;
         second_line_process(extfp, line, ICF, line_number++, head, command_head, flag_register);
         free(line);
     }
-    print_command_list(command_head);
-    format_object_file(obfp, ICF, DCF, command_head);
-    write_entry_to_file(entfp, head);
+    if(!flag_register->ENC){
+        print_command_list(command_head);
+        format_object_file(obfp, ICF, DCF, command_head);
+        write_entry_to_file(entfp, head);
+    }
     fclose(obfp);
     fclose(extfp);
     fclose(entfp);
+    delete_extern_file(file_name);
+    delete_entry_file(file_name);
+    delete_am_file(file_name);
 }
 
 void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register)
