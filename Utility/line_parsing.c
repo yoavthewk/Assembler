@@ -32,6 +32,10 @@ char *parse_line(char *line)
             i++;
     }
 
+    if (strchr(line, '\n') == NULL)
+    {
+        return new_line;
+    }
     if (j <= 2)
     {
         new_line[0] = '\n';
