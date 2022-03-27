@@ -73,7 +73,11 @@ char *parse_line_first_iteration(char *line, PSW *flagRegister)
             i++;
     }
 
-    if (j <= 2)
+    if (strchr(line, '\n') == NULL)
+    {
+        return new_line;
+    }
+    else if (j <= 2)
     {
         new_line[0] = '\n';
         new_line[1] = 0;
