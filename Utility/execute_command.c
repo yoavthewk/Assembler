@@ -52,7 +52,7 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
     return;
 
 found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
-    if (flag_register->ERR || flag_register->ENC) return;
+    if (flag_register->ERR) return;
     
     strcpy(line, line_backup);
 
@@ -94,7 +94,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     return;
 
 found2:
-    if (flag_register->ERR || flag_register->ENC) return;
+    if (flag_register->ERR) return;
     
     /*            encode                */
     /************************************/
