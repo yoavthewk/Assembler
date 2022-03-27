@@ -9,6 +9,18 @@
 #define BASE 0
 #define OFFSET 0
 
+
+/**
+ * @brief performs the first iteration over the file.
+ * 
+ * @param file_name the file name.
+ * @param fp the file pointer.
+ * @param head the head of the symbol list.
+ * @param IC the instruction count.
+ * @param DC the data count.
+ * @param flagRegister the flag register.
+ * @param commad_head the head of the command list.
+ */
 void firstIteration(char *file_name, FILE *fp, symbol_list* head, hregister* IC, hregister* DC, PSW* flagRegister, command_list *commad_head);
 
 /* Helper Functions */
@@ -77,8 +89,8 @@ void process_data(char *line, hregister* DC, int line_number, PSW *flag_register
 bool handle_data(char *line, symbol_list *head, hregister* IC, hregister* DC, int line_number, PSW *flag_register, command_list *command_head);
 
 /**
- * @brief processes a command line, validates it, analyzes it and encodes it accordingly if it is valid. 
- *        If it isn't it throws an error.
+ * @brief processes a command line, validates it, analyzes it and encodes it accordingly if it is valid by calling a helper function. 
+ *        If it isn't it throws an error. 
  * 
  * @param line the line to process
  * @param head the head of the symbol list.

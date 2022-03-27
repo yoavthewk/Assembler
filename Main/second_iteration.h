@@ -1,7 +1,30 @@
 #include "first_iteration.h"
 
 
+/**
+ * @brief the second iteration over the file.
+ * 
+ * @param file_name the file to iterate over.
+ * @param fp the file pointer.
+ * @param ICF the final IC.
+ * @param DCF the final DC.
+ * @param head the head of the symbol list.
+ * @param command_head the head of the command list.
+ * @param flag_register the flag register.
+ */
+void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *head, command_list *command_head, PSW *flag_register);
+
+/* Helper Functions */
+
+/**
+ * @brief returns the next IC.
+ * 
+ * @param IC the current IC
+ * @param head the head of the command list.
+ * @return int the next IC.
+ */
 int get_next_IC(int IC, command_list *head);
+
 /**
  * @brief checks if the line is data declaration.
  *
@@ -51,18 +74,65 @@ char *special_base(char *line);
  */
 void append_to_object_file(FILE *fp, char *word);
 
-void write_value_offset(FILE* fp, symbol_list *head, char* label_name);
-
+/**
+ * @brief processes each line in the second iteration, it is the main logic function.
+ * 
+ * @param fp the file pointer of the extern file.
+ * @param line the line to process.
+ * @param ICF the final IC.
+ * @param line_number the current line number.
+ * @param head the head of the symbol list.
+ * @param command_head the head of the command list.
+ * @param flag_register the flag register.
+ * @param IC the current IC.
+ */
 void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register, int* IC);
 
+/**
+ * @brief writes the entries to the entry file.
+ * 
+ * @param fp the entry file pointer.
+ * @param head the head of the symbol list.
+ */
 void write_entry_to_file(FILE* fp, symbol_list *head);
 
+/**
+ * @brief writes the externals to the extern file.
+ * 
+ * @param fp the extern file pointer.
+ * @param name the name of the extern.
+ * @param address the address of the word the extern is referenced in.
+ * @param second_address the address of the second word the extern is referenced in.
+ */
 void write_extern_to_file(FILE* fp, char* name, int address, int second_address);
 
+/**
+ * @brief checks if a command needs completion to it's encoding.
+ * 
+ * @param head the head of the command list.
+ * @param IC the current IC.
+ * @return true if it needs completion.
+ */
 bool need_completion(command_list *head, int IC);
 
+/**
+ * @brief completes the encoding of a certain command in the command list.
+ * 
+ * @param head the head of the symbol list.
+ * @param command_head the head of the command list.
+ * @param flag_register the flag register.
+ * @param fp the extern file file pointer.
+ * @param label the label to fill.
+ * @param IC the current IC.
+ */
 void fill_command_list(symbol_list *head, command_list **command_head, PSW* flag_register, FILE* fp, char* label, int IC);
 
-void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *head, command_list *command_head, PSW *flag_register);
-
+/**
+ * @brief writes the final encoding to the object file.
+ * 
+ * @param fp the object file pointer.
+ * @param IC the IC.
+ * @param DC the DC.
+ * @param head the command list head.
+ */
 void format_object_file(FILE *fp, int IC, int DC, command_list *head);

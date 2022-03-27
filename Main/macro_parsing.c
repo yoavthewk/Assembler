@@ -133,6 +133,13 @@ bool has_space(char *name)
     return false;
 }
 
+/*
+ * This function pre-assembles the input file.
+ * Parameters:
+ * char* file_name - the name of the input file.
+ * FILE* fp - the file pointer of the input file.
+ * head - the head of the macro list.
+ */
 void preassemble(char *file_name, FILE *fp, macro_list *head)
 {
     char *line;

@@ -1,5 +1,11 @@
 #include "symbol_list.h"
 
+/*
+ * This function creates a node and allocates memory to it
+ * Input: the next node, the name of the curr node, the value of the current node, the addr of the node,
+ * the offset of the node, the attributes of the node.
+ * Output: none
+ */
 symbol_list *init_symbol_node(symbol_list *next, char name[], unsigned int value, unsigned int addr, unsigned int offset, bool att[])
 {
     int i = 0;
@@ -21,6 +27,11 @@ symbol_list *init_symbol_node(symbol_list *next, char name[], unsigned int value
     return node;
 }
 
+/*
+ * This function releases the memory allocated to the linked list
+ * Input: the head of the list
+ * Output: none
+ */
 void free_symbol_list(symbol_list *head)
 {
     symbol_list *temp;
@@ -32,6 +43,11 @@ void free_symbol_list(symbol_list *head)
     }
 }
 
+/*
+ * This function inserts a node at the end of the list
+ * Input: the head of the list, the node to insert, is new file
+ * Output: none
+ */
 void insert_symbol(symbol_list **head, symbol_list *node)
 {
     symbol_list *temp = *head;
@@ -59,6 +75,11 @@ void insert_symbol(symbol_list **head, symbol_list *node)
     temp->next = node;
 }
 
+/*
+ * This function returns the size of a linked list
+ * Input: the head of the list
+ * Output: the size of the list
+ */
 int get_symbol_list_size(symbol_list *head)
 {
     if (!head->next)
@@ -68,6 +89,11 @@ int get_symbol_list_size(symbol_list *head)
     return get_symbol_list_size(head->next) + 1;
 }
 
+/*
+* This function checks if the symbol list contains a symbol by name
+* Input: the head of the list, the name to find
+* Output: true if name in list
+*/
 bool contains(symbol_list *head, char *name)
 {
     do
@@ -78,6 +104,11 @@ bool contains(symbol_list *head, char *name)
     return false;
 }
 
+/*
+* This function updates an attribute in a node, by name
+* Input: the head, and the name of the node to update
+* Output: none
+*/
 void update_entry(symbol_list* head, char *name){
     do
     {
@@ -88,6 +119,11 @@ void update_entry(symbol_list* head, char *name){
     } while ((head = head->next));
 }
 
+/*
+* This function prints the symbol list
+* Input: the head of the list
+* Output: none
+*/
 void print_symbol_list(symbol_list *head)
 {
     while (head)

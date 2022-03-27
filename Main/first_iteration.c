@@ -1,5 +1,16 @@
 #include "first_iteration.h"
 
+/**
+ * @brief performs the first iteration over the file.
+ * 
+ * @param file_name the file name.
+ * @param fp the file pointer.
+ * @param head the head of the symbol list.
+ * @param IC the instruction count.
+ * @param DC the data count.
+ * @param flagRegister the flag register.
+ * @param commad_head the head of the command list.
+ */
 void firstIteration(char *file_name, FILE *fp, symbol_list *head, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
     int line_number = 1;
@@ -20,9 +31,18 @@ void firstIteration(char *file_name, FILE *fp, symbol_list *head, hregister *IC,
     }
 }
 
-/*
-    This method processes the line given and analyzes it, it is the main logic of first iteration.
-*/
+/**
+ * @brief processes a command line, validates it, analyzes it and encodes it accordingly if it is valid by calling a helper function. 
+ *        If it isn't it throws an error. 
+ * 
+ * @param line the line to process
+ * @param head the head of the symbol list.
+ * @param line_number the number of the current line.
+ * @param IC the instruction count.
+ * @param DC the data count.
+ * @param flag_register the flag register.
+ * @param command_head the head of the command list.
+ */
 void process_line(char *line, symbol_list *head, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
     /* Initialization of variables */
@@ -147,6 +167,12 @@ void process_line(char *line, symbol_list *head, int line_number, hregister *IC,
     free(line);
 }
 
+/**
+ * @brief checks for illegal commas error in the line.
+ * 
+ * @param line the line to check.
+ * @param flag_register the flag register.
+ */
 void check_illegal_commas(char *line, PSW *flag_register)
 {
     int i, comma_count = 0;
@@ -159,6 +185,15 @@ void check_illegal_commas(char *line, PSW *flag_register)
     flag_register->ERR = comma_count >= 2 ? 1 : flag_register->ERR;
 }
 
+/**
+ * @brief checks whether there's an extraneous text error in the line.
+ * 
+ * @param line the line to check.
+ * @param operands the number of operands of the command.
+ * @param flag_register the flag register.
+ * @param line_number the current line number
+ * @return true if there is an extraneous text error.
+ */
 bool extraneous_text(char *line, int operands, PSW *flag_register, int line_number)
 {
     char *tok;
@@ -197,6 +232,11 @@ bool extraneous_text(char *line, int operands, PSW *flag_register, int line_numb
     return false;
 }
 
+/**
+* @brief helper function of is_valid_label, checks if the name of the label is valid.
+*
+* @param name name to check.
+*/
 bool is_valid_label_name(char *name)
 {
     bool valid = true;
@@ -244,11 +284,25 @@ bool is_valid_label_name(char *name)
     return valid;
 }
 
+/**
+* @brief checks if a label is valid.
+*
+* @param label label to check.
+* @param head head of the symbol list.
+* @return true if the label given is valid.
+*/
 bool is_valid_label(char *label, symbol_list *head)
 {
     return is_valid_label_name(label) && !contains(head, label);
 }
 
+/**
+* @brief helper function of is_valid_extern, checks if the symbol is already
+         in the symbol list without the extern attribute.
+*
+* @param head the head of the symbol list.
+* @param name name to check.
+*/
 bool contains_not_extern(symbol_list *head, char *name)
 {
     do
@@ -259,11 +313,27 @@ bool contains_not_extern(symbol_list *head, char *name)
     return false;
 }
 
+/**
+ * @brief helper function of handle_extern, checks if the extern is valid.
+ * 
+ * @param label the extern name.
+ * @param head the head of the symbol list.
+ * @return true if it is valid.
+ */
 bool is_valid_extern(char *label, symbol_list *head)
 {
     return !contains_not_extern(head, label) && is_valid_label_name(label);
 }
 
+/**
+ * @brief handles a line with extern declaration by checking whether it's valid and if so
+ *        adding it to the symbol list.
+ * 
+ * @param line the line to handle.
+ * @param head the head of the symbol list.
+ * @param line_number the number of the current line.
+ * @param flag_register the flag register.
+ */
 void handle_extern(char *line, symbol_list *head, int line_number, PSW *flag_register)
 {
     /* get the name of the symbol first */
@@ -285,6 +355,13 @@ void handle_extern(char *line, symbol_list *head, int line_number, PSW *flag_reg
     insert_symbol(&head, init_symbol_node(NULL, name, 0, 0, 0, att));
 }
 
+/**
+ * @brief updates the symbol list after the first iteration by re-adjusting the value, offset 
+ *        and base address of data lines (value --> value + ICF).
+ * 
+ * @param head the head of the symbol list.
+ * @param IC the instruction count.
+ */
 void update_symbol_list(symbol_list *head, hregister *IC)
 {
     symbol_list *temp = head;
@@ -300,6 +377,13 @@ void update_symbol_list(symbol_list *head, hregister *IC)
     }
 }
 
+/**
+ * @brief updates the command list after the first iteration by re-adjusting 
+ *        the IC of data lines (IC --> IC + ICF).
+ * 
+ * @param head the head of the command list.
+ * @param IC the final instruction count.
+ */
 void update_command_list(command_list *head, hregister *IC)
 {
     command_list *temp = head;
@@ -313,6 +397,14 @@ void update_command_list(command_list *head, hregister *IC)
     }
 }
 
+/**
+* @brief checks if the line contains label declaration.
+*
+* @param line line to check.
+* @param head head of the symbol list.
+* @param line_number the number of the current line.
+* @param flag_register the flag register.
+*/
 void contains_label(char *line, symbol_list *head, int line_number, PSW *flag_register)
 {
     char *canBeLabel = strtok(line, " "); /* get the first (or only) word in the line. */
@@ -335,6 +427,18 @@ void contains_label(char *line, symbol_list *head, int line_number, PSW *flag_re
     }
 }
 
+/**
+* @brief handles a line with data initialization.
+*
+* @param line line to handle.
+* @param head head of the symbol list.
+* @param DC the instruction count.
+* @param DC the data count.
+* @param line_number the number of the current line.
+* @param flag_register the flag register.
+* @param command_head the head of the command list.
+* @return true if there's data initialization.
+*/
 bool handle_data(char *line, symbol_list *head, hregister *IC, hregister *DC, int line_number, PSW *flag_register, command_list *command_head)
 {
     char lineBackup[MAX_LEN] = {0}, name[MAX_LEN] = {0};
@@ -367,6 +471,16 @@ bool handle_data(char *line, symbol_list *head, hregister *IC, hregister *DC, in
     return false;
 }
 
+/**
+* @brief processes the data from the line, validates it and encodes it.
+*
+* @param line line to process.
+* @param DC the data count.
+* @param line_number the number of the current line.
+* @param flag_register the flag register.
+* @param head the head of the command list.
+* @return true if there's a declaration of an entry.
+*/
 void process_data(char *line, hregister *DC, int line_number, PSW *flag_register, command_list *head)
 {
     int num, i, list_index = 0, length = 0;
@@ -429,6 +543,13 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
     }
 }
 
+/**
+* @brief checks if there's a declaration of an extern in the line.
+*
+* @param line line to check.
+* @param flag_register the flag register.
+* @return true if there's a declaration of an extern.
+*/
 bool is_extern(char *line, PSW *flag_register)
 {
     char *cmd;
@@ -437,6 +558,13 @@ bool is_extern(char *line, PSW *flag_register)
     /* else: if(flag_register.SYM) show error return false... else return !strcmp(cmd, ".extern"); */
 }
 
+/**
+* @brief checks if theres a declaration of an entry in the line.
+*
+* @param line line to check.
+* @param flag_register the flag register.
+* @return true if there's a declaration of an entry.
+*/
 bool is_entry(char *line, PSW *flag_register)
 {
     char *cmd;
@@ -444,6 +572,13 @@ bool is_entry(char *line, PSW *flag_register)
     return flag_register->SYM ? !strcmp(strtok(NULL, " "), ".entry") : !strcmp(cmd, ".entry");
 }
 
+/**
+ * @brief checks if the data contains a space
+ * 
+ * @param data the data to check.
+ * @param flag_register the flag register.
+ * @return true if it contains a space.
+ */
 bool contains_space(char *data, PSW *flag_register)
 {
     int i = 0;
