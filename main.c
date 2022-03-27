@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
         flag_register->SYM = 0;
         flag_register->ENC = 0;
 
-        macro_head = init_node(NULL, "mov", "NULL");
+        macro_head = init_node(NULL, "fish", "fish");
         symbol_head = init_symbol_node(NULL, "1", 'h', 220, 10, test);
         test_arr = (char **)calloc(sizeof(char *) * LINES, sizeof(char *));
         for (i = 0; i < LINES; i++)

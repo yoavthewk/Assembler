@@ -4,12 +4,12 @@ macro_list* init_node(macro_list* next, char* name, char* content)
 {
     macro_list* node = (macro_list*)malloc(sizeof(macro_list));
     if(content != NULL){
-        node->m.data = (char*)malloc(strlen(content) + 1);
+        node->m.data = (char*)malloc(SIZE_OF_COMMAND);
         strcpy(node->m.data, content);
     }
 
     if(name != NULL){
-        node->m.name = (char*)malloc(strlen(name) + 1);
+        node->m.name = (char*)malloc(SIZE_OF_COMMAND);
         strcpy(node->m.name, name);    
     }
 
@@ -32,9 +32,8 @@ void free_macro_list(macro_list *head)
 void insert_at_end(macro_list** head, macro_list* node)
 {
     macro_list * temp = *head;
-    int i = 0;
     
-    if (!strcmp(temp->m.name, "mov"))
+    if (!strcmp(temp->m.name, "fish") && !strcmp(temp->m.data, "fish"))
     {
         temp->next = node->next;
         strcpy(temp->m.name, node->m.name);

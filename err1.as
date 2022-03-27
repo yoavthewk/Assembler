@@ -1,5 +1,5 @@
 ; This is a program with errors
-
+ 
 ; 1 - ERROR in err1.am line 4 - label can't be a register
 r3: add r3,r15 
 ; 2 - ERROR in err1.am line 6 - label can't be a command name
@@ -35,4 +35,3 @@ mov r3,A[r1]
 mov r3,A[rrrr]
 ; 17 - ERROR in err1.am line 37 - Add Mode Index must have ] after the reg
 mov r3,A[r12A]
-

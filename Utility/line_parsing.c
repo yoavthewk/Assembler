@@ -34,6 +34,7 @@ char *parse_line(char *line)
 
     if (strchr(line, '\n') == NULL)
     {
+        free(line);
         return new_line;
     }
     if (j <= 2)
