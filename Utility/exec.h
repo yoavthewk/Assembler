@@ -140,6 +140,10 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
 
 int find_addressing(char* tok, int* index, int* command_length, int* number, const int action_index, const int line_number, symbol_list* head, PSW* flag_register, bool is_second);
 
+void encode_one_operand(int action_index, command_list* command_head, int dst, int number, int index, int IC, int command_length);
+
+void encode_two_operand(command_list* command_head, int action_index, int number, int number1, int index, int index1, int src, int dst, int IC, int command_length);
+
 struct
 {
 	char name[8];

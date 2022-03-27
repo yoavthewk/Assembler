@@ -2,7 +2,7 @@
 
 void parse_command(char *line, symbol_list *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
-    int i = 0, number = 0, number1 = 0, index = 0, index1 = 0, list_index = 0;
+    int i = 0, number = 0, number1 = 0, index = 0, index1 = 0;
     char *tok, line_backup[MAX_LEN] = {0}, tmp_tok[MAX_LEN] = {0};
     int command_length = 0;
     char **arr = NULL;
@@ -17,7 +17,7 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
             command_length += 1;
             if (!flag_register->ENC) {
                 arr = (char **) calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
-                arr[list_index] = encode_command_opcode(action_index);
+                arr[0] = encode_command_opcode(action_index);
                 insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
             }
             IC->data += command_length;
@@ -46,20 +46,13 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
         goto found;
 
     /* alert error */
-    if (flag_register->ERR)
-    {
-        return;
-    }
+    if (flag_register->ERR) return;
     throw_error("Invalid or missing first operand!\n", line_number);
     /* break */
     return;
 
 found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
-    if (flag_register->ERR || flag_register->ENC)
-    {
-        return;
-    }
-    dst = i; /* get the addressing */
+    if (flag_register->ERR || flag_register->ENC) return;
     
     strcpy(line, line_backup);
 
@@ -71,24 +64,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     {
         if (action_table[action_index].operands == 1)
         {
-            arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
-            arr[list_index++] = encode_command_opcode(action_index);
-            /* encode */
-            if (dst == IMMEDIATE)
-            {
-                arr[list_index++] = encode_command_registers(0, 0, action_index, 0, dst, false);
-                arr[list_index++] = encode_immediate(number);
-            }
-            else
-            {
-                int dst_register;
-                dst_register = dst == REGISTER_DIRECT ? number : dst == DIRECT ? 0
-                                                                               : index;
-
-                arr[list_index++] = encode_command_registers(0, dst_register, action_index, 0, dst, false);
-            }
-
-            insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
+            encode_one_operand(action_index, command_head, dst, number, index, IC->data, command_length);
             IC->data += command_length;
             return;
         }
@@ -103,64 +79,26 @@ found: /* it means the first operand is being addressed in a valid way, therefor
         return;
     }
 
-    strcpy(line_backup, tok);
-    strcpy(tmp_tok, tok);
-
     /*
        we find the addressing mode of the second operand
     */
-    if ((dst = find_addressing(tok, &index1, &command_length, &number1, action_index, line_number, head, flag_register, true)) != -1)
+    if ((src = find_addressing(tok, &index1, &command_length, &number1, action_index, line_number, head, flag_register, true)) != -1)
         goto found2;
 
     /* alert error and break */
-    if (flag_register->ERR) {
-        return;
-    }
+    if (flag_register->ERR) return;
+
     fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
     flag_register->ERR = 1;
     return;
-found2:
-    if (flag_register->ERR || flag_register->ENC)
-    {
-        return;
-    }
-    src = i;
 
+found2:
+    if (flag_register->ERR || flag_register->ENC) return;
+    
     /*            encode                */
     /************************************/
-    arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
-    arr[list_index++] = encode_command_opcode(action_index);
-
-    if (src == REGISTER_DIRECT && dst == REGISTER_DIRECT)
-    {
-        arr[list_index++] = encode_command_registers(number1, number, action_index, src, dst, true);
-    }
-    else
-    {
-        int dst_register, src_register;
-        dst_register = dst == REGISTER_DIRECT ? number : dst == DIRECT ? 0
-                                                                       : index;
-        src_register = src == REGISTER_DIRECT ? number1 : src == DIRECT ? 0
-                                                                        : index1;
-        arr[list_index++] = encode_command_registers(src_register, dst_register, action_index, src, dst, true);
-    }
-
-    if (src == IMMEDIATE && dst == IMMEDIATE)
-    {
-        arr[list_index++] = encode_immediate(number);
-        arr[list_index++] = encode_immediate(number1);
-    }
-    else if (src == IMMEDIATE)
-    {
-        arr[list_index + 2] = encode_immediate(number1); /* we leave 2 spots for the labels */
-    }
-    else if (dst == IMMEDIATE)
-    {
-        arr[list_index++] = encode_immediate(number);
-    }
-
-    insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
+    encode_two_operand(command_head, action_index, number, number1, index, index1, src, dst, IC->data, command_length);
     /**********************************************************/
 
     IC->data += command_length;
@@ -211,3 +149,64 @@ int find_addressing(char* tok, int* index, int* command_length, int* number, con
     }
     return -1;
 }
+
+void encode_one_operand(int action_index, command_list* command_head, int dst, int number, int index, int IC, int command_length){
+    int list_index = 0;
+    char** arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
+    arr[list_index++] = encode_command_opcode(action_index);
+
+    /* encode */
+    if (dst == IMMEDIATE)
+    {
+        arr[list_index++] = encode_command_registers(0, 0, action_index, 0, dst, false);
+        arr[list_index++] = encode_immediate(number);
+    }
+    else
+    {
+        int dst_register;
+        dst_register = dst == REGISTER_DIRECT ? number : dst == DIRECT ? 0
+                                                                    : index;
+
+        arr[list_index++] = encode_command_registers(0, dst_register, action_index, 0, dst, false);
+    }
+
+    insert_command_list(&command_head, init_command_node(NULL, command_length, IC, false, arr));
+}
+
+void encode_two_operand(command_list* command_head, int action_index, int number, int number1, int index, int index1, int src, int dst, int IC, int command_length){
+    int list_index = 0;
+    char** arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
+
+    arr[list_index++] = encode_command_opcode(action_index);
+
+    if (src == REGISTER_DIRECT && dst == REGISTER_DIRECT)
+    {
+        arr[list_index++] = encode_command_registers(number1, number, action_index, src, dst, true);
+    }
+    else
+    {
+        int dst_register, src_register;
+        dst_register = dst == REGISTER_DIRECT ? number : dst == DIRECT ? 0
+                                                                       : index;
+        src_register = src == REGISTER_DIRECT ? number1 : src == DIRECT ? 0
+                                                                        : index1;
+        arr[list_index++] = encode_command_registers(src_register, dst_register, action_index, src, dst, true);
+    }
+
+    if (src == IMMEDIATE && dst == IMMEDIATE)
+    {
+        arr[list_index++] = encode_immediate(number);
+        arr[list_index++] = encode_immediate(number1);
+    }
+    else if (src == IMMEDIATE)
+    {
+        arr[list_index + 2] = encode_immediate(number1); /* we leave 2 spots for the labels */
+    }
+    else if (dst == IMMEDIATE)
+    {
+        arr[list_index++] = encode_immediate(number);
+    }
+
+    insert_command_list(&command_head, init_command_node(NULL, command_length, IC, false, arr));
+}
+
