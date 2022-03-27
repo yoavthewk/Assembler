@@ -33,7 +33,7 @@ void insert_at_end(macro_list** head, macro_list* node)
 {
     macro_list * temp = *head;
     
-    if (!strcmp(temp->m.name, "fish") && !strcmp(temp->m.data, "fish"))
+    if (!strcmp(temp->m.name, DEFAULT_MACRO_NAME) && !strcmp(temp->m.data, DEFAULT_MACRO_NAME))
     {
         temp->next = node->next;
         strcpy(temp->m.name, node->m.name);

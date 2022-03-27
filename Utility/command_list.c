@@ -46,7 +46,7 @@ void insert_command_list(command_list **head, command_list *node)
     command_list *temp = *head;
     int i = 0;
 
-    if (!strcmp(temp->arr[0], "?"))
+    if (!strcmp(temp->arr[0], DEFAULT_COMMAND_DATA))
     {
         temp->next = node->next;
         temp->IC = node->IC;

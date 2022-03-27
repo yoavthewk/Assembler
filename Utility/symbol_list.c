@@ -53,7 +53,7 @@ void insert_symbol(symbol_list **head, symbol_list *node)
     symbol_list *temp = *head;
     int i = 0;
     
-    if (!strcmp(temp->s.name, "1"))
+    if (!strcmp(temp->s.name, DEFAULT_SYMBOL_NAME))
     {
         temp->next = node->next;
         strcpy(temp->s.name, node->s.name);

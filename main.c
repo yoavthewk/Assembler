@@ -31,13 +31,13 @@ int main(int argc, char *argv[])
         flag_register->SYM = 0;
         flag_register->ENC = 0;
 
-        macro_head = init_node(NULL, "fish", "fish");
-        symbol_head = init_symbol_node(NULL, "1", 'h', 220, 10, test);
+        macro_head = init_node(NULL, DEFAULT_MACRO_NAME, DEFAULT_MACRO_NAME);
+        symbol_head = init_symbol_node(NULL, DEFAULT_SYMBOL_NAME, 'h', 220, 10, test);
         test_arr = (char **)calloc(sizeof(char *) * LINES, sizeof(char *));
         for (i = 0; i < LINES; i++)
         {
             test_arr[i] = (char *)malloc(MAX_LEN);
-            strcpy(test_arr[i], "?");
+            strcpy(test_arr[i], DEFAULT_COMMAND_DATA);
         }
         command_head = init_command_node(NULL, 4, 1, 1, test_arr);
         /* ************************************************************ */

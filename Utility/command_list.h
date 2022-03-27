@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define DEFAULT_COMMAND_DATA "?"
 #define ENCODE_LENGTH 21
 #define LINES 4
 

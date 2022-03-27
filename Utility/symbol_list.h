@@ -1,6 +1,7 @@
 #ifndef SYMBOL_LIST_SEEN
 #define SYMBOL_LIST_SEEN
 #define SYMBOL_SIZE 83
+#define DEFAULT_SYMBOL_NAME "1"
 #define ENTRY 1
 #include <stdlib.h>
 #include <stdbool.h>

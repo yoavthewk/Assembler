@@ -17,7 +17,6 @@ END:    stop
 STR:   .string "abcd"
 LIST:  .data 6, -9
        .data -100
-       .data 10000000000
 
 .entry K
 K: .data 31

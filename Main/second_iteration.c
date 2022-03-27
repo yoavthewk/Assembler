@@ -29,7 +29,6 @@ void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *
     }
     if (!flag_register->ENC)
     {
-        print_command_list(command_head);
         format_object_file(obfp, ICF, DCF, command_head);
         write_entry_to_file(entfp, head);
     }

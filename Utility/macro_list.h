@@ -6,6 +6,7 @@
 #include <string.h>
 
 #define SIZE_OF_COMMAND 83
+#define DEFAULT_MACRO_NAME "fish"
 
 /*
 * Struct to represent a macro in the form of {name: data}

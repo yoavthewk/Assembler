@@ -26,8 +26,6 @@ void firstIteration(char *file_name, FILE *fp, symbol_list *head, hregister *IC,
     {
         update_symbol_list(head, IC);
         update_command_list(command_head, IC);
-        print_command_list(command_head);
-        print_symbol_list(head);
     }
 }
 
@@ -499,6 +497,7 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
             if (contains_space(data, flag_register))
             {
                 throw_error("Extraneous text!", line_number);
+                flag_register->ENC = 1;
                 for (i = 0; i < list_index; i++)
                 {
                     free(arr[i]);
@@ -510,6 +509,7 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
             if (flag_register->ERR || num > MAX_NUM || num < MIN_NUM)
             {
                 /* alert error */
+                flag_register->ENC = 1;
                 throw_error("Invalid number entered!", line_number);
                 for (i = 0; i < list_index; i++)
                 {
@@ -530,8 +530,6 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
         {
             arr = (char **)realloc(arr, sizeof(char *) * (strlen(data) + 1));
         }
-        /*printf("%s\n", data);
-        data = strtok(NULL, "\"");*/
         for (i = 0; data[i] != 0; i++)
         {
             arr[list_index++] = encode_immediate(data[i]);
