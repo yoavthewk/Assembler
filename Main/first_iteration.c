@@ -21,7 +21,7 @@ void firstIteration(char *file_name, FILE *fp, symbol_list *head, hregister *IC,
 }
 
 /*
-    This method processes the line given and analyzes it
+    This method processes the line given and analyzes it, it is the main logic of first iteration.
 */
 void process_line(char *line, symbol_list *head, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
@@ -380,7 +380,7 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
             length++;
             if (length > LINES)
             {
-                arr = (char **)realloc(arr, sizeof(char *) * length);
+                arr = (char **)realloc(&arr, sizeof(char *) * length);
             }
             if (contains_space(data, flag_register))
             {
@@ -389,12 +389,11 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
                 {
                     free(arr[i]);
                 }
-
                 free(arr);
                 return;
             }
             num = get_number(data, flag_register);
-            if (flag_register->ERR)
+            if (flag_register->ERR || num > MAX_NUM || num < MIN_NUM)
             {
                 /* alert error */
                 throw_error("Invalid number entered!", line_number);
