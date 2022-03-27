@@ -1,6 +1,12 @@
 #include "exec.h"
 
-int getNumber(char *num, PSW *flag_register)
+/**
+* @brief getting a number from a string
+* @param num the number
+* @param flag_register a pointer to the special flag register
+* @return the number from the string
+*/
+int get_number(char *num, PSW *flag_register)
 {
 	int i = 0;
 	int j = 0;
@@ -17,7 +23,14 @@ int getNumber(char *num, PSW *flag_register)
 	return atoi(number);
 }
 
-bool is_immediate(char *line, int *number, PSW *flag_register)
+/**
+* @brief checks if an operand is using immediate addressing
+* @param line pointer to the line to check
+* @param number pointer to the number addressed
+* @param flag_register pointer to the flag register
+* @return true if addressing method is immediate
+*/
+bool is_immediate(char *line, int *number, PSW *flag_register, int line_number)
 {
 	char *binary_line;
 
@@ -26,7 +39,13 @@ bool is_immediate(char *line, int *number, PSW *flag_register)
 		return false;
 	memmove(line, line + 1, strlen(line)); /* skip over it */
 
-	*number = getNumber(line, flag_register); /* get the argument */
+	*number = get_number(line, flag_register); /* get the argument */
+
+	if(*number > MAX_NUM || *number < MIN_NUM){
+		flag_register->ERR = 1;
+		throw_error("Immediate is too big!", line_number);
+	}
+
 	if (flag_register->ERR)
 	{
 		return false;
@@ -37,7 +56,13 @@ bool is_immediate(char *line, int *number, PSW *flag_register)
 	return true;
 }
 
-bool is_direct(char *line, int *address, symbol_list *head)
+/**
+* @brief checks if an operand is using direct addressing
+* @param line pointer to the line to check
+* @param head pointer to the head of the symbol list
+* @return true if addressing method is direct
+*/
+bool is_direct(char *line, symbol_list *head)
 {
 	if (line)
 	{
@@ -59,20 +84,24 @@ bool is_direct(char *line, int *address, symbol_list *head)
 	return false;
 }
 
-bool is_index(char *line, char *label, int *index, PSW *flag_register, int line_number)
+/**
+* @brief checks if an operand is using index addressing
+* @param line pointer to the line to check
+* @param flag_register pointer to the special flag register
+* @param line_number number of current line
+* @return true if addressing method is index
+*/
+bool is_index(char *line, int *index, PSW *flag_register, int line_number)
 {
 	char *tok;
 	tok = strtok(line, "[");
 	if (tok != NULL)
 	{
-		/* check if tok is in the symbol table */
-		strcpy(label, tok);
-		/* if it is: */
 		tok = strtok(NULL, "]");
 		if (tok && tok[0] == 'r')
 		{
 			memmove(tok, tok + 1, strlen(tok));
-			*index = getNumber(tok, flag_register);
+			*index = get_number(tok, flag_register);
 			if (flag_register->ERR == 1)
 			{
 				/* index is illegal */
@@ -92,12 +121,19 @@ bool is_index(char *line, char *label, int *index, PSW *flag_register, int line_
 	return false;
 }
 
+/**
+* @brief checks if an operand is using register-direct addressing
+* @param line pointer to the line to check
+* @param number the number addressed
+* @param flag_register pointer to the special flag register
+* @return true if operand is using register-direct addressing
+*/
 bool is_register_direct(char *line, int *number, PSW *flag_register)
 {
 	if (line[0] == 'r')
 	{
 		memmove(line, line + 1, strlen(line));
-		*number = getNumber(line, flag_register);
+		*number = get_number(line, flag_register);
 
 		if (flag_register->ERR || (*number < 0 || *number > 15))
 		{
@@ -108,11 +144,21 @@ bool is_register_direct(char *line, int *number, PSW *flag_register)
 	return false;
 }
 
+/**
+* @brief throws an error message
+* @param message the error
+* @param line_number the no. of the line in which the error occured
+*/
 void throw_error(char *message, int line_number)
 {
 	printf("Line %d: %s\n", line_number, message);
 }
 
+/**
+* @brief encoding an immediate operand
+* @param num the immediate number
+* @return the encoded operand
+*/
 char *encode_immediate(int num)
 {
 	const size_t BITS = 16;
@@ -138,6 +184,11 @@ char *encode_immediate(int num)
 	return bin_str;
 }
 
+/**
+* @brief encoding the opcode
+* @param action_index index of the action in the action table
+* @return the encoding of the opcode
+*/
 char *encode_command_opcode(int action_index)
 {
 	const size_t ARE_SIZE = 3;
@@ -163,6 +214,12 @@ char *encode_command_opcode(int action_index)
 	return bin_str;
 }
 
+/**
+* @brief encoding the label value.
+* @param value the value to encode.
+* @param external whether the label is external or not.
+* @return the encoded line.
+*/
 char *encode_label_value(int value, bool external)
 {
     int mask = 0;
@@ -191,6 +248,12 @@ char *encode_label_value(int value, bool external)
     return bin_str;
 }
 
+/**
+* @brief encoding the label offset.
+* @param offset the offset to encode.
+* @param external whether the label is external or not.
+* @return the encoded line.
+*/
 char *encode_label_offset(int offset, bool external)
 {
     int mask = 0;
@@ -219,6 +282,15 @@ char *encode_label_offset(int offset, bool external)
 	return bin_str;
 }
 
+/**
+* @brief encoding the registers.
+* @param src the source register number.
+* @param dst the destination register number.
+* @param action_index index of the action in the action table
+* @param src_addressing the source addressing mode.
+* @param dst_addressing the destination addressing mode.
+* @param two_operands true if the command has two operands.
+*/
 char *encode_command_registers(int src, int dst, int action_index, int src_addressing, int dst_addressing, bool two_operands)
 {
 	const size_t ADDRESSING = 2;
@@ -287,6 +359,11 @@ char *encode_command_registers(int src, int dst, int action_index, int src_addre
 	return bin_str;
 }
 
+/**
+* @brief checks whether a line is empty
+* @param line pointer to the line to check
+* @return true if empty
+*/
 bool is_empty_line(char *line)
 {
 	int i;

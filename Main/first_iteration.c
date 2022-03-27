@@ -393,7 +393,7 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
                 free(arr);
                 return;
             }
-            num = getNumber(data, flag_register);
+            num = get_number(data, flag_register);
             if (flag_register->ERR)
             {
                 /* alert error */

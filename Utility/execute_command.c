@@ -2,8 +2,7 @@
 
 void parse_command(char *line, symbol_list *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
-    int i = 0, number = 0, number1 = 0, index = 0, index1 = 0, address = 0, list_index = 0;
-    char *label = NULL;
+    int i = 0, number = 0, number1 = 0, index = 0, index1 = 0, list_index = 0;
     char *tok, line_backup[MAX_LEN] = {0}, tmp_tok[MAX_LEN] = {0};
     int command_length = 0;
     char **arr = NULL;
@@ -36,7 +35,6 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
     memmove(line, line + 1, strlen(line)); /* skip the space */
     strcpy(line_backup, line);
     command_length += 2;
-    label = (char *)calloc(MAX_LEN, sizeof(char));
     tok = strtok(line, ",");
     strcpy(tmp_tok, tok);
 
@@ -49,14 +47,14 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
             switch (i)
             {
             case IMMEDIATE:
-                if (is_immediate(tok, &number, flag_register))
+                if (is_immediate(tok, &number, flag_register, line_number))
                 {
                     command_length++; /* add the word of the immediate */
                     goto found;
                 }
                 break;
             case INDEX:
-                if (is_index(tok, label, &index, flag_register, line_number))
+                if (is_index(tok, &index, flag_register, line_number))
                 {
                     command_length += 2; /* add the base address and the offset */
                     goto found;
@@ -69,7 +67,7 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
                 }
                 break;
             case DIRECT:
-                if (is_direct(tok, &address, head))
+                if (is_direct(tok, head))
                 {
                     command_length += 2; /* add base and offset */
                     goto found;
@@ -83,18 +81,15 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
     /* alert error */
     if (flag_register->ERR)
     {
-        free(label);
         return;
     }
     throw_error("Invalid or missing first operand!\n", line_number);
     /* break */
-    free(label);
     return;
 
 found: /* it means the first operand is being addressed in a valid way, therefore we search the second */
     if (flag_register->ERR)
     {
-        free(label);
         return;
     }
     dst = i; /* get the addressing */
@@ -128,19 +123,16 @@ found: /* it means the first operand is being addressed in a valid way, therefor
 
             insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
             IC->data += command_length;
-            free(label);
             return;
         }
 
         /* not enough operands */
         throw_error("Not enough operands passsed!", line_number);
-        free(label);
         return;
     }
     else if (action_table[action_index].operands == 1)
     {
         throw_error("Extraneous text!", line_number);
-        free(label);
         return;
     }
 
@@ -157,14 +149,14 @@ found: /* it means the first operand is being addressed in a valid way, therefor
             switch (i)
             {
             case IMMEDIATE:
-                if (is_immediate(tok, &number1, flag_register))
+                if (is_immediate(tok, &number1, flag_register, line_number))
                 {
                     command_length += 1; /* add the word of the immediate */
                     goto found2;
                 }
                 break;
             case INDEX:
-                if (is_index(tok, label, &index1, flag_register, line_number))
+                if (is_index(tok, &index1, flag_register, line_number))
                 {
                     command_length += 2; /* add the base address and the offset */
                     goto found2;
@@ -177,7 +169,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
                 }
                 break;
             case DIRECT:
-                if (is_direct(tok, &address, head))
+                if (is_direct(tok, head))
                 {
                     command_length += 2; /* add base and offset */
                     goto found2;
@@ -190,18 +182,15 @@ found: /* it means the first operand is being addressed in a valid way, therefor
 
     /* alert error and break */
     if (flag_register->ERR) {
-        free(label);
         return;
     }
     fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
     flag_register->ERR = 1;
-    free(label);
     return;
 found2:
     if (flag_register->ERR || flag_register->ENC)
     {
-        free(label);
         return;
     }
     src = i;
@@ -243,5 +232,4 @@ found2:
     /**********************************************************/
 
     IC->data += command_length;
-    free(label);
 }

@@ -47,18 +47,48 @@ void write_line(FILE *fp, char *input);
 int clear_file(char *file_name, char *extension);
 
 /**
- * @brief Open an object file
+ * @brief creates \ opens an object file.
  * @param file_name the name of the file
  * @return FILE* of the object file
  */
 FILE *create_object_file(char *file_name);
 
+/**
+ * @brief creates \ opens an entry file.
+ * @param file_name the name of the file
+ * @return FILE* of the object file
+ */
 FILE *create_entry_file(char *file_name);
 
+/**
+ * @brief creates \ opens an extern file.
+ * @param file_name the name of the file
+ * @return FILE* of the object file
+ */
 FILE *create_extern_file(char *file_name);
+
+/**
+ * @brief deletes an am file.
+ * @param file_name the name of the file
+ */
 void delete_am_file(char *file_name);
+
+/**
+ * @brief deletes an extern file.
+ * @param file_name the name of the file
+ */
 void delete_extern_file(char *file_name);
+
+/**
+ * @brief deletes an entry file.
+ * @param file_name the name of the file
+ */
 void delete_entry_file(char *file_name);
+
+/**
+ * @brief deletes an object file.
+ * @param file_name the name of the file
+ */
 void delete_object_file(char *file_name);
 
 #endif /* FILES_H */

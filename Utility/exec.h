@@ -31,26 +31,24 @@
 * @param flag_register pointer to the flag register
 * @return true if addressing method is immediate
 */
-bool is_immediate(char *line, int *number, PSW *flag_register);
+bool is_immediate(char *line, int *number, PSW *flag_register, int line_number);
 
 /**
 * @brief checks if an operand is using direct addressing
 * @param line pointer to the line to check
-* @param address pointer to the address
 * @param head pointer to the head of the symbol list
 * @return true if addressing method is direct
 */
-bool is_direct(char *line, int *address, symbol_list *head);
+bool is_direct(char *line, symbol_list *head);
 
 /**
 * @brief checks if an operand is using index addressing
 * @param line pointer to the line to check
-* @param label pointer to a label
 * @param flag_register pointer to the special flag register
 * @param line_number number of current line
 * @return true if addressing method is index
 */
-bool is_index(char *line, char *label, int *index, PSW *flag_register, int line_number);
+bool is_index(char *line, int *index, PSW *flag_register, int line_number);
 
 /**
 * @brief checks if an operand is using register-direct addressing
@@ -62,7 +60,7 @@ bool is_index(char *line, char *label, int *index, PSW *flag_register, int line_
 bool is_register_direct(char *line, int *number, PSW *flag_register);
 
 /**
-* @brief throw an error message
+* @brief throws an error message
 * @param message the error
 * @param line_number the no. of the line in which the error occured
 */
@@ -115,7 +113,7 @@ char *encode_label_value(int value, bool external);
 * @param flag_register a pointer to the special flag register
 * @return the number from the string
 */
-int getNumber(char *num, PSW *flag_register);
+int get_number(char *num, PSW *flag_register);
 
 /**
 * @brief checks whether a line is empty
@@ -128,7 +126,7 @@ bool is_empty_line(char *line);
 /* Main function */
 
 /**
-* @brief this function parses a command line
+* @brief this function validates the command and if it is valid it encodes it.
 * @param line the line to parse
 * @param head pointer to the start of the symbol list
 * @param action_index index of the action in the action table

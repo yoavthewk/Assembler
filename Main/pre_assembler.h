@@ -3,13 +3,13 @@
 #include "../Utility/files.h"
 #include "../Utility/macro_list.h"
 #include "../Utility/hardware.h"
+#include "../Utility/line_parsing.h"
 #include <ctype.h>
 
 void copy_macro_to_file(macro_list* head, char* macroName, char* filename);
 bool is_macro(macro_list* head, char* input, FILE* fp, char* filename);
 void add_macro_to_table(macro_list* head, FILE* fp, char *name);
 bool contains_name(macro_list* macroTableHead, char* name);
-char* parse_line(char* line);
 bool has_space(char* name);
 
 
