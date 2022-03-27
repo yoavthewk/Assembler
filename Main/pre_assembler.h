@@ -6,10 +6,39 @@
 #include "../Utility/line_parsing.h"
 #include <ctype.h>
 
+/*
+ * This function replaces a macro name with its content inside the assembly file
+ * Input: the macro name, the file name, and the macro list
+ * Output: none.
+ */
 void copy_macro_to_file(macro_list* head, char* macroName, char* filename);
+
+/*
+ * This function checks whether a given line contains a macro
+ * Input: a specific line in the program
+ * Output: Boolean, true if macro.
+ */
 bool is_macro(macro_list* head, char* input, FILE* fp, char* filename);
+
+/*
+ * This function adds a new macro to the macro table
+ * Input: the macto list, the assembly file (to get the content of the macro), and the macro name
+ * Output: none.
+ */
 void add_macro_to_table(macro_list* head, FILE* fp, char *name);
+
+/*
+ * This function checks whether the macro table contains a given macro
+ * Input: a macro name, and the macro table head
+ * Output: Boolean, true if in the list.
+ */
 bool contains_name(macro_list* macroTableHead, char* name);
+
+/*
+ * This function checks if a possible macro name has a space.
+ * Input: possible name.
+ * Output: Boolean, true if it does, false elsewise.
+ */
 bool has_space(char* name);
 
 
