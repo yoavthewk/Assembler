@@ -7,13 +7,13 @@ int main(int argc, char *argv[])
     FILE *fp; /*, *newMacroFile*/
     macro_list *macro_head;
     symbol_list *symbol_head;
-    command_list* command_head;
+    command_list *command_head;
 
     int num_of_files = argc - 1, file_index = 1, i = 0;
     bool test[] = {false, false, false, false};
     hregister *IC = (hregister *)malloc(sizeof(hregister));
     hregister *DC = (hregister *)malloc(sizeof(hregister));
-    PSW* flag_register = (PSW*)malloc(sizeof(PSW));
+    PSW *flag_register = (PSW *)malloc(sizeof(PSW));
 
     /* if there are no files, we print an error and exit. */
     if (argc == 1)
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         printf("No files provided\n");
         return 1;
     }
-    
+
     /* open each file and process it */
     while (num_of_files > 0)
     {
@@ -31,13 +31,13 @@ int main(int argc, char *argv[])
         flag_register->ERR = 0;
         flag_register->SYM = 0;
         flag_register->ENC = 0;
-        
+
         macro_head = init_node(NULL, "someMacro", "NULL");
         symbol_head = init_symbol_node(NULL, "someSymbol", 'h', 220, 10, test);
-        test_arr = (char**)calloc(sizeof(char*) * LINES, sizeof(char*));
+        test_arr = (char **)calloc(sizeof(char *) * LINES, sizeof(char *));
         for (i = 0; i < LINES; i++)
         {
-            test_arr[i] = (char*)malloc(MAX_LEN);
+            test_arr[i] = (char *)malloc(MAX_LEN);
             strcpy(test_arr[i], "abcdefg");
         }
         command_head = init_command_node(NULL, 4, 1, 1, test_arr);
@@ -56,7 +56,11 @@ int main(int argc, char *argv[])
                 firstIteration(file_name, fp, symbol_head, IC, DC, flag_register, command_head);
                 fclose(fp);
             }
-            if (flag_register->ENC) goto next_file;
+            if (flag_register->ENC)
+            {
+                delete_am_file(file_name);
+                goto next_file;
+            }
             fp = open_file(file_name, true);
             if (fp)
             {
@@ -68,7 +72,7 @@ int main(int argc, char *argv[])
         {
             printf("%s doesn't exist\n", file_name);
         }
-        next_file:
+    next_file:
         num_of_files--;
         free_symbol_list(symbol_head);
         free_macro_list(macro_head);
@@ -77,6 +81,6 @@ int main(int argc, char *argv[])
     free(IC);
     free(flag_register);
     free(DC);
-    
+
     return 0;
 }

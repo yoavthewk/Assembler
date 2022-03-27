@@ -44,17 +44,21 @@ void write_line(FILE *fp, char *input);
  * Parameters:
  * char* filename - the name of the file to open.
  */
-int clear_file(char *file_name, char* extension);
+int clear_file(char *file_name, char *extension);
 
 /**
  * @brief Open an object file
- * @param file_name the name of the file 
+ * @param file_name the name of the file
  * @return FILE* of the object file
  */
-FILE* create_object_file(char* file_name);
+FILE *create_object_file(char *file_name);
 
 FILE *create_entry_file(char *file_name);
 
 FILE *create_extern_file(char *file_name);
+void delete_am_file(char *file_name);
+void delete_extern_file(char *file_name);
+void delete_entry_file(char *file_name);
+void delete_object_file(char *file_name);
 
 #endif /* FILES_H */
