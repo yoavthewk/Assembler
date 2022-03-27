@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-    char *file_name, **test_arr = NULL;
+    char *file_name, **test_arr = NULL, *tmp_file_name = NULL;
     /*char *original_line, *line;*/
     FILE *fp; /*, *newMacroFile*/
     macro_list *macro_head;
@@ -45,6 +45,8 @@ int main(int argc, char *argv[])
 
         /* Getting the file pointer */
         file_name = argv[file_index++];
+        tmp_file_name = (char*)malloc(strlen(file_name) + 1);
+        strcpy(tmp_file_name, file_name);
         fp = open_file(file_name, false);
 
         if (fp)
@@ -58,7 +60,6 @@ int main(int argc, char *argv[])
             }
             if (flag_register->ENC)
             {
-                delete_am_file(file_name);
                 goto next_file;
             }
             fp = open_file(file_name, true);
@@ -73,10 +74,19 @@ int main(int argc, char *argv[])
             printf("%s doesn't exist\n", file_name);
         }
     next_file:
+        strcpy(file_name, tmp_file_name);
+        free(tmp_file_name);
         num_of_files--;
         free_symbol_list(symbol_head);
         free_macro_list(macro_head);
         free_command_list(command_head);
+        if (flag_register->ENC)
+        {
+            delete_object_file(file_name);
+            delete_extern_file(file_name);
+            delete_entry_file(file_name);
+            delete_am_file(file_name);
+        }
     }
     free(IC);
     free(flag_register);
