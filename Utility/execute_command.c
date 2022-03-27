@@ -42,7 +42,7 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
 
     /* find the addressing mode of the first operand */
     
-    if ((dst = find_addressing(tok, &index, &command_length, &number, action_index, line_number, head, flag_register)) != -1)
+    if ((dst = find_addressing(tok, &index, &command_length, &number, action_index, line_number, head, flag_register, false)) != -1)
         goto found;
 
     /* alert error */
@@ -109,43 +109,8 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     /*
        we find the addressing mode of the second operand
     */
-    for (i = 0; i < NUM_OF_ADDRESSING; i++)
-    {
-        if (action_table[action_index].second_operand_valid[i])
-        {
-            switch (i)
-            {
-            case IMMEDIATE:
-                if (is_immediate(tok, &number1, flag_register, line_number))
-                {
-                    command_length += 1; /* add the word of the immediate */
-                    goto found2;
-                }
-                break;
-            case INDEX:
-                if (is_index(tok, &index1, flag_register, line_number))
-                {
-                    command_length += 2; /* add the base address and the offset */
-                    goto found2;
-                }
-                break;
-            case REGISTER_DIRECT:
-                if (is_register_direct(tok, &number1, flag_register))
-                {
-                    goto found2;
-                }
-                break;
-            case DIRECT:
-                if (is_direct(tok, head))
-                {
-                    command_length += 2; /* add base and offset */
-                    goto found2;
-                }
-                break;
-            }
-        }
-        strcpy(tok, tmp_tok);
-    }
+    if ((dst = find_addressing(tok, &index1, &command_length, &number1, action_index, line_number, head, flag_register, true)) != -1)
+        goto found2;
 
     /* alert error and break */
     if (flag_register->ERR) {
@@ -201,7 +166,7 @@ found2:
     IC->data += command_length;
 }
 
-int find_addressing(char* tok, int* index, int* command_length, int* number, const int action_index, const int line_number, symbol_list* head, PSW* flag_register)
+int find_addressing(char* tok, int* index, int* command_length, int* number, const int action_index, const int line_number, symbol_list* head, PSW* flag_register, bool is_second)
 {
     char tmp_tok[MAX_LEN] = {0};
     int i = 0;
@@ -209,21 +174,21 @@ int find_addressing(char* tok, int* index, int* command_length, int* number, con
     for (i = 0; i < NUM_OF_ADDRESSING; i++)
     {
         strcpy(tmp_tok, tok);
-        if ((action_table[action_index].operands == 2 && action_table[action_index].first_operand_valid[i]) || (action_table[action_index].operands == 1 && action_table[action_index].second_operand_valid[i]))
+        if (is_second ? action_table[action_index].second_operand_valid[i] : (action_table[action_index].operands == 2 && action_table[action_index].first_operand_valid[i]) || (action_table[action_index].operands == 1 && action_table[action_index].second_operand_valid[i]))
         {
             switch (i)
             {
             case IMMEDIATE:
                 if (is_immediate(tok, number, flag_register, line_number))
                 {
-                    command_length++; /* add the word of the immediate */
+                    (*command_length)++; /* add the word of the immediate */
                     return i;
                 }
                 break;
             case INDEX:
                 if (is_index(tok, index, flag_register, line_number))
                 {
-                    command_length += 2; /* add the base address and the offset */
+                    (*command_length) += 2; /* add the base address and the offset */
                     return i;
                 }
                 break;
@@ -236,7 +201,7 @@ int find_addressing(char* tok, int* index, int* command_length, int* number, con
             case DIRECT:
                 if (is_direct(tok, head))
                 {
-                    command_length += 2; /* add base and offset */
+                    (*command_length) += 2; /* add base and offset */
                     return i;
                 }
                 break;

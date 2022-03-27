@@ -138,7 +138,7 @@ bool is_empty_line(char *line);
 */
 void parse_command(char *line, symbol_list *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head);
 
-int find_addressing(char* tok, int* index, int* command_length, int* number, const int action_index, const int line_number, int* address, symbol_list* head, PSW* flag_register);
+int find_addressing(char* tok, int* index, int* command_length, int* number, const int action_index, const int line_number, symbol_list* head, PSW* flag_register, bool is_second);
 
 struct
 {
