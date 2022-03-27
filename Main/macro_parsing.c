@@ -1,4 +1,5 @@
 #include "pre_assembler.h"
+
 /*
  * This function checks whether a given line contains a macro
  * Input: a specific line in the program
@@ -15,7 +16,7 @@ bool is_macro(macro_list *head, char *input, FILE *fp, char *filename)
         /* If the word is not "macro" */
         cmd[strlen(cmd) - 1] = 0;
         if (!has_space(cmd) && contains_name(head, cmd)) /* we check if it is a name of a macro */
-        {                                         
+        {
             copy_macro_to_file(head, cmd, filename); /* if it is, we copy it's contents to the pre-assembled file */
             free(line);
             return true;
@@ -23,10 +24,13 @@ bool is_macro(macro_list *head, char *input, FILE *fp, char *filename)
         free(line);
         return false;
     }
-    else if (!cmd)
+    else if (!cmd){
+        free(line);
         return false;
+    }
 
-    cmd = strtok(NULL, "\n");       /* get the name of the macro */
+    cmd = strtok(NULL, "\n"); /* get the name of the macro */
+
     add_macro_to_table(head, fp, cmd); /* add the macro to the table. */
     free(line);
     return true;
@@ -154,4 +158,3 @@ void preassemble(char *file_name, FILE *fp, macro_list *head)
         fclose(fp);
     }
 }
-
