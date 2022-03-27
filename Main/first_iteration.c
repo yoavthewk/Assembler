@@ -3,7 +3,7 @@
 
 void firstIteration(char *file_name, FILE *fp, symbol_list *head, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
-    int line_number = 0;
+    int line_number = 1;
     char *line = NULL;
 
     while ((line = get_next_line(fp)) != NULL)

@@ -4,7 +4,7 @@
 void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *head, command_list *command_head, PSW *flag_register)
 {
     char *line = NULL;
-    int line_number = 0;
+    int line_number = 1;
     FILE *obfp = create_object_file(file_name);
     FILE *entfp = create_entry_file(file_name);
     FILE *extfp = create_extern_file(file_name);

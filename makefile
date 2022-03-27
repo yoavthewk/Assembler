@@ -3,6 +3,7 @@ EXEFLAGS = -ansi -Wall -pedantic -g -m32
 OBJ_SRC = main.o first_iteration.o second_iteration.o macro_parsing.o files.o symbol_list.o line_parsing.o execute_command.o command_parse.o macro_list.o command_list.o
 CC = gcc
 OUT = prog
+OTHERS = *.ob *.ext *.ent *.am
  
 prog: $(OBJ_SRC)
 	$(CC) $(EXEFLAGS) $(OBJ_SRC) -o $(OUT)
@@ -41,5 +42,5 @@ command_list.o: Utility/command_list.c Utility/command_list.h
 	$(CC) $(CFLAGS) Utility/command_list.c -std=c90
 
 clean:
-	rm -f $(OBJ_SRC) $(OUT)
+	rm -f $(OBJ_SRC) $(OUT) $(OTHERS)
  

@@ -37,7 +37,7 @@ void insert_command_list(command_list **head, command_list *node)
         temp->IC = node->IC;
         temp->L = node->L;
         temp->data = node->data;
-        for (i = 0; i < LINES; i++)
+        for (i = 0; i < node->L; i++)
         {
             strcpy(temp->arr[i], node->arr[i]);
         }
