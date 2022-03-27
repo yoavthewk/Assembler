@@ -4,7 +4,7 @@
 void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *head, command_list *command_head, PSW *flag_register)
 {
     char *line = NULL;
-    int line_number = 1;
+    int line_number = 1, IC = 100;
     FILE *obfp = create_object_file(file_name);
     FILE *entfp = create_entry_file(file_name);
     FILE *extfp = create_extern_file(file_name);
@@ -13,7 +13,7 @@ void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *
     {
         if (flag_register->ERR)
             flag_register->ENC = 1;
-        second_line_process(extfp, line, ICF, line_number++, head, command_head, flag_register);
+        second_line_process(extfp, line, ICF, line_number++, head, command_head, flag_register, &IC);
         free(line);
     }
     if (!flag_register->ENC)
@@ -27,12 +27,11 @@ void second_iteration(char *file_name, FILE *fp, int ICF, int DCF, symbol_list *
     fclose(entfp);
 }
 
-void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register)
+void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register, int* IC)
 {
     char line_backup[MAX_LEN] = {0};
     char *tok;
     char *label = NULL;
-    static int IC = 100;
     int offset = 0;
     flag_register->ERR = flag_register->SYM = 0;
 
@@ -82,9 +81,9 @@ void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_
     strcpy(line_backup, line);
     /* if we got this far, it is a command */
     /* check if we need to complete words */
-    if (!need_completion(command_head, IC))
+    if (!need_completion(command_head, *IC))
     {
-        IC = get_next_IC(IC, command_head);
+        *IC = get_next_IC(*IC, command_head);
         /* if not, we return */
         free(line);
         return;
@@ -124,12 +123,12 @@ void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_
         strcpy(label, tok);
     }
 
-    fill_command_list(head, &command_head, flag_register, fp, label, IC);
+    fill_command_list(head, &command_head, flag_register, fp, label, *IC);
     if (flag_register->ERR)
     {
         throw_error("Label does not exist!", line_number);
     }
-    IC = get_next_IC(IC, command_head);
+    *IC = get_next_IC(*IC, command_head);
     free(label);
     free(line);
 }

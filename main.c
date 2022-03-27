@@ -2,13 +2,12 @@
 
 int main(int argc, char *argv[])
 {
-    char *file_name, **test_arr = NULL, *tmp_file_name = NULL;
+    char file_name[FILENAME_MAX] = {0}, **test_arr = NULL, *tmp_file_name = NULL;
     /*char *original_line, *line;*/
     FILE *fp; /*, *newMacroFile*/
     macro_list *macro_head;
     symbol_list *symbol_head;
     command_list *command_head;
-
     int num_of_files = argc - 1, file_index = 1, i = 0;
     bool test[] = {false, false, false, false};
     hregister *IC = (hregister *)malloc(sizeof(hregister));
@@ -32,20 +31,20 @@ int main(int argc, char *argv[])
         flag_register->SYM = 0;
         flag_register->ENC = 0;
 
-        macro_head = init_node(NULL, "someMacro", "NULL");
-        symbol_head = init_symbol_node(NULL, "someSymbol", 'h', 220, 10, test);
+        macro_head = init_node(NULL, "mov", "NULL");
+        symbol_head = init_symbol_node(NULL, "1", 'h', 220, 10, test);
         test_arr = (char **)calloc(sizeof(char *) * LINES, sizeof(char *));
         for (i = 0; i < LINES; i++)
         {
             test_arr[i] = (char *)malloc(MAX_LEN);
-            strcpy(test_arr[i], "abcdefg");
+            strcpy(test_arr[i], "?");
         }
         command_head = init_command_node(NULL, 4, 1, 1, test_arr);
         /* ************************************************************ */
 
         /* Getting the file pointer */
-        file_name = argv[file_index++];
-        tmp_file_name = (char*)malloc(strlen(file_name) + 1);
+        strcpy(file_name, argv[file_index++]);
+        tmp_file_name = (char *)malloc(strlen(file_name) + 1);
         strcpy(tmp_file_name, file_name);
         fp = open_file(file_name, false);
 

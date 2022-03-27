@@ -45,8 +45,8 @@ void insert_command_list(command_list **head, command_list *node)
 {
     command_list *temp = *head;
     int i = 0;
-    static int callNum = 0;
-    if (++callNum == 1)
+
+    if (!strcmp(temp->arr[0], "?"))
     {
         temp->next = node->next;
         temp->IC = node->IC;

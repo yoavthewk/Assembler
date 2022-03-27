@@ -31,7 +31,20 @@ void free_macro_list(macro_list *head)
 
 void insert_at_end(macro_list** head, macro_list* node)
 {
-    macro_list* temp = *head;
+    macro_list * temp = *head;
+    int i = 0;
+    
+    if (!strcmp(temp->m.name, "mov"))
+    {
+        temp->next = node->next;
+        strcpy(temp->m.name, node->m.name);
+        strcpy(temp->m.data, node->m.data);
+        free(node->m.data);
+        free(node->m.name);
+        free(node);
+        return;
+    }
+
     while (temp->next)
     {
         temp = temp->next;

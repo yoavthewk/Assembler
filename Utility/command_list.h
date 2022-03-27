@@ -30,6 +30,7 @@ command_list *init_command_node(command_list* next, int L, int IC, bool data, ch
  * This function inserts a node to the end of the list
  * @param head a pointer to the start of the list
  * @param node the node to insert
+ * @param new_iteration if we moved a file reset the static counter
  */
 void insert_command_list(command_list **head, command_list *node);
 

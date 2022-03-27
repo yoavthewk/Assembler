@@ -40,11 +40,10 @@ void free_symbol_list(symbol_list *head);
 
 /*
  * This function inserts a node at the end of the list
- * Input: the head of the list, the node to insert
+ * Input: the head of the list, the node to insert, is new file
  * Output: none
  */
 void insert_symbol(symbol_list **head, symbol_list *node);
-
 /*
  * This function returns the size of a linked list
  * Input: the head of the list

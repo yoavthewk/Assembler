@@ -28,8 +28,6 @@ void handle_entry(char *line, symbol_list *head, PSW *flag_register, int line_nu
  */
 FILE *create_object_file(char *file_name);
 
-void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register);
-
 /**
  * @brief this function creates a newly allocated substring from [start] to [end]
  * @param line substring origin
@@ -55,7 +53,7 @@ void append_to_object_file(FILE *fp, char *word);
 
 void write_value_offset(FILE* fp, symbol_list *head, char* label_name);
 
-void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register);
+void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_list *head, command_list *command_head, PSW *flag_register, int* IC);
 
 void write_entry_to_file(FILE* fp, symbol_list *head);
 

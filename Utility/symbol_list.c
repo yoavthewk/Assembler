@@ -36,8 +36,8 @@ void insert_symbol(symbol_list **head, symbol_list *node)
 {
     symbol_list *temp = *head;
     int i = 0;
-    static int callNum = 0;
-    if (++callNum == 1)
+    
+    if (!strcmp(temp->s.name, "1"))
     {
         temp->next = node->next;
         strcpy(temp->s.name, node->s.name);
