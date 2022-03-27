@@ -10,15 +10,11 @@ typedef struct hregister {
     unsigned int data : 20;
 } hregister;
 
-/* struct to represent a word in assmebly; also 20 bits */
-typedef struct word {
-    unsigned int data : 20;
-} word;
-
 /* special flag register that holds two flags, each one bit */
 typedef struct PSW {
     unsigned int ERR : 1; /* error flag */
 	unsigned int SYM : 1; /* symbol flag */
+    unsigned int ENC : 1; /* encode flag */
 } PSW;
 
 #endif /* !HARDWARE_SEEN */

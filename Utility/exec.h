@@ -19,6 +19,8 @@
 #define ENTRY 1
 #define CODE 2
 #define DATA 3
+#define MAX_NUM 32767
+#define MIN_NUM -32768
 
 /* Helper functions */
 
@@ -81,15 +83,31 @@ char *encode_immediate(int num);
 char *encode_command_opcode(int action_index);
 
 /**
-* @brief encoding the registers
-* @param src
-* @param dst
+* @brief encoding the registers.
+* @param src the source register number.
+* @param dst the destination register number.
 * @param action_index index of the action in the action table
-* @param src_addressing
-* @param dst_addressing
-* @param two_operands true if the command has two operands
+* @param src_addressing the source addressing mode.
+* @param dst_addressing the destination addressing mode.
+* @param two_operands true if the command has two operands.
 */
 char *encode_command_registers(int src, int dst, int action_index, int src_addressing, int dst_addressing, bool two_operands);
+
+/**
+* @brief encoding the label offset.
+* @param offset the offset to encode.
+* @param external whether the label is external or not.
+* @return the encoded line.
+*/
+char *encode_label_offset(int offset, bool external);
+
+/**
+* @brief encoding the label value.
+* @param value the value to encode.
+* @param external whether the label is external or not.
+* @return the encoded line.
+*/
+char *encode_label_value(int value, bool external);
 
 /**
 * @brief getting a number from a string
@@ -106,7 +124,9 @@ int getNumber(char *num, PSW *flag_register);
 */
 bool is_empty_line(char *line);
 
-/* Execution functions */
+
+/* Main function */
+
 /**
 * @brief this function parses a command line
 * @param line the line to parse
@@ -120,9 +140,6 @@ bool is_empty_line(char *line);
 */
 void parse_command(char *line, symbol_list *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head);
 
-char *encode_label_offset(int offset, bool external);
-
-char *encode_label_value(int value, bool external);
 
 struct
 {

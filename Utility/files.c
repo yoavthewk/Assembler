@@ -106,3 +106,54 @@ FILE *create_extern_file(char *file_name)
     free(tmp_name);
     return ext_fp;
 }
+
+void delete_object_file(char *file_name)
+{
+    const int ob_length = 3;
+    char* tmp_name = (char*)malloc(MAX_LEN);
+    clear_file(file_name, ".ob");
+    strcpy(tmp_name, file_name);
+    strncat(tmp_name, ".ob", ob_length);
+    if(remove(tmp_name) != 0){
+        printf("Failed to delete %s", tmp_name);
+    }
+    free(tmp_name);
+}
+
+void delete_entry_file(char *file_name)
+{
+    const int ob_length = 4;
+    char* tmp_name = (char*)malloc(MAX_LEN);
+    clear_file(file_name, ".ent");
+    strcpy(tmp_name, file_name);
+    strncat(tmp_name, ".ent", ob_length);
+    if(remove(tmp_name) != 0){
+        printf("Failed to delete %s", tmp_name);
+    }
+    free(tmp_name);
+}
+
+void delete_extern_file(char *file_name)
+{
+    const int ob_length = 4;
+    char* tmp_name = (char*)malloc(MAX_LEN);
+    clear_file(file_name, ".ext");
+    strcpy(tmp_name, file_name);
+    strncat(tmp_name, ".ext", ob_length);
+    if(remove(tmp_name) != 0){
+        printf("Failed to delete %s", tmp_name);
+    }
+    free(tmp_name);
+}
+
+void delete_am_file(char* file_name){
+    const int ob_length = 3;
+    char* tmp_name = (char*)malloc(MAX_LEN);
+    clear_file(file_name, ".am");
+    strcpy(tmp_name, file_name);
+    strncat(tmp_name, ".am", ob_length);
+    if(remove(tmp_name) != 0){
+        printf("Failed to delete %s", tmp_name);
+    }
+    free(tmp_name);
+}

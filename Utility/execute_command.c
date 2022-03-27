@@ -39,6 +39,8 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
     label = (char *)calloc(MAX_LEN, sizeof(char));
     tok = strtok(line, ",");
     strcpy(tmp_tok, tok);
+
+    /* find the addressing mode of the first operand */
     for (i = 0; i < NUM_OF_ADDRESSING; i++)
     {
         strcpy(tmp_tok, tok);
@@ -80,7 +82,7 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
 
     /* alert error */
     throw_error("Invalid or missing first operand!\n", line_number);
-    /* raise error flag: */
+    flag_register->ENC = 0;
     /* break */
     free(label);
     return;
@@ -94,9 +96,11 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     dst = i; /* get the addressing */
 
     strcpy(line, line_backup);
+
     if (action_table[action_index].operands == 2)
         strtok(line, ",");
-    tok = strtok(NULL, ","); /* get the rest */
+
+    tok = strtok(NULL, ","); /* get the rest of the line */
     if (!tok || tok[0] == '\n' || !tok[0])
     {
         if (action_table[action_index].operands == 1)
@@ -137,10 +141,9 @@ found: /* it means the first operand is being addressed in a valid way, therefor
 
     strcpy(line_backup, tok);
     strcpy(tmp_tok, tok);
+
     /* 
-       we can just use strtok to get to the , and then to the rest of the word.
-       encode the first operand with what we found
-       afterwards, do the same for the rest 
+       we find the addressing mode of the second operand
     */
     for (i = 0; i < NUM_OF_ADDRESSING; i++)
     {
@@ -183,6 +186,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     /* alert error and break */
     fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
+
 found2:
     if (flag_register->ERR)
     {
@@ -192,7 +196,8 @@ found2:
     src = i;
 
 
-    /* encode */
+    /*            encode                */
+    /************************************/
     arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
     arr[list_index++] = encode_command_opcode(action_index);
 
@@ -221,6 +226,7 @@ found2:
     }
 
     insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
+    /**********************************************************/
 
     IC->data += command_length;
     free(label);
