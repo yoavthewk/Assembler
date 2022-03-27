@@ -7,17 +7,19 @@ command_list *init_command_node(command_list *next, int L, int IC, bool data, ch
 
     tmp->IC = IC;
     tmp->L = L;
-    tmp->arr = (char**)calloc(sizeof(char*) * L, sizeof(char*));
+    tmp->arr = (char **)calloc(sizeof(char *) * L, sizeof(char *));
     tmp->data = data;
 
     for (i = 0; i < L; i++)
     {
         tmp->arr[i] = (char *)calloc(sizeof(char) * ENCODE_LENGTH, sizeof(char));
-        if (str_array[i]){
+        if (str_array[i])
+        {
             strcpy(tmp->arr[i], str_array[i]);
             free(str_array[i]);
         }
-        else {
+        else
+        {
             strncpy(tmp->arr[i], "????????????????????", ENCODE_LENGTH);
         }
     }
@@ -35,12 +37,12 @@ void insert_command_list(command_list **head, command_list *node)
     {
         temp->next = node->next;
         temp->IC = node->IC;
-        temp->L = node->L;
         temp->data = node->data;
-        for (i = 0; i < node->L; i++)
+        for (i = 0; i < temp->L; i++)
         {
             strcpy(temp->arr[i], node->arr[i]);
         }
+        temp->L = node->L;
         free_command_list(node);
         return;
     }
@@ -63,9 +65,10 @@ void print_command_list(command_list *head)
         printf("IC=%d, L=%d\n", head->IC, head->L);
         for (i = 0; i < head->L; i++)
         {
-            if (head->arr[i]) puts(head->arr[i]);
+            if (head->arr[i])
+                puts(head->arr[i]);
         }
-        
+
         head = head->next;
     }
 }
@@ -77,11 +80,12 @@ void free_command_list(command_list *node)
 
     if (!node)
         return;
-    
+
     while (tmp)
     {
         tmp = node->next;
-        for (i = 0; i < node->L; ++i) {
+        for (i = 0; i < node->L; ++i)
+        {
             free(node->arr[i]);
         }
         free(node->arr);
@@ -91,7 +95,7 @@ void free_command_list(command_list *node)
     node = NULL;
 }
 
-size_t get_command_size(command_list* head)
+size_t get_command_size(command_list *head)
 {
     size_t size = 0;
     while (head)
@@ -100,5 +104,4 @@ size_t get_command_size(command_list* head)
         head = head->next;
     }
     return size;
-    
 }

@@ -93,7 +93,7 @@ void second_line_process(FILE *fp, char *line, int ICF, int line_number, symbol_
     /* get the first operand */
     tok = strtok(line, ",");
     /* if it starts with # it's an immediate, and we need to encode the second operand. */
-    label = (char*)malloc(MAX_LEN);
+    label = (char*)calloc(MAX_LEN, sizeof(char));
     if(tok[0] == '#')
         strcpy(label, strtok(NULL, ","));
     
@@ -186,9 +186,9 @@ void fill_command_list(symbol_list *head, command_list **command_head, PSW* flag
         write_extern_to_file(fp, head->s.name, tmp->IC + i, tmp->IC + i + 1);
     }
     
-    /*free(tmp->arr[i]);*/
+    free(tmp->arr[i]);
     tmp->arr[i++] = encode_label_value(head->s.value - head->s.value % 16, head->s.attributes[EXTERN]);
-    /*free(tmp->arr[i]);*/
+    free(tmp->arr[i]);
     tmp->arr[i] = encode_label_offset(head->s.value % 16, head->s.attributes[EXTERN]);
 }
 

@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         DC->data = 0;
         flag_register->ERR = 0;
         flag_register->SYM = 0;
-        flag_register->ENC = 1;
+        flag_register->ENC = 0;
         
         macro_head = init_node(NULL, "someMacro", "NULL");
         symbol_head = init_symbol_node(NULL, "someSymbol", 'h', 220, 10, test);
@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
                 firstIteration(file_name, fp, symbol_head, IC, DC, flag_register, command_head);
                 fclose(fp);
             }
+            if (flag_register->ENC) goto next_file;
             fp = open_file(file_name, true);
             if (fp)
             {
@@ -67,6 +68,7 @@ int main(int argc, char *argv[])
         {
             printf("%s doesn't exist\n", file_name);
         }
+        next_file:
         num_of_files--;
         free_symbol_list(symbol_head);
         free_macro_list(macro_head);

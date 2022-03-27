@@ -1,6 +1,5 @@
 #include "first_iteration.h"
 
-
 void firstIteration(char *file_name, FILE *fp, symbol_list *head, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
     int line_number = 1;
@@ -8,17 +7,21 @@ void firstIteration(char *file_name, FILE *fp, symbol_list *head, hregister *IC,
 
     while ((line = get_next_line(fp)) != NULL)
     {
+        if (flag_register->ERR) flag_register->ENC = 1;
         process_line(line, head, line_number++, IC, DC, flag_register, command_head);
         free(line);
     }
-    update_symbol_list(head, IC);
-    update_command_list(command_head, IC);
-    print_command_list(command_head);
-    print_symbol_list(head);
+    if (!flag_register->ENC)
+    {
+        update_symbol_list(head, IC);
+        update_command_list(command_head, IC);
+        print_command_list(command_head);
+        print_symbol_list(head);
+    }
 }
 
-/* 
-    This method processes the line given and analyzes it 
+/*
+    This method processes the line given and analyzes it
 */
 void process_line(char *line, symbol_list *head, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head)
 {
@@ -50,7 +53,7 @@ void process_line(char *line, symbol_list *head, int line_number, hregister *IC,
     }
 
     strcpy(line_backup, line);
-    
+
     /* check if we need to handle data and if so, process it */
     if (handle_data(line_backup, head, IC, DC, line_number, flag_register, command_head))
     {
@@ -103,6 +106,7 @@ void process_line(char *line, symbol_list *head, int line_number, hregister *IC,
             /* alert error */
             throw_error("Label name is invalid!", line_number);
             flag_register->ERR = 1;
+            free(line);
             return;
         }
         att[CODE] = true;
@@ -132,19 +136,23 @@ void process_line(char *line, symbol_list *head, int line_number, hregister *IC,
 
     /* trying to check for externous text; */
     if (extraneous_text(line, action_table[i].operands, flag_register, line_number))
+    {
+        free(line);
         return;
-
+    }
     strcpy(line, line_backup);
-    
+
     /* if it is, we call the function that validates and encodes the command */
     parse_command(line, head, i, line_number, IC, DC, flag_register, command_head);
     free(line);
 }
 
-void check_illegal_commas(char* line, PSW* flag_register){
+void check_illegal_commas(char *line, PSW *flag_register)
+{
     int i, comma_count = 0;
 
-    for(i = 0; i < strlen(line); i++){
+    for (i = 0; i < strlen(line); i++)
+    {
         comma_count += *(line + i) == ',' ? 1 : 0;
     }
 
@@ -154,7 +162,7 @@ void check_illegal_commas(char* line, PSW* flag_register){
 bool extraneous_text(char *line, int operands, PSW *flag_register, int line_number)
 {
     char *tok;
-    char* tmp = line;
+    char *tmp = line;
     if (operands == 2)
     {
         tok = strtok(line, ",");
@@ -189,14 +197,14 @@ bool extraneous_text(char *line, int operands, PSW *flag_register, int line_numb
     return false;
 }
 
-
 bool is_valid_label_name(char *name)
 {
     bool valid = true;
     int i, register_number;
 
     /* first we check that the first character is a letter */
-    if(!isalpha(name[0])) return false;
+    if (!isalpha(name[0]))
+        return false;
 
     for (i = 1; i < strlen(name) - 1; i++)
     {
@@ -212,21 +220,23 @@ bool is_valid_label_name(char *name)
     }
 
     /* check other assembly saved words */
-    if(!strcmp(name, "extern") || !strcmp(name, "entry") || !strcmp(name, "string") || !strcmp(name, "data"))
+    if (!strcmp(name, "extern") || !strcmp(name, "entry") || !strcmp(name, "string") || !strcmp(name, "data"))
         return false;
 
     /* check if it's a register name */
-    if(name[0] == 'r'){
+    if (name[0] == 'r')
+    {
         int j = 0;
-	    char number[MAX_LEN] = {0};
+        char number[MAX_LEN] = {0};
 
         i = 1;
 
-	    while ((isdigit(name[i]) || name[i] == '-' || name[i] == '+') && name[i] != ',')
-		    number[j++] = name[i++];
+        while ((isdigit(name[i]) || name[i] == '-' || name[i] == '+') && name[i] != ',')
+            number[j++] = name[i++];
 
         register_number = atoi(number);
-        if(register_number >= 0 && register_number <= 15){
+        if (register_number >= 0 && register_number <= 15)
+        {
             return false;
         }
     }
@@ -290,7 +300,8 @@ void update_symbol_list(symbol_list *head, hregister *IC)
     }
 }
 
-void update_command_list(command_list *head, hregister *IC){
+void update_command_list(command_list *head, hregister *IC)
+{
     command_list *temp = head;
     while (temp)
     {
@@ -324,7 +335,7 @@ void contains_label(char *line, symbol_list *head, int line_number, PSW *flag_re
     }
 }
 
-bool handle_data(char *line, symbol_list *head, hregister *IC, hregister *DC, int line_number, PSW *flag_register, command_list* command_head)
+bool handle_data(char *line, symbol_list *head, hregister *IC, hregister *DC, int line_number, PSW *flag_register, command_list *command_head)
 {
     char lineBackup[MAX_LEN] = {0}, name[MAX_LEN] = {0};
     char *canBeData = NULL; /* get the first (or only) word in the line. */
@@ -356,27 +367,29 @@ bool handle_data(char *line, symbol_list *head, hregister *IC, hregister *DC, in
     return false;
 }
 
-void process_data(char *line, hregister *DC, int line_number, PSW *flag_register, command_list* head)
+void process_data(char *line, hregister *DC, int line_number, PSW *flag_register, command_list *head)
 {
     int num, i, list_index = 0, length = 0;
     char *data = strtok(line, " "); /* get the first (or only) word in the line. */
-    char** arr = (char**)calloc(sizeof(char*) * MAX_WORD_SIZE, sizeof(char*));
+    char **arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
     data = flag_register->SYM ? strtok(NULL, " ") : data;
     if (!strcmp(data, ".data"))
     {
         while ((data = strtok(NULL, ",")))
         {
             length++;
-            if (length > LINES) {
-                arr = (char**)realloc(&arr, sizeof(char*) * length);
+            if (length > LINES)
+            {
+                arr = (char **)realloc(&arr, sizeof(char *) * length);
             }
-            if(contains_space(data, flag_register)){
+            if (contains_space(data, flag_register))
+            {
                 throw_error("Extraneous text!", line_number);
                 for (i = 0; i < list_index; i++)
                 {
                     free(arr[i]);
                 }
-                
+
                 free(arr);
                 return;
             }
@@ -400,8 +413,9 @@ void process_data(char *line, hregister *DC, int line_number, PSW *flag_register
     else
     {
         data = strtok(NULL, " \"");
-        if (strlen(data) > LINES) {
-            arr = (char**)realloc(arr, sizeof(char*) * (strlen(data) + 1));
+        if (strlen(data) > LINES)
+        {
+            arr = (char **)realloc(arr, sizeof(char *) * (strlen(data) + 1));
         }
         /*printf("%s\n", data);
         data = strtok(NULL, "\"");*/
@@ -431,10 +445,13 @@ bool is_entry(char *line, PSW *flag_register)
     return flag_register->SYM ? !strcmp(strtok(NULL, " "), ".entry") : !strcmp(cmd, ".entry");
 }
 
-bool contains_space(char* data, PSW* flag_register){
+bool contains_space(char *data, PSW *flag_register)
+{
     int i = 0;
-    for(; i < strlen(data); i++){
-        if(*(data + i) == ' ') return true;
+    for (; i < strlen(data); i++)
+    {
+        if (*(data + i) == ' ')
+            return true;
     }
     return false;
 }

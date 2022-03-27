@@ -81,8 +81,12 @@ void parse_command(char *line, symbol_list *head, int action_index, int line_num
     }
 
     /* alert error */
+    if (flag_register->ERR)
+    {
+        free(label);
+        return;
+    }
     throw_error("Invalid or missing first operand!\n", line_number);
-    flag_register->ENC = 0;
     /* break */
     free(label);
     return;
@@ -113,14 +117,15 @@ found: /* it means the first operand is being addressed in a valid way, therefor
                 arr[list_index++] = encode_command_registers(0, 0, action_index, 0, dst, false);
                 arr[list_index++] = encode_immediate(number);
             }
-            else{
+            else
+            {
                 int dst_register;
-                dst_register = dst == REGISTER_DIRECT ? number : dst == DIRECT ? 0 : index;
+                dst_register = dst == REGISTER_DIRECT ? number : dst == DIRECT ? 0
+                                                                               : index;
 
                 arr[list_index++] = encode_command_registers(0, dst_register, action_index, 0, dst, false);
             }
-        
-            
+
             insert_command_list(&command_head, init_command_node(NULL, command_length, IC->data, false, arr));
             IC->data += command_length;
             free(label);
@@ -142,7 +147,7 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     strcpy(line_backup, tok);
     strcpy(tmp_tok, tok);
 
-    /* 
+    /*
        we find the addressing mode of the second operand
     */
     for (i = 0; i < NUM_OF_ADDRESSING; i++)
@@ -184,30 +189,39 @@ found: /* it means the first operand is being addressed in a valid way, therefor
     }
 
     /* alert error and break */
+    if (flag_register->ERR) {
+        free(label);
+        return;
+    }
     fflush(stdin);
     throw_error("Invalid or Missing Second Operand!", line_number);
-
+    flag_register->ERR = 1;
+    free(label);
+    return;
 found2:
-    if (flag_register->ERR)
+    if (flag_register->ERR || flag_register->ENC)
     {
         free(label);
         return;
     }
     src = i;
 
-
     /*            encode                */
     /************************************/
     arr = (char **)calloc(sizeof(char *) * MAX_WORD_SIZE, sizeof(char *));
     arr[list_index++] = encode_command_opcode(action_index);
 
-    if(src == REGISTER_DIRECT && dst == REGISTER_DIRECT){
+    if (src == REGISTER_DIRECT && dst == REGISTER_DIRECT)
+    {
         arr[list_index++] = encode_command_registers(number1, number, action_index, src, dst, true);
     }
-    else{
+    else
+    {
         int dst_register, src_register;
-        dst_register = dst == REGISTER_DIRECT ? number : dst == DIRECT ? 0 : index;
-        src_register = src == REGISTER_DIRECT ? number1 : src == DIRECT ? 0 : index1;
+        dst_register = dst == REGISTER_DIRECT ? number : dst == DIRECT ? 0
+                                                                       : index;
+        src_register = src == REGISTER_DIRECT ? number1 : src == DIRECT ? 0
+                                                                        : index1;
         arr[list_index++] = encode_command_registers(src_register, dst_register, action_index, src, dst, true);
     }
 
