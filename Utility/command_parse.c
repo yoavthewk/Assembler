@@ -59,14 +59,12 @@ bool is_direct(char *line, int *address, symbol_list *head)
 	return false;
 }
 
-bool is_index(char *line, char *label, int *index, PSW *flag_register, int line_number)
+bool is_index(char *line, int *index, PSW *flag_register, int line_number)
 {
 	char *tok;
 	tok = strtok(line, "[");
 	if (tok != NULL)
 	{
-		/* check if tok is in the symbol table */
-		strcpy(label, tok);
 		/* if it is: */
 		tok = strtok(NULL, "]");
 		if (tok && tok[0] == 'r')

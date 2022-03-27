@@ -50,7 +50,7 @@ bool is_direct(char *line, int *address, symbol_list *head);
 * @param line_number number of current line
 * @return true if addressing method is index
 */
-bool is_index(char *line, char *label, int *index, PSW *flag_register, int line_number);
+bool is_index(char *line, int *index, PSW *flag_register, int line_number);
 
 /**
 * @brief checks if an operand is using register-direct addressing
@@ -140,6 +140,7 @@ bool is_empty_line(char *line);
 */
 void parse_command(char *line, symbol_list *head, int action_index, int line_number, hregister *IC, hregister *DC, PSW *flag_register, command_list *command_head);
 
+int find_addressing(char* tok, int* index, int* command_length, int* number, const int action_index, const int line_number, int* address, symbol_list* head, PSW* flag_register);
 
 struct
 {

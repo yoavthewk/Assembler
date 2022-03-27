@@ -15,7 +15,7 @@ LOOP: 	prn #48
 	sub LOOP[r10], r14
 END:    stop
 STR:   .string "abcd"
-.data 6, -9
+LIST:  .data 6, -9
        .data -100
 
 .entry K
