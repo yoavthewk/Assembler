@@ -152,7 +152,7 @@ struct
 	unsigned int operands : 2;
 	unsigned int first_operand_valid[4];
 	unsigned int second_operand_valid[4];
-} static action_table[] = {
+} static const action_table[17] = {
 	{"mov", 0, 0, 2, {1, 1, 1, 1}, {0, 1, 1, 1}},
 	{"cmp", 1, 0, 2, {1, 1, 1, 1}, {1, 1, 1, 1}},
 	{"add", 2, 10, 2, {1, 1, 1, 1}, {0, 1, 1, 1}},
